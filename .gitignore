@@ -1,11 +1,17 @@
-# macOS specific files
+# macOS spezifische Dateien
 .DS_Store
 
-# Logs, dependencies and temporary files
+# Logdateien und temporäre Dateien
 npm-debug.log*
 yarn-debug.log*
+
+# Umgebungsvariablen
 .env
+
+# IDE- und Editor-Ordner
 .idea/
 .vscode/
+
+# Abhängigkeiten und Build
 **/node_modules/
 /dist/
