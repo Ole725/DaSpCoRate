@@ -1,0 +1,11 @@
+# macOS specific files
+.DS_Store
+
+# Logs, dependencies and temporary files
+npm-debug.log*
+yarn-debug.log*
+.env
+.idea/
+.vscode/
+**/node_modules/
+/dist/
