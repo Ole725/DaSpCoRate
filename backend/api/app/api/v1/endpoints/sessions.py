@@ -8,7 +8,7 @@ from datetime import date # Für den Typ Hinting von session_date
 from app.core.database import get_db
 from app.schemas import session as schemas_session
 from app.crud import session as crud_session
-from app.dependencies.dependencies import get_current_trainer # Nur Trainer dürfen Sessions verwalten
+from app.dependencies.dependencies import get_trainer_from_token # Nur Trainer dürfen Sessions verwalten
 from app.models.trainer import Trainer # Für Type Hinting
 
 router = APIRouter()
@@ -18,7 +18,7 @@ router = APIRouter()
 def create_new_session(
     session_in: schemas_session.SessionCreate,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer)
+    current_trainer: Trainer = Depends(get_trainer_from_token)
 ):
     session = crud_session.create_session(db=db, session=session_in, trainer_id=current_trainer.id)
     return session
@@ -32,7 +32,7 @@ def read_sessions(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer) # Authentifizierung als Trainer
+    current_trainer: Trainer = Depends(get_trainer_from_token) # Authentifizierung als Trainer
 ):
     trainer_id_filter = current_trainer.id if only_my_sessions else None
     # Wenn only_my_sessions False ist, könnte ein Admin alle Sessions sehen.
@@ -47,7 +47,7 @@ def read_sessions(
 def read_session(
     session_id: int,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer)
+    current_trainer: Trainer = Depends(get_trainer_from_token)
 ):
     db_session = crud_session.get_session(db, session_id=session_id)
     if db_session is None or db_session.trainer_id != current_trainer.id:
@@ -61,7 +61,7 @@ def update_existing_session(
     session_id: int,
     session_in: schemas_session.SessionUpdate,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer)
+    current_trainer: Trainer = Depends(get_trainer_from_token)
 ):
     db_session = crud_session.get_session(db, session_id=session_id)
     if db_session is None or db_session.trainer_id != current_trainer.id:
@@ -75,7 +75,7 @@ def update_existing_session(
 def delete_existing_session(
     session_id: int,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer)
+    current_trainer: Trainer = Depends(get_trainer_from_token)
 ):
     db_session = crud_session.get_session(db, session_id=session_id)
     if db_session is None or db_session.trainer_id != current_trainer.id:

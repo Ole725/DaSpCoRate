@@ -8,7 +8,7 @@ from app.core.database import get_db
 from app.schemas import session_enrollment as schemas_enrollment
 from app.crud import session_enrollment as crud_enrollment
 from app.crud import session as crud_session # Benötigt, um zu prüfen, ob Session existiert
-from app.dependencies.dependencies import get_current_trainer, get_current_couple # Trainer UND Paare
+from app.dependencies.dependencies import get_trainer_from_token, get_couple_from_token # Trainer UND Paare
 from app.models.trainer import Trainer
 from app.models.couple import Couple
 
@@ -19,7 +19,7 @@ router = APIRouter()
 def enroll_couple_in_session(
     enrollment_in: schemas_enrollment.SessionEnrollmentCreate,
     db: Session = Depends(get_db),
-    current_couple: Couple = Depends(get_current_couple) # Nur authentifizierte Paare können sich anmelden
+    current_couple: Couple = Depends(get_couple_from_token) # Nur authentifizierte Paare können sich anmelden
 ):
     # 1. Prüfen, ob die Session existiert
     session = crud_session.get_session(db, session_id=enrollment_in.session_id)
@@ -45,7 +45,7 @@ def read_my_enrollments(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_couple: Couple = Depends(get_current_couple) # Nur authentifizierte Paare können ihre eigenen Anmeldungen sehen
+    current_couple: Couple = Depends(get_couple_from_token) # Nur authentifizierte Paare können ihre eigenen Anmeldungen sehen
 ):
     enrollments = crud_enrollment.get_enrollments_by_couple(db, couple_id=current_couple.id, skip=skip, limit=limit)
     return enrollments
@@ -56,7 +56,7 @@ def read_enrollments_for_my_sessions(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer) # Nur authentifizierte Trainer
+    current_trainer: Trainer = Depends(get_trainer_from_token) # Nur authentifizierte Trainer
 ):
     enrollments = crud_enrollment.get_enrollments_for_trainer_sessions(db, trainer_id=current_trainer.id, skip=skip, limit=limit)
     return enrollments
@@ -66,7 +66,7 @@ def read_enrollments_for_my_sessions(
 def unenroll_couple_from_session(
     enrollment_id: int,
     db: Session = Depends(get_db),
-    current_couple: Couple = Depends(get_current_couple) # Nur das angemeldete Paar kann sich abmelden
+    current_couple: Couple = Depends(get_couple_from_token) # Nur das angemeldete Paar kann sich abmelden
 ):
     db_enrollment = crud_enrollment.get_enrollment(db, enrollment_id=enrollment_id)
     if not db_enrollment or db_enrollment.couple_id != current_couple.id:
@@ -85,7 +85,7 @@ def read_enrollments_for_specific_session(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer)
+    current_trainer: Trainer = Depends(get_trainer_from_token)
 ):
     # Prüfen, ob die Session dem aktuellen Trainer gehört
     session = crud_session.get_session(db, session_id=session_id)

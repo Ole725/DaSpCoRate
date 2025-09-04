@@ -50,3 +50,13 @@ def delete_trainer(db: Session, trainer_id: int):
         db.commit()
         return True
     return False
+
+# Funktion zum Aktualisieren des Passworts eines Trainers
+def update_trainer_password(db: Session, trainer_id: int, new_password_hash: str):
+    db_trainer = db.query(models_trainer.Trainer).filter(models_trainer.Trainer.id == trainer_id).first()
+    if db_trainer:
+        db_trainer.password_hash = new_password_hash
+        db.add(db_trainer)
+        db.commit()
+        db.refresh(db_trainer)
+    return db_trainer

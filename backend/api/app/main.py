@@ -1,19 +1,20 @@
 # /DaSpCoRate/backend/api/app/main.py
 
 from fastapi import FastAPI
-from app.api.v1.endpoints import auth, couples, sessions, enrollments, ratings # Importiert Auth- und Couples-Router
+from app.api.v1.endpoints import auth, couple_ops, sessions, enrollments, ratings, users # Importiert Auth- und Couples-Router
 
 app = FastAPI(
     title="Tanzsport-App API",
     description="API für die Bewertung und das Feedback im Tanzsport.",
     version="0.1.0",
+    debug=True,
 )
 
 # Router für Authentifizierung hinzufügen
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 
 # Router für Paarverwaltung hinzufügen (geschützt durch Authentifizierung)
-app.include_router(couples.router, prefix="/api/v1/couples", tags=["Couples"])
+app.include_router(couple_ops.router, prefix="/api/v1/couples", tags=["Couples"]) 
 
 # Router für Sessionverwaltung hinzufügen (geschützt durch Trainer-Authentifizierung)
 app.include_router(sessions.router, prefix="/api/v1/sessions", tags=["Sessions"])
@@ -23,6 +24,9 @@ app.include_router(enrollments.router, prefix="/api/v1/enrollments", tags=["Enro
 
 # Router für Bewertungen hinzufügen
 app.include_router(ratings.router, prefix="/api/v1/ratings", tags=["Ratings"])
+
+# Router für allgemeine Benutzeraktionen (Passwort ändern etc.)
+app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 
 @app.get("/")
 async def read_root():

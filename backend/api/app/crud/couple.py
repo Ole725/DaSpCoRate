@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.models import couple as models_couple
 from app.schemas import couple as schemas_couple
 from app.core import security # Wird benötigt für Passwort-Hashing bei Registrierung
+from typing import Optional
 
 # Funktion zum Abrufen eines Paares anhand seiner ID
 def get_couple(db: Session, couple_id: int):
@@ -55,3 +56,13 @@ def delete_couple(db: Session, couple_id: int):
         db.commit()
         return True
     return False
+
+# Funktion zum Aktualisieren des Passworts eines Paares
+def update_couple_password(db: Session, couple_id: int, new_password_hash: str):
+    db_couple = db.query(models_couple.Couple).filter(models_couple.Couple.id == couple_id).first()
+    if db_couple:
+        db_couple.password_hash = new_password_hash
+        db.add(db_couple)
+        db.commit()
+        db.refresh(db_couple)
+    return db_couple

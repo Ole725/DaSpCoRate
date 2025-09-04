@@ -9,7 +9,7 @@ from app.schemas import rating as schemas_rating
 from app.crud import rating as crud_rating
 from app.crud import session as crud_session # Um Session-Existenz/Besitz zu prüfen
 from app.crud import couple as crud_couple   # Um Couple-Existenz zu prüfen
-from app.dependencies.dependencies import get_current_trainer, get_current_couple
+from app.dependencies.dependencies import get_trainer_from_token, get_couple_from_token
 from app.models.trainer import Trainer
 from app.models.couple import Couple
 
@@ -22,7 +22,7 @@ router = APIRouter()
 def create_new_rating(
     rating_in: schemas_rating.RatingCreate,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer) # Nur Trainer dürfen bewerten
+    current_trainer: Trainer = Depends(get_trainer_from_token) # Nur Trainer dürfen bewerten
 ):
     # 1. Prüfen, ob die Session existiert und dem Trainer gehört
     session = crud_session.get_session(db, session_id=rating_in.session_id)
@@ -55,7 +55,7 @@ def read_ratings_for_my_sessions(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer)
+    current_trainer: Trainer = Depends(get_trainer_from_token)
 ):
     ratings = crud_rating.get_ratings_for_trainer_sessions(db, trainer_id=current_trainer.id, skip=skip, limit=limit)
     return ratings
@@ -67,7 +67,7 @@ def read_ratings_for_specific_session(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer)
+    current_trainer: Trainer = Depends(get_trainer_from_token)
 ):
     # Prüfen, ob die Session dem aktuellen Trainer gehört
     session = crud_session.get_session(db, session_id=session_id)
@@ -84,7 +84,7 @@ def update_existing_rating(
     rating_id: int,
     rating_in: schemas_rating.RatingUpdate,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer)
+    current_trainer: Trainer = Depends(get_trainer_from_token)
 ):
     db_rating = crud_rating.get_rating(db, rating_id=rating_id)
     if not db_rating:
@@ -103,7 +103,7 @@ def update_existing_rating(
 def delete_existing_rating(
     rating_id: int,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_current_trainer)
+    current_trainer: Trainer = Depends(get_trainer_from_token)
 ):
     db_rating = crud_rating.get_rating(db, rating_id=rating_id)
     if not db_rating:
@@ -127,7 +127,7 @@ def read_my_ratings(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_couple: Couple = Depends(get_current_couple) # Nur authentifizierte Paare
+    current_couple: Couple = Depends(get_couple_from_token) # Nur authentifizierte Paare
 ):
     ratings = crud_rating.get_ratings_by_couple(db, couple_id=current_couple.id, skip=skip, limit=limit)
     return ratings
