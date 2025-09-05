@@ -11,26 +11,21 @@ function LoginPage({ onLoginSuccess }) {
 
   // Funktion, die beim Absenden des Formulars aufgerufen wird
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Verhindert das Neuladen der Seite
+    event.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      // Logik zum Senden der Login-Anfrage an das Backend
-      // Ruft unsere API-Funktion auf
       const data = await loginUser(email, password);
-
       console.log("Login erfolgreich!", data);
       
-      // Hier speichern wir den Token für zukünftige Anfragen
       localStorage.setItem('authToken', data.access_token);
       localStorage.setItem('tokenType', data.token_type);
-
-      // Rufe die übergebene Funktion auf, um die App zu informieren
+      
+      // Rufe die übergebene Funktion auf, die App kümmert sich um die Weiterleitung
       onLoginSuccess();
 
     } catch (err) {
-      // Fange den Fehler, den wir in client.js geworfen haben
       setError(err.message);
       console.error("Login-Fehler:", err.message);
     } finally {
