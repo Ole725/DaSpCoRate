@@ -1,13 +1,22 @@
 // /DaSpCoRate/frontend/src/pages/LoginPage.jsx
-import React, { useState } from 'react';
-import { loginUser } from '../api/client'; // Importiert unsere API-Funktion
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../api/client';
 
-function LoginPage({ onLoginSuccess }) {
-  // State-Variablen, um die Eingaben im Formular zu speichern
+function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Prüfen, ob bereits ein Token vorhanden ist, und ggf. weiterleiten
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, []);
 
   // Funktion, die beim Absenden des Formulars aufgerufen wird
   const handleSubmit = async (event) => {
@@ -17,14 +26,9 @@ function LoginPage({ onLoginSuccess }) {
 
     try {
       const data = await loginUser(email, password);
-      console.log("Login erfolgreich!", data);
-      
       localStorage.setItem('authToken', data.access_token);
-      localStorage.setItem('tokenType', data.token_type);
-      
-      // Rufe die übergebene Funktion auf, die App kümmert sich um die Weiterleitung
-      onLoginSuccess();
-
+      // Navigiere direkt zum Dashboard nach erfolgreichem Login
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message);
       console.error("Login-Fehler:", err.message);
