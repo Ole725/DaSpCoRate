@@ -1,6 +1,7 @@
 # /DaSpCoRate/backend/api/app/main.py
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.endpoints import auth, couple_ops, sessions, enrollments, ratings, users # Importiert Auth- und Couples-Router
 
 app = FastAPI(
@@ -8,6 +9,21 @@ app = FastAPI(
     description="API für die Bewertung und das Feedback im Tanzsport.",
     version="0.1.0",
     debug=True,
+)
+
+# Erlaubte Origins (Domains, von denen Anfragen kommen dürfen)
+origins = [
+    "http://localhost:5173", # Ihre React-App
+    "http://localhost:3000", # Manchmal laufen React-Apps auch hier
+    "http://127.0.0.1:5173", # Alternative Schreibweise für localhost
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins, # Erlaubt die oben definierten Origins
+    allow_credentials=True, # Erlaubt Cookies (wichtig für spätere Features)
+    allow_methods=["*"],    # Erlaubt alle HTTP-Methoden (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],    # Erlaubt alle HTTP-Header (inkl. Authorization)
 )
 
 # Router für Authentifizierung hinzufügen
