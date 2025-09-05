@@ -8,10 +8,10 @@ import LoginPage from './pages/LoginPage';
 import DashboardOverviewPage from './pages/DashboardOverviewPage';
 import CouplesManagementPage from './pages/CouplesManagementPage';
 import SessionsManagementPage from './pages/SessionsManagementPage';
+import SessionDetailPage from './pages/SessionDetailPage';
 
 function App() {
-  // Kein State-Management für Authentifizierung mehr hier!
-  // Das übernimmt die ProtectedRoute-Komponente.
+
 
   return (
     <Routes>
@@ -31,6 +31,7 @@ function App() {
         <Route index element={<DashboardOverviewPage />} /> {/* Standard-Route für /dashboard */}
         <Route path="couples" element={<CouplesManagementPage />} />
         <Route path="sessions" element={<SessionsManagementPage />} />
+        <Route path="sessions/:sessionId" element={<SessionDetailPage />} />
       </Route>
       
       {/* Fallback-Route: Leitet jede unbekannte URL zu /login um */}

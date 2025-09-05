@@ -11,6 +11,7 @@ class SessionEnrollment(Base):
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey("sessions.id", ondelete="CASCADE"), nullable=False) # FOREIGN KEY
     couple_id = Column(Integer, ForeignKey("couples.id", ondelete="CASCADE"), nullable=False) # FOREIGN KEY
+    start_number = Column(Integer, nullable=False)
     enrolled_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Beziehungen zu den verknüpften Session- und Couple-Objekten

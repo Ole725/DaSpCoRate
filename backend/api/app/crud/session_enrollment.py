@@ -38,10 +38,11 @@ def get_enrollments_for_trainer_sessions(db: Session, trainer_id: int, skip: int
     ).offset(skip).limit(limit).all()
 
 # Funktion zum Erstellen einer neuen Session-Anmeldung
-def create_session_enrollment(db: Session, session_id: int, couple_id: int):
+def create_session_enrollment(db: Session, session_id: int, couple_id: int, start_number: int):
     db_enrollment = models_enrollment.SessionEnrollment(
         session_id=session_id,
-        couple_id=couple_id
+        couple_id=couple_id,
+        start_number=start_number
     )
     db.add(db_enrollment)
     db.commit()

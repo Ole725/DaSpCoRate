@@ -18,6 +18,6 @@ class Session(Base):
     # 'trainer' ist der Name für den Zugriff auf das verknüpfte Trainer-Objekt
     trainer = relationship("Trainer", back_populates="sessions")
     # Beziehung zu den Bewertungen in dieser Session
-    ratings = relationship("Rating", back_populates="session")
+    ratings = relationship("Rating", back_populates="session", cascade="all, delete-orphan")
     # Beziehung zu den Anmeldungen für diese Session
-    enrollments = relationship("SessionEnrollment", back_populates="session")
+    enrollments = relationship("SessionEnrollment", back_populates="session", cascade="all, delete-orphan")

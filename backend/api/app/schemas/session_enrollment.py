@@ -8,12 +8,15 @@ from datetime import datetime
 # Das Paar gibt nur die Session-ID an, die couple_id wird vom Token abgeleitet.
 class SessionEnrollmentCreate(BaseModel):
     session_id: int
+    couple_id: int
+    start_number: int
 
 # Schema für das Lesen einer Session-Anmeldung aus der Datenbank
 class SessionEnrollmentInDB(BaseModel):
     id: int
     session_id: int
     couple_id: int
+    start_number: int
     enrolled_at: datetime
 
     model_config = ConfigDict(from_attributes=True) # Pydantic V2 Anpassung

@@ -81,12 +81,16 @@ CREATE TABLE `ratings` (
 --
 -- Diese Tabelle verwaltet, welche Paare sich für welche Sessions angemeldet haben.
 --
+
 CREATE TABLE `session_enrollment` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `session_id` INT NOT NULL,
   `couple_id` INT NOT NULL,
+  `start_number` INT NOT NULL, -- <-- NEUE SPALTE
   `enrolled_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`session_id`) REFERENCES `sessions`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`couple_id`) REFERENCES `couples`(`id`) ON DELETE CASCADE
+  FOREIGN KEY (`couple_id`) REFERENCES `couples`(`id`) ON DELETE CASCADE,
+  UNIQUE KEY `unique_session_couple` (`session_id`, `couple_id`), -- Verhindert Doppel-Anmeldungen
+  UNIQUE KEY `unique_session_start_number` (`session_id`, `start_number`) -- Verhindert doppelte Startnummern pro Session
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
