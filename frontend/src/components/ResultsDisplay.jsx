@@ -1,9 +1,10 @@
 // /DaSpCoRate/frontend/src/components/ResultsDisplay.jsx
 import { useMemo } from 'react';
 
-function ResultsDisplay({ ratings, enrolledCouples }) {
-  // useMemo berechnet die Ergebnisse nur neu, wenn sich die Daten ändern
+function ResultsDisplay({ ratings, enrolledCouples, session }) {
+  // ... (useMemo-Hook zum Berechnen der Ergebnisse bleibt gleich) ...
   const results = useMemo(() => {
+    if (!enrolledCouples) return [];
     const coupleScores = {};
 
     enrolledCouples.forEach(couple => {
@@ -27,12 +28,20 @@ function ResultsDisplay({ ratings, enrolledCouples }) {
       }
     });
 
-    // Konvertiere das Objekt in ein Array und sortiere nach Gesamtpunktzahl
     return Object.values(coupleScores).sort((a, b) => b.total_score - a.total_score);
   }, [ratings, enrolledCouples]);
 
   return (
     <div>
+      {/* NEU: Grüner Ergebnis-Container */}
+      <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md mb-6">
+        <h3 className="font-bold text-lg">Training abgeschlossen</h3>
+        <p>
+          Session: <strong>{session?.title}</strong> am {session ? new Date(session.session_date).toLocaleDateString('de-DE') : ''}
+        </p>
+        {/* Hier könnte man eine Gesamtpunktzahl über alle Paare und Runden anzeigen, falls gewünscht */}
+      </div>
+      
       <h3 className="text-2xl font-bold mb-4">Gesamtergebnis</h3>
       <div className="space-y-4">
         {results.map((result, index) => (

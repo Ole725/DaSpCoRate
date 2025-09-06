@@ -63,49 +63,30 @@ async def login_for_access_token(
         user = trainer
         user_role = "trainer"
     
-    # Wenn kein Trainer gefunden oder Passwort falsch, versuche als Paar zu authentifizieren
+    # Wenn kein Trainer gefunden, versuche als Paar
     if user is None:
         couple = crud_couple.get_couple_by_email(db, email=form_data.username)
         if couple and security.verify_password(form_data.password, couple.password_hash):
             user = couple
             user_role = "couple"
 
-    if user is None: # Immer noch kein Benutzer gefunden oder Passwort falsch
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # Token generieren
+    # Erstelle den Payload für das Token
+    token_payload = {"sub": user.email, "role": user_role}
+    
+    if user_role == 'couple':
+        token_payload['mrs_first_name'] = user.mrs_first_name
+        token_payload['mr_first_name'] = user.mr_first_name
+
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
-        # Wichtig: Der 'sub' Claim sollte einen eindeutigen Identifier enthalten, hier die E-Mail
-        # Die 'role' ist jetzt dynamisch und wird mit im Token gespeichert
-        data={"sub": user.email, "role": user_role},
-        expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
-
-# Endpunkt für den Login und die Erstellung eines Access Tokens
-@router.post("/token", response_model=Token)
-async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), # Standard-Formular für User/Passwort
-    db: Session = Depends(get_db)
-):
-    # Versuche, den Benutzer als Trainer zu finden und zu authentifizieren
-    user = crud_trainer.get_trainer_by_email(db, email=form_data.username)
-    if not user or not security.verify_password(form_data.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    # Token generieren
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = security.create_access_token(
-        data={"sub": user.email, "role": "trainer"}, # 'sub' ist Standard für den User-Identifier
+        data=token_payload,
         expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}

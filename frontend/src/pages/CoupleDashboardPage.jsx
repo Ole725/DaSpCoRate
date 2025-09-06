@@ -1,18 +1,17 @@
 // /DaSpCoRate/frontend/src/pages/CoupleDashboardPage.jsx
 import { useState, useEffect, useMemo } from 'react';
-import { getMyRatings, getSessions } from '../api/client'; // getSessions importieren
+import { getMyRatings, getSessions } from '../api/client';
 import RatingViewTable from '../components/RatingViewTable';
 
 function CoupleDashboardPage() {
   const [ratings, setRatings] = useState([]);
-  const [sessions, setSessions] = useState([]); // State für Session-Infos
+  const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Lade Bewertungen und alle Sessions parallel
         const [ratingsData, sessionsData] = await Promise.all([
           getMyRatings(),
           getSessions(),
@@ -28,46 +27,77 @@ function CoupleDashboardPage() {
     fetchData();
   }, []);
   
-  // Gruppiere die Bewertungen nach Session und Runde
-  const groupedRatings = useMemo(() => {
-    const groups = {};
+  // Gruppiere die Bewertungen jetzt primär nach Session
+  const sessionsWithRatings = useMemo(() => {
+    const sessionGroups = {};
+    
     ratings.forEach(rating => {
-      const key = `${rating.session_id}-${rating.round}`;
-      if (!groups[key]) {
-        groups[key] = {
-          sessionId: rating.session_id,
-          round: rating.round,
-          ratings: []
+      const sessionId = rating.session_id;
+      if (!sessionGroups[sessionId]) {
+        // Finde die Session-Infos
+        const sessionInfo = sessions.find(s => s.id === sessionId);
+        sessionGroups[sessionId] = {
+          sessionInfo: sessionInfo || { title: `Session ID: ${sessionId}`, session_date: '' },
+          totalScore: 0,
+          rounds: {}
         };
       }
-      groups[key].ratings.push(rating);
+      
+      const round = rating.round;
+      if (!sessionGroups[sessionId].rounds[round]) {
+        sessionGroups[sessionId].rounds[round] = {
+          roundNumber: round,
+          ratings: [],
+          roundTotal: 0
+        };
+      }
+      
+      sessionGroups[sessionId].rounds[round].ratings.push(rating);
+      sessionGroups[sessionId].rounds[round].roundTotal += rating.points;
+      sessionGroups[sessionId].totalScore += rating.points;
     });
-    return Object.values(groups).sort((a,b) => b.sessionId - a.sessionId || b.round - a.round);
-  }, [ratings]);
+    
+    return Object.values(sessionGroups)
+                 .sort((a, b) => new Date(b.sessionInfo.session_date) - new Date(a.sessionInfo.session_date));
+
+  }, [ratings, sessions]);
 
   if (loading) return <p>Lade deine Bewertungen...</p>;
   if (error) return <p className="text-red-500">Fehler: {error}</p>;
 
   return (
     <div className="space-y-8">
-      <h2 className="text-3xl font-bold text-gray-800">Unsere Bewertungshistorie</h2>
-      {groupedRatings.length > 0 ? (
-        groupedRatings.map(group => {
-          // Finde die passenden Session-Details
-          const sessionInfo = sessions.find(s => s.id === group.sessionId);
-          return (
-            <div key={`${group.sessionId}-${group.round}`} className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold mb-1">
-                {sessionInfo ? sessionInfo.title : `Session ID: ${group.sessionId}`}
-              </h3>
-              <p className="text-gray-600 mb-4">
-                {sessionInfo ? `Datum: ${new Date(sessionInfo.session_date).toLocaleDateString('de-DE')}` : ''}
-                <span className="font-bold ml-4">Runde {group.round}</span>
-              </p>
-              <RatingViewTable ratings={group.ratings} round={group.round} />
+      <h2 className="text-3xl font-bold text-gray-800">Meine Bewertungshistorie</h2>
+      {sessionsWithRatings.length > 0 ? (
+        sessionsWithRatings.map(sessionGroup => (
+          <div key={sessionGroup.sessionInfo.id} className="bg-white p-6 rounded-lg shadow-lg">
+            {/* --- NEUER GRÜNER ERGEBNIS-BALKEN --- */}
+            <div className="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-md mb-6 flex justify-between items-center">
+              <div>
+                <h3 className="font-bold text-lg">{sessionGroup.sessionInfo.title}</h3>
+                <p className="text-sm">
+                  Datum: {new Date(sessionGroup.sessionInfo.session_date).toLocaleDateString('de-DE')}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold">{sessionGroup.totalScore}</p>
+                <p className="text-sm">Gesamtpunkte</p>
+              </div>
             </div>
-          );
-        })
+
+            {/* Zeige die Detail-Tabellen für jede Runde in dieser Session */}
+            <div className="space-y-6">
+              {Object.values(sessionGroup.rounds)
+                     .sort((a, b) => a.roundNumber - b.roundNumber)
+                     .map(roundGroup => (
+                <div key={roundGroup.roundNumber}>
+                  <h4 className="text-lg font-semibold mb-2">Details für Runde {roundGroup.roundNumber}</h4>
+                  <RatingViewTable ratings={roundGroup.ratings} round={roundGroup.roundNumber} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
       ) : (
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <p>Du hast noch keine Bewertungen erhalten.</p>
@@ -76,4 +106,5 @@ function CoupleDashboardPage() {
     </div>
   );
 }
+
 export default CoupleDashboardPage;

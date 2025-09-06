@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
   const login = (token) => {
     localStorage.setItem('authToken', token);
     const decoded = jwtDecode(token);
+
     setUser(decoded);
     if (decoded.role === 'trainer') navigate('/dashboard');
     if (decoded.role === 'couple') navigate('/couple-dashboard');

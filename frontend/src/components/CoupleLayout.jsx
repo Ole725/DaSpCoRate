@@ -10,8 +10,7 @@ function CoupleLayout() {
       <header className="bg-white shadow">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-green-600">
-            <Link to="/couple-dashboard">Paar-Ansicht</Link>
-            {user && <span className="text-sm font-normal text-gray-500 ml-2">{user.email}</span>}
+            Paar-Ansicht von {user ? `${user.mrs_first_name} & ${user.mr_first_name}` : '...'}
           </h1>
           <button
             onClick={logout}
@@ -22,7 +21,6 @@ function CoupleLayout() {
         </div>
       </header>
       <main className="container mx-auto mt-4 p-4">
-        {/* Outlet für zukünftige Paar-Seiten wie "Mein Account" */}
         <Outlet />
       </main>
     </div>

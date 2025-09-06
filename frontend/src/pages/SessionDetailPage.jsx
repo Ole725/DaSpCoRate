@@ -201,6 +201,7 @@ function SessionDetailPage() {
           <ResultsDisplay 
             ratings={ratings}
             enrolledCouples={enrolledCouplesDetails}
+            session={session}
           />
         )}
         
