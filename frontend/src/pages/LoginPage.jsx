@@ -1,41 +1,34 @@
 // /DaSpCoRate/frontend/src/pages/LoginPage.jsx
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { loginUser } from '../api/client';
 
 function LoginPage() {
-  const navigate = useNavigate();
+  const { login, isAuthenticated, user } = useAuth(); // Holen Sie sich den Zustand aus dem Context
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Prüfen, ob bereits ein Token vorhanden ist, und ggf. weiterleiten
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, []);
-
-  // Funktion, die beim Absenden des Formulars aufgerufen wird
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError(null);
     setLoading(true);
-
+    setError(null);
     try {
       const data = await loginUser(email, password);
-      localStorage.setItem('authToken', data.access_token);
-      // Navigiere direkt zum Dashboard nach erfolgreichem Login
-      navigate('/dashboard', { replace: true });
+      login(data.access_token); // Ruft die login-Funktion aus dem Context auf
     } catch (err) {
       setError(err.message);
-      console.error("Login-Fehler:", err.message);
-    } finally {
       setLoading(false);
     }
   };
+
+  // Wenn der Benutzer bereits authentifiziert ist, leite ihn SOFORT weiter
+  if (isAuthenticated) {
+    const targetPath = user.role === 'trainer' ? '/dashboard' : '/couple-dashboard';
+    return <Navigate to={targetPath} replace />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">

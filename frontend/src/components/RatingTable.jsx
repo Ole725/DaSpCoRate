@@ -13,7 +13,7 @@ const criteria = [
   { key: 'Appearance', label: 'Appearance' },
 ];
 
-function RatingTable({ enrolledCouples, existingRatings, onRate, round = 1 }) {
+function RatingTable({ enrolledCouples, existingRatings, onRate, onRemoveCouple, round = 1 }) {
   
   console.log("RatingTable received new ratings:", existingRatings);
 
@@ -26,13 +26,21 @@ function RatingTable({ enrolledCouples, existingRatings, onRate, round = 1 }) {
             {/* ... */}
             {/* Header für jedes Paar mit Startnummer */}
             {enrolledCouples
-              .sort((a, b) => a.start_number - b.start_number) // Sortiere nach Startnummer
-              .map(couple => (
-                <th key={couple.id} className="border p-2 min-w-[100px]">
-                  <div className="text-2xl font-bold">{couple.start_number}</div>
-                  <div className="text-xs text-gray-600">{couple.mr_first_name} & {couple.mrs_first_name}</div>
-                </th>
-            ))}
+            .sort((a, b) => a.start_number - b.start_number)
+            .map(couple => (
+              <th key={couple.id} className="border p-2 min-w-[150px] relative group">
+                <div className="text-2xl font-bold">{couple.start_number}</div>
+                <div className="text-xs text-gray-600">{couple.mr_first_name} & {couple.mrs_first_name}</div>
+                {/* NEU: "Entfernen"-Button, der beim Hover erscheint */}
+                <button
+                  onClick={() => onRemoveCouple(couple.id)}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Paar aus Session entfernen"
+                >
+                  &times;
+                </button>
+              </th>
+          ))}
           </tr>
         </thead>
     <tbody>

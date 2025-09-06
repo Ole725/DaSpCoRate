@@ -2,18 +2,19 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List, Optional
-from datetime import date # Für den Typ Hinting von session_date
+from typing import List, Union
+from datetime import date
 
 from app.core.database import get_db
 from app.schemas import session as schemas_session
 from app.crud import session as crud_session
-from app.dependencies.dependencies import get_trainer_from_token # Nur Trainer dürfen Sessions verwalten
-from app.models.trainer import Trainer # Für Type Hinting
+from app.dependencies.dependencies import get_trainer_from_token, get_current_user
+from app.models.trainer import Trainer
+from app.models.couple import Couple
 
 router = APIRouter()
 
-# Endpunkt zum Erstellen einer neuen Session (nur für authentifizierte Trainer)
+# Endpunkt zum Erstellen einer neuen Session (nur für Trainer)
 @router.post("/", response_model=schemas_session.SessionInDB, status_code=status.HTTP_201_CREATED)
 def create_new_session(
     session_in: schemas_session.SessionCreate,
@@ -23,39 +24,41 @@ def create_new_session(
     session = crud_session.create_session(db=db, session=session_in, trainer_id=current_trainer.id)
     return session
 
-# Endpunkt zum Abrufen aller Sessions (optional nach Trainer-ID filtern)
-# Ein Trainer sieht standardmäßig nur seine eigenen Sessions.
-# Für einen Admin (später) könnte man alle Sessions erlauben.
+# EIN Endpunkt zum Abrufen von Sessions
 @router.get("/", response_model=List[schemas_session.SessionInDB])
 def read_sessions(
-    only_my_sessions: bool = True, # Parameter, um nur eigene Sessions zu sehen
-    skip: int = 0,
-    limit: int = 100,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_trainer_from_token) # Authentifizierung als Trainer
+    # Akzeptiere jeden eingeloggten Benutzer (Trainer oder Paar)
+    current_user: Union[Trainer, Couple] = Depends(get_current_user)
 ):
-    trainer_id_filter = current_trainer.id if only_my_sessions else None
-    # Wenn only_my_sessions False ist, könnte ein Admin alle Sessions sehen.
-    # Für den Moment lassen wir trainer_id_filter immer auf current_trainer.id,
-    # da nur Trainer diesen Endpunkt nutzen und nur ihre Sessions sehen sollen.
-    # Ein "Admin"-Konzept müsste hier erst noch implementiert werden.
-    sessions = crud_session.get_sessions(db, trainer_id=current_trainer.id, skip=skip, limit=limit)
+    # Wenn der Benutzer ein Trainer ist, gib nur seine Sessions zurück
+    if isinstance(current_user, Trainer):
+        sessions = crud_session.get_sessions(db, trainer_id=current_user.id)
+        return sessions
+    
+    # Wenn der Benutzer ein Paar ist (oder ein anderer Typ), gib alle Sessions zurück
+    # Paare brauchen alle Sessions, um die Titel/Daten für ihre Bewertungen zu finden.
+    sessions = crud_session.get_sessions(db, limit=1000)
     return sessions
 
-# Endpunkt zum Abrufen einer einzelnen Session nach ID
+# Endpunkt zum Abrufen der Details EINER einzelnen Session nach ID
 @router.get("/{session_id}", response_model=schemas_session.SessionInDB)
-def read_session(
+def read_session_details(
     session_id: int,
     db: Session = Depends(get_db),
-    current_trainer: Trainer = Depends(get_trainer_from_token)
+    current_user: Union[Trainer, Couple] = Depends(get_current_user)
 ):
     db_session = crud_session.get_session(db, session_id=session_id)
-    if db_session is None or db_session.trainer_id != current_trainer.id:
-        # Stelle sicher, dass nur der eigene Trainer oder ein berechtigter Admin auf die Session zugreifen kann
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found or not authorized")
+    if db_session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Optional: Zusätzliche Sicherheitsprüfung, wenn nur der eigene Trainer die Details sehen darf
+    # if isinstance(current_user, Trainer) and db_session.trainer_id != current_user.id:
+    #     raise HTTPException(status_code=403, detail="Not authorized to view this session's details")
+        
     return db_session
 
-# Endpunkt zum Aktualisieren einer Session (nur für den erstellenden Trainer)
+# Endpunkt zum Aktualisieren einer Session (nur für Trainer)
 @router.put("/{session_id}", response_model=schemas_session.SessionInDB)
 def update_existing_session(
     session_id: int,
@@ -70,7 +73,7 @@ def update_existing_session(
     session = crud_session.update_session(db=db, session_id=session_id, session_in=session_in)
     return session
 
-# Endpunkt zum Löschen einer Session (nur für den erstellenden Trainer)
+# Endpunkt zum Löschen einer Session (nur für Trainer)
 @router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_existing_session(
     session_id: int,

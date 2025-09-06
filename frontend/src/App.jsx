@@ -1,5 +1,6 @@
 // /DaSpCoRate/frontend/src/App.jsx
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext'; // Nur für die Root-Route
 
 // Importiere unsere Komponenten und Seiten
 import ProtectedRoute from './components/ProtectedRoute';
@@ -9,33 +10,56 @@ import DashboardOverviewPage from './pages/DashboardOverviewPage';
 import CouplesManagementPage from './pages/CouplesManagementPage';
 import SessionsManagementPage from './pages/SessionsManagementPage';
 import SessionDetailPage from './pages/SessionDetailPage';
+import CoupleDashboardPage from './pages/CoupleDashboardPage';
+import AccountPage from './pages/AccountPage';
+import CoupleLayout from './components/CoupleLayout';
 
 function App() {
-
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <Routes>
-      {/* Öffentliche Route für die Login-Seite */}
-      <Route path="/login" element={<LoginPage />} />
+      {/* Route für die Login-Seite */}
+      <Route
+        path="/login"
+        element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />}
+      />
 
-      {/* Geschützte Dashboard-Routen */}
-      <Route 
-        path="/dashboard" 
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        {/* Kind-Routen, die im <Outlet> des DashboardLayout gerendert werden */}
-        <Route index element={<DashboardOverviewPage />} /> {/* Standard-Route für /dashboard */}
-        <Route path="couples" element={<CouplesManagementPage />} />
-        <Route path="sessions" element={<SessionsManagementPage />} />
-        <Route path="sessions/:sessionId" element={<SessionDetailPage />} />
+      {/* Geschützte Trainer-Routen */}
+      <Route element={<ProtectedRoute allowedRoles={['trainer']} />}>
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<DashboardOverviewPage />} />
+          <Route path="couples" element={<CouplesManagementPage />} />
+          <Route path="sessions" element={<SessionsManagementPage />} />
+          <Route path="sessions/:sessionId" element={<SessionDetailPage />} />
+          <Route path="account" element={<AccountPage />} />
+        </Route>
+      </Route>
+
+      {/* Geschützte Paar-Routen */}
+      <Route element={<ProtectedRoute allowedRoles={['couple']} />}>
+        <Route path="/couple-dashboard" element={<CoupleLayout />}>
+          <Route index element={<CoupleDashboardPage />} /> {/* Hauptseite */}
+          <Route path="account" element={<AccountPage />} />   {/* Zukünftige Account-Seite */}
+        </Route>
       </Route>
       
-      {/* Fallback-Route: Leitet jede unbekannte URL zu /login um */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* Root-Route, die zur richtigen Startseite weiterleitet */}
+      <Route
+        path="/"
+        element={
+          !isAuthenticated ? (
+            <Navigate to="/login" />
+          ) : user?.role === 'trainer' ? (
+            <Navigate to="/dashboard" />
+          ) : (
+            <Navigate to="/couple-dashboard" />
+          )
+        }
+      />
+      
+      {/* Not Found Route */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }

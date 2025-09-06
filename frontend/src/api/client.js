@@ -153,3 +153,23 @@ export const deleteSession = async (sessionId) => {
     throw new Error(error.response?.data?.detail || 'Fehler beim Löschen der Session');
   }
 };
+
+// Funktion zum Löschen einer Anmeldung (Abmelden)
+export const unenrollCouple = async (enrollmentId) => {
+  try {
+    await apiClient.delete(`/api/v1/enrollments/${enrollmentId}`);
+    return true;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abmelden des Paares');
+  }
+};
+
+// Funktion für ein Paar, um die eigene Bewertungshistorie abzurufen
+export const getMyRatings = async () => {
+  try {
+    const response = await apiClient.get('/api/v1/ratings/me');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Bewertungen');
+  }
+};

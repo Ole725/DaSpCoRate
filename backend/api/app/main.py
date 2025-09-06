@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.endpoints import auth, couple_ops, sessions, enrollments, ratings, users # Importiert Auth- und Couples-Router
+from app.api.v1.endpoints import auth, couple_ops, sessions, enrollment_ops, ratings, users # Importiert Auth- und Couples-Router
 
 app = FastAPI(
     title="Tanzsport-App API",
@@ -36,7 +36,7 @@ app.include_router(couple_ops.router, prefix="/api/v1/couples", tags=["Couples"]
 app.include_router(sessions.router, prefix="/api/v1/sessions", tags=["Sessions"])
 
 # Router für Session-Anmeldung hinzufügen
-app.include_router(enrollments.router, prefix="/api/v1/enrollments", tags=["Enrollments"])
+app.include_router(enrollment_ops.router, prefix="/api/v1/enrollments", tags=["Enrollments"])
 
 # Router für Bewertungen hinzufügen
 app.include_router(ratings.router, prefix="/api/v1/ratings", tags=["Ratings"])

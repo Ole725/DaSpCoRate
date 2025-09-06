@@ -1,24 +1,20 @@
 // /DaSpCoRate/frontend/src/components/DashboardLayout.jsx
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-function DashboardLayout() {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('tokenType');
-    navigate('/login');
-  };
+// onLogout-Prop wird nicht mehr benötigt
+function DashboardLayout() { 
+  const { logout } = useAuth(); // Holen Sie sich die logout-Funktion aus dem Context
 
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-blue-600">
-            <Link to="/dashboard">Tanzsport-App</Link>
+            <Link to="/dashboard">DaSpCoRate-App</Link>
           </h1>
           <button
-            onClick={handleLogout}
+            onClick={logout} // Rufe direkt die logout-Funktion aus dem Context auf
             className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
           >
             Logout
@@ -42,12 +38,10 @@ function DashboardLayout() {
           </nav>
         </aside>
         <main className="w-3/4">
-          {/* Die Outlet-Komponente rendert die aktuell aktive "Kind"-Route */}
           <Outlet />
         </main>
       </div>
     </div>
   );
 }
-
 export default DashboardLayout;

@@ -12,6 +12,8 @@ import {
 } from '../api/client';
 import RatingTable from '../components/RatingTable';
 import Modal from '../components/Modal';
+import ResultsDisplay from '../components/ResultsDisplay';
+import { unenrollCouple } from '../api/client';
 
 function SessionDetailPage() {
   const { sessionId } = useParams();
@@ -22,9 +24,11 @@ function SessionDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // States für das "Paar hinzufügen"-Modal
+  const [currentRound, setCurrentRound] = useState(1); 
+  const [isFinished, setIsFinished] = useState(false);
+
   const [isAddCoupleModalOpen, setIsAddCoupleModalOpen] = useState(false);
-  const [startNumbers, setStartNumbers] = useState({}); // Speichert die Startnummern für die Paare im Modal
+  const [startNumbers, setStartNumbers] = useState({});
 
   // Lädt alle notwendigen Daten für die Seite
   useEffect(() => {
@@ -57,7 +61,6 @@ function SessionDetailPage() {
     const initialStartNumbers = {};
     let currentNumber = maxNumber + 1;
     
-    // Filtere verfügbare Paare direkt hier
     const available = allCouples.filter(c => !enrollments.some(e => e.couple_id === c.id));
     
     available.forEach(couple => {
@@ -69,39 +72,49 @@ function SessionDetailPage() {
     setIsAddCoupleModalOpen(true);
   };
 
-  // Handler zum Ändern einer Startnummer im Modal
   const handleStartNumberChange = (coupleId, value) => {
     setStartNumbers(prev => ({ ...prev, [coupleId]: value }));
   };
 
-  // Handler, wenn der "Hinzufügen"-Button für ein spezifisches Paar geklickt wird
   const handleAddCoupleToSession = async (coupleId) => {
     const startNumber = startNumbers[coupleId];
     if (!startNumber || isNaN(parseInt(startNumber))) {
       alert('Bitte geben Sie eine gültige Startnummer ein.');
       return;
     }
-
     try {
       await enrollCoupleByTrainer(parseInt(sessionId), coupleId, parseInt(startNumber));
-      
-      // Lade die Anmeldungen und Paare neu, um die UI zu aktualisieren.
-      // Das Modal bleibt offen für weitere Ergänzungen.
       const [enrollmentsData, allCouplesData] = await Promise.all([
         getEnrollmentsForSession(sessionId),
         getCouples()
       ]);
       setEnrollments(enrollmentsData);
       setAllCouples(allCouplesData);
-
     } catch (err) {
       alert(`Fehler beim Hinzufügen des Paares: ${err.message}`);
     }
   };
+  const handleRemoveCouple = async (coupleId) => {
+    const enrollment = enrollments.find(e => e.couple_id === coupleId);
+      // --- NEU: DEBUG-LOG ---
+      console.log("Versuche, Paar mit ID zu entfernen:", coupleId);
+      // ----------------------
+  
+    if (!enrollment) return;
 
-  // Handler für die Bewertung (bleibt unverändert)
+    if (window.confirm('Sind Sie sicher, dass Sie dieses Paar aus der Session entfernen möchten? Alle Bewertungen für dieses Paar in dieser Session werden ebenfalls gelöscht.')) {
+      try {
+        await unenrollCouple(enrollment.id);
+        // Lade die Anmeldungen neu, um die UI zu aktualisieren
+        const enrollmentsData = await getEnrollmentsForSession(sessionId);
+        setEnrollments(enrollmentsData);
+      } catch (err) {
+        alert(`Fehler beim Entfernen des Paares: ${err.message}`);
+      }
+    }
+  };
   const handleRate = async (coupleId, category, points) => {
-    const round = 1;
+    const round = currentRound;
     const originalRatings = [...ratings];
     const existingRating = ratings.find(r => r.couple_id === coupleId && r.category === category && r.round === round);
     let optimisticRatings;
@@ -126,18 +139,28 @@ function SessionDetailPage() {
     }
   };
 
+  const handleNextRound = () => {
+    setCurrentRound(prevRound => prevRound + 1);
+  };
+
+  const handleFinishTraining = () => {
+    setIsFinished(true);
+  };
+
   // Lade- und Fehlerzustände
   if (loading) return <div>Lade Session-Daten...</div>;
   if (error) return <div className="text-red-500">Fehler: {error}</div>;
   if (!session) return null;
 
-  // Berechnete Werte für die Anzeige
+  // Berechnete Werte für die Anzeige (JETZT INNERHALB DER KOMPONENTE)
   const enrolledCouplesDetails = enrollments.map(enrollment => {
     const coupleDetails = allCouples.find(c => c.id === enrollment.couple_id);
     return coupleDetails ? { ...coupleDetails, start_number: enrollment.start_number } : null;
   }).filter(Boolean);
 
   const availableCouples = allCouples.filter(c => !enrollments.some(e => e.couple_id === c.id));
+  
+  const ratingsForCurrentRound = ratings.filter(r => r.round === currentRound);
 
   return (
     <>
@@ -147,28 +170,60 @@ function SessionDetailPage() {
             <h2 className="text-2xl font-semibold mb-1">{session.title}</h2>
             <p className="text-gray-600">Datum: {new Date(session.session_date).toLocaleDateString('de-DE')}</p>
           </div>
-          <button
-            onClick={openAddCoupleModal}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-          >
-            + Paar zur Session hinzufügen
-          </button>
+          {/* Zeige "Paar hinzufügen"-Button nur, wenn Training nicht beendet ist */}
+          {!isFinished && (
+            <button
+              onClick={openAddCoupleModal}
+              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+            >
+              + Paar zur Session hinzufügen
+            </button>
+          )}
         </div>
-        
-        <h3 className="text-xl font-semibold my-4">Bewertungstabelle (Runde 1)</h3>
-        {enrolledCouplesDetails.length > 0 ? (
-          <RatingTable 
-            enrolledCouples={enrolledCouplesDetails}
-            existingRatings={ratings}
-            onRate={handleRate}
-            round={1}
-          />
+
+        {/* --- KONDITIONALE ANZEIGE: TABELLE ODER ERGEBNISSE --- */}
+        {!isFinished ? (
+          <div>
+            <h3 className="text-xl font-semibold my-4">Bewertungstabelle (Runde {currentRound})</h3>
+            {enrolledCouplesDetails.length > 0 ? (
+              <RatingTable 
+                enrolledCouples={enrolledCouplesDetails}
+                existingRatings={ratingsForCurrentRound}
+                onRate={handleRate}
+                onRemoveCouple={handleRemoveCouple}
+                round={currentRound}
+              />
+            ) : (
+              <p>Noch keine Paare für diese Session angemeldet.</p>
+            )}
+          </div>
         ) : (
-          <p>Noch keine Paare für diese Session angemeldet.</p>
+          <ResultsDisplay 
+            ratings={ratings}
+            enrolledCouples={enrolledCouplesDetails}
+          />
+        )}
+        
+        {/* Steuerungs-Buttons, nur anzeigen wenn nicht beendet und Paare da sind */}
+        {!isFinished && enrolledCouplesDetails.length > 0 && (
+          <div className="mt-6 flex justify-end gap-4">
+            <button
+              onClick={handleNextRound}
+              className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Nächste Runde
+            </button>
+            <button
+              onClick={handleFinishTraining}
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Training beenden
+            </button>
+          </div>
         )}
       </div>
 
-      <Modal
+<Modal
         isOpen={isAddCoupleModalOpen}
         onClose={() => setIsAddCoupleModalOpen(false)}
         title="Paar zur Session hinzufügen"
@@ -179,7 +234,7 @@ function SessionDetailPage() {
             <ul className="max-h-80 overflow-y-auto">
               {availableCouples.map(couple => (
                 <li key={couple.id} className="flex justify-between items-center p-2 border-b gap-4">
-                  <span>{couple.mr_first_name} & {couple.mrs_first_name}</span>
+                  <span>{couple.mrs_first_name} & {couple.mr_first_name}</span>
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
