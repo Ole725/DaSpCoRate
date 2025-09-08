@@ -40,7 +40,7 @@ export const loginUser = async (email, password) => {
 
 };
 
-// Funktion zum Abrufen aller Paare (jetzt mit axios)
+// Funktion zum Abrufen aller Paare mit axios
 export const getCouples = async () => {
   try {
     const response = await apiClient.get('/api/v1/couples/');
@@ -59,6 +59,36 @@ export const createCouple = async (coupleData) => {
     throw new Error(error.response?.data?.detail || 'Fehler beim Erstellen des Paares');
   }
 
+};
+
+// Holt die Daten des aktuell eingeloggten Benutzers
+export const getMe = async () => {
+  try {
+    const response = await apiClient.get('/api/v1/users/me');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Profildaten');
+  }
+};
+
+// Aktualisiert das Profil eines Paares
+export const updateMyCoupleProfile = async (profileData) => {
+  try {
+    const response = await apiClient.put('/api/v1/couples/me', profileData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Aktualisieren des Profils');
+  }
+};
+
+// Ändert das Passwort des aktuellen Benutzers
+export const changeMyPassword = async (passwordData) => {
+  try {
+    await apiClient.put('/api/v1/users/me/password', passwordData);
+    return { message: 'Passwort erfolgreich geändert.' };
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Ändern des Passworts');
+  }
 };
 
 // Funktion zum Abrufen aller Sessions eines Trainers

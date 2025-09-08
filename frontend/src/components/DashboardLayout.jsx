@@ -34,6 +34,9 @@ function DashboardLayout() {
               <li className="mb-2">
                 <Link to="/dashboard/sessions" className="text-blue-600 hover:underline">Session-Verwaltung</Link>
               </li>
+              <li className="mt-4 border-t pt-4"> {/* Trennlinie */}
+                <Link to="/dashboard/profile" className="text-blue-600 hover:underline">Mein Profil</Link>
+              </li>
             </ul>
           </nav>
         </aside>

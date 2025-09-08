@@ -9,10 +9,19 @@ from app.crud import couple as crud_couple
 from typing import Union
 from app.models.trainer import Trainer
 from app.models.couple import Couple
-from app.schemas.user import PasswordChange # NEU
+from app.schemas.user import PasswordChange
+from app.schemas import trainer as schemas_trainer
+from app.schemas import couple as schemas_couple
 from app.dependencies.dependencies import get_current_user # Kann Trainer ODER Couple sein
 
 router = APIRouter()
+
+@router.get("/me", response_model=Union[schemas_trainer.TrainerInDB, schemas_couple.CoupleInDB])
+def read_users_me(current_user: Union[Trainer, Couple] = Depends(get_current_user)):
+    """
+    Gibt die Daten des aktuell eingeloggten Benutzers (Trainer oder Paar) zurück.
+    """
+    return current_user
 
 # Endpunkt zum Ändern des Passworts für den aktuell angemeldeten Benutzer (Trainer oder Paar)
 @router.put("/me/password", status_code=status.HTTP_200_OK)
