@@ -1,13 +1,13 @@
 // /DaSpCoRate/frontend/src/pages/SessionsManagementPage.jsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { getSessions, createSession, deleteSession } from '../api/client';
 import Modal from '../components/Modal';
 
 function SessionsManagementPage() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   // State für das Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,31 +16,19 @@ function SessionsManagementPage() {
     session_date: '', // Format: YYYY-MM-DD
   });
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [sessionToDelete, setSessionToDelete] = useState(null);
+
   // Funktion zum Abrufen der Sessions
   const fetchSessions = async () => {
     try {
-      setError(null);
       setLoading(true);
       const data = await getSessions();
       setSessions(data);
     } catch (err) {
-      setError(err.message);
+      toast.error(`Fehler beim Laden der Sessions: ${err.message}`);
     } finally {
       setLoading(false);
-    }
-  };
-
-    const handleDeleteSession = async (sessionId) => {
-    // Bestätigungsdialog (ersetzt confirm(), wie im PRD gefordert)
-    // Für den Moment verwenden wir window.confirm, später ersetzen wir es durch ein Modal.
-    if (window.confirm('Sind Sie sicher, dass Sie diese Session löschen möchten?')) {
-      try {
-        await deleteSession(sessionId);
-        // Lade die Session-Liste neu, um die gelöschte Session zu entfernen
-        fetchSessions(); 
-      } catch (err) {
-        alert(`Fehler beim Löschen: ${err.message}`);
-      }
     }
   };
 
@@ -57,11 +45,36 @@ function SessionsManagementPage() {
     e.preventDefault();
     try {
       await createSession(newSessionData);
+      toast.success('Session erfolgreich hinzugefügt!');
       setIsModalOpen(false); // Schließe das Modal bei Erfolg
       setNewSessionData({ title: '', session_date: '' }); // Formular zurücksetzen
       fetchSessions(); // Lade die Session-Liste neu
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
+    }
+  };
+
+  // Handler für den Lösch-Workflow
+  const openDeleteModal = (session) => {
+    setSessionToDelete(session);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSessionToDelete(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!sessionToDelete) return;
+    try {
+      await deleteSession(sessionToDelete.id);
+      toast.success(`Session "${sessionToDelete.title}" wurde gelöscht.`);
+      fetchSessions(); // Liste neu laden
+    } catch (err) {
+      toast.error(`Fehler beim Löschen: ${err.message}`);
+    } finally {
+      closeDeleteModal(); // Modal immer schließen
     }
   };
 
@@ -79,7 +92,6 @@ function SessionsManagementPage() {
         </div>
         <div className="overflow-x-auto">
           {loading && <p>Lade Sessions...</p>}
-          {error && <p className="text-red-500">Fehler: {error}</p>}
           {!loading && !error && (
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -101,9 +113,9 @@ function SessionsManagementPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center gap-4"> {/* NEU: Flex-Container */}
                       <Link to={`/dashboard/sessions/${session.id}`} className="text-indigo-600 hover:text-indigo-900">
-                        Details
+                        Start
                       </Link>
-                     <button onClick={() => handleDeleteSession(session.id)} className="text-red-600 hover:text-red-900"> {/* NEU: Button mit Funktion */}
+                      <button onClick={() => openDeleteModal(session)} className="text-red-600 hover:text-red-900">
                         Löschen
                       </button>
                     </div>
@@ -160,6 +172,32 @@ function SessionsManagementPage() {
             </button>
           </div>
         </form>
+      </Modal>
+      {/* Modal zum Bestätigen des Löschens */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        title="Session löschen"
+      >
+       <div>
+          <p>
+            Möchtest du die Session <span className="font-bold">"{sessionToDelete?.title}"</span> wirklich endgültig löschen? Alle zugehörigen Anmeldungen und Bewertungen gehen dabei verloren.
+         </p>
+         <div className="flex justify-end mt-6 space-x-4">
+            <button
+             onClick={closeDeleteModal}
+             className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            >
+              Abbrechen
+            </button>
+           <button
+             onClick={handleDeleteConfirm}
+             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+           >
+             Löschen
+           </button>
+          </div>
+        </div>
       </Modal>
     </>
   );

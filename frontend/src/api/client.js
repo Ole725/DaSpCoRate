@@ -61,6 +61,26 @@ export const createCouple = async (coupleData) => {
 
 };
 
+// Funktion zum Aktualisieren eines vorhandenen Paares
+export const updateCouple = async (coupleId, coupleData) => {
+  try {
+    const response = await apiClient.put(`/api/v1/couples/${coupleId}`, coupleData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Aktualisieren des Paares');
+  }
+};
+
+// Funktion zum Löschen eines Paares
+export const deleteCouple = async (coupleId) => {
+  try {
+    const response = await apiClient.delete(`/api/v1/couples/${coupleId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Löschen des Paares');
+  }
+};
+
 // Holt die Daten des aktuell eingeloggten Benutzers
 export const getMe = async () => {
   try {

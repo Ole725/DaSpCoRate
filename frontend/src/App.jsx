@@ -1,5 +1,7 @@
 // /DaSpCoRate/frontend/src/App.jsx
+import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { useAuth } from './context/AuthContext'; // Nur für die Root-Route
 
 // Importiere unsere Komponenten und Seiten
@@ -19,6 +21,7 @@ function App() {
   const { isAuthenticated, user } = useAuth();
 
   return (
+    <div>
     <Routes>
       {/* Route für die Login-Seite */}
       <Route
@@ -64,6 +67,18 @@ function App() {
       {/* Not Found Route */}
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
+          <Toaster
+        position="top-right" // Position (andere Optionen: 'top-center', 'bottom-right' etc.)
+        toastOptions={{
+          // Standard-Optionen für alle Toasts
+          duration: 5000, // 5 Sekunden sichtbar
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
+    </div>
   );
 }
 

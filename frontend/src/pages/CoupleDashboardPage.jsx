@@ -1,5 +1,6 @@
 // /DaSpCoRate/frontend/src/pages/CoupleDashboardPage.jsx
 import { useState, useEffect, useMemo } from 'react';
+import toast from 'react-hot-toast';
 import { getMyRatings, getSessions } from '../api/client';
 import RatingViewTable from '../components/RatingViewTable';
 
@@ -7,7 +8,6 @@ function CoupleDashboardPage() {
   const [ratings, setRatings] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,7 +19,7 @@ function CoupleDashboardPage() {
         setRatings(ratingsData);
         setSessions(sessionsData);
       } catch (err) {
-        setError(err.message);
+        toast.error(`Fehler beim Laden deiner Daten: ${err.message}`);
       } finally {
         setLoading(false);
       }
@@ -63,15 +63,13 @@ function CoupleDashboardPage() {
   }, [ratings, sessions]);
 
   if (loading) return <p>Lade deine Bewertungen...</p>;
-  if (error) return <p className="text-red-500">Fehler: {error}</p>;
 
   return (
     <div className="space-y-8">
-      <h2 className="text-3xl font-bold text-gray-800">Meine Bewertungshistorie</h2>
+      <h2 className="text-3xl font-bold text-gray-800">Unsere Bewertungshistorie</h2>
       {sessionsWithRatings.length > 0 ? (
         sessionsWithRatings.map(sessionGroup => (
           <div key={sessionGroup.sessionInfo.id} className="bg-white p-6 rounded-lg shadow-lg">
-            {/* --- NEUER GRÜNER ERGEBNIS-BALKEN --- */}
             <div className="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-md mb-6 flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-lg">{sessionGroup.sessionInfo.title}</h3>

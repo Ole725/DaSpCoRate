@@ -1,6 +1,7 @@
 // /DaSpCoRate/frontend/src/pages/SessionDetailPage.jsx
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { 
   getSessionDetails, 
   getEnrollmentsForSession, 
@@ -22,7 +23,6 @@ function SessionDetailPage() {
   const [ratings, setRatings] = useState([]);
   const [allCouples, setAllCouples] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   
   const [currentRound, setCurrentRound] = useState(1); 
   const [isFinished, setIsFinished] = useState(false);
@@ -30,12 +30,14 @@ function SessionDetailPage() {
   const [isAddCoupleModalOpen, setIsAddCoupleModalOpen] = useState(false);
   const [startNumbers, setStartNumbers] = useState({});
 
+  const [isRemoveConfirmModalOpen, setIsRemoveConfirmModalOpen] = useState(false);
+  const [enrollmentToRemove, setEnrollmentToRemove] = useState(null);
+
   // Lädt alle notwendigen Daten für die Seite
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        setError(null);
         const [sessionData, enrollmentsData, ratingsData, allCouplesData] = await Promise.all([
           getSessionDetails(sessionId),
           getEnrollmentsForSession(sessionId),
@@ -47,7 +49,7 @@ function SessionDetailPage() {
         setRatings(ratingsData);
         setAllCouples(allCouplesData);
       } catch (err) {
-        setError(err.message);
+        toast.error(`Fehler beim Laden der Daten: ${err.message}`);
       } finally {
         setLoading(false);
       }
@@ -79,11 +81,12 @@ function SessionDetailPage() {
   const handleAddCoupleToSession = async (coupleId) => {
     const startNumber = startNumbers[coupleId];
     if (!startNumber || isNaN(parseInt(startNumber))) {
-      alert('Bitte geben Sie eine gültige Startnummer ein.');
+      toast.error('Bitte geben Sie eine gültige Startnummer ein.');
       return;
     }
     try {
       await enrollCoupleByTrainer(parseInt(sessionId), coupleId, parseInt(startNumber));
+      toast.success('Paar erfolgreich zur Session hinzugefügt!')
       const [enrollmentsData, allCouplesData] = await Promise.all([
         getEnrollmentsForSession(sessionId),
         getCouples()
@@ -91,28 +94,39 @@ function SessionDetailPage() {
       setEnrollments(enrollmentsData);
       setAllCouples(allCouplesData);
     } catch (err) {
-      alert(`Fehler beim Hinzufügen des Paares: ${err.message}`);
+      toast.error(`Fehler beim Hinzufügen: ${err.message}`);
     }
   };
-  const handleRemoveCouple = async (coupleId) => {
-    const enrollment = enrollments.find(e => e.couple_id === coupleId);
-      // --- NEU: DEBUG-LOG ---
-      console.log("Versuche, Paar mit ID zu entfernen:", coupleId);
-      // ----------------------
-  
-    if (!enrollment) return;
 
-    if (window.confirm('Sind Sie sicher, dass Sie dieses Paar aus der Session entfernen möchten? Alle Bewertungen für dieses Paar in dieser Session werden ebenfalls gelöscht.')) {
-      try {
-        await unenrollCouple(enrollment.id);
-        // Lade die Anmeldungen neu, um die UI zu aktualisieren
-        const enrollmentsData = await getEnrollmentsForSession(sessionId);
-        setEnrollments(enrollmentsData);
-      } catch (err) {
-        alert(`Fehler beim Entfernen des Paares: ${err.message}`);
-      }
+  // Handler für das Entfernen eines Paares
+  const openRemoveConfirmModal = (coupleId) => {
+    const enrollment = enrollments.find(e => e.couple_id === coupleId);
+    if (enrollment) {
+      const couple = allCouples.find(c => c.id === coupleId);
+      setEnrollmentToRemove({ ...enrollment, coupleName: `${couple.mrs_first_name} & ${couple.mr_first_name}` });
+      setIsRemoveConfirmModalOpen(true);
     }
   };
+
+  const closeRemoveConfirmModal = () => {
+    setIsRemoveConfirmModalOpen(false);
+    setEnrollmentToRemove(null);
+  };
+
+  const handleRemoveConfirm = async () => {
+    if (!enrollmentToRemove) return;
+    try {
+      await unenrollCouple(enrollmentToRemove.id);
+      toast.success(`Paar wurde aus der Session entfernt.`);
+      const enrollmentsData = await getEnrollmentsForSession(sessionId);
+      setEnrollments(enrollmentsData);
+    } catch (err) {
+      toast.error(`Fehler beim Entfernen: ${err.message}`);
+    } finally {
+      closeRemoveConfirmModal();
+    }
+  };
+
   const handleRate = async (coupleId, category, points) => {
     const round = currentRound;
     const originalRatings = [...ratings];
@@ -134,7 +148,7 @@ function SessionDetailPage() {
       const finalRatingsData = await getRatingsForSession(sessionId);
       setRatings(finalRatingsData);
     } catch (err) {
-      alert(`Fehler beim Speichern der Bewertung: ${err.message}`);
+      toast.error(`Fehler beim Speichern: ${err.message}`);
       setRatings(originalRatings);
     }
   };
@@ -149,7 +163,6 @@ function SessionDetailPage() {
 
   // Lade- und Fehlerzustände
   if (loading) return <div>Lade Session-Daten...</div>;
-  if (error) return <div className="text-red-500">Fehler: {error}</div>;
   if (!session) return null;
 
   // Berechnete Werte für die Anzeige (JETZT INNERHALB DER KOMPONENTE)
@@ -190,7 +203,7 @@ function SessionDetailPage() {
                 enrolledCouples={enrolledCouplesDetails}
                 existingRatings={ratingsForCurrentRound}
                 onRate={handleRate}
-                onRemoveCouple={handleRemoveCouple}
+                onRemoveCouple={openRemoveConfirmModal}
                 round={currentRound}
               />
             ) : (
@@ -224,7 +237,7 @@ function SessionDetailPage() {
         )}
       </div>
 
-<Modal
+      <Modal
         isOpen={isAddCoupleModalOpen}
         onClose={() => setIsAddCoupleModalOpen(false)}
         title="Paar zur Session hinzufügen"
@@ -257,6 +270,31 @@ function SessionDetailPage() {
           ) : (
             <p>Alle Paare sind bereits für diese Session angemeldet.</p>
           )}
+        </div>
+      </Modal>
+      <Modal
+        isOpen={isRemoveConfirmModalOpen}
+        onClose={closeRemoveConfirmModal}
+        title="Paar entfernen"
+      >
+        <div>
+          <p>
+            Möchtest du das Paar <span className="font-bold">{enrollmentToRemove?.coupleName}</span> wirklich aus der Session entfernen? Alle Bewertungen für dieses Paar in dieser Session werden ebenfalls gelöscht.
+          </p>
+         <div className="flex justify-end mt-6 space-x-4">
+            <button
+              onClick={closeRemoveConfirmModal}
+              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            >
+              Abbrechen
+            </button>
+            <button
+              onClick={handleRemoveConfirm}
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Entfernen
+            </button>
+          </div>
         </div>
       </Modal>
     </>

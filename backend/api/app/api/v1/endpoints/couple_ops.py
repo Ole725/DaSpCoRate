@@ -92,16 +92,17 @@ def update_existing_couple(
     couple_id: int,
     couple_in: schemas_couple.CoupleUpdate,
     db: Session = Depends(get_db),
-    current_couple: Couple = Depends(get_couple_from_token)
+    current_trainer: Trainer = Depends(get_trainer_from_token) # <--- Das ist KORREKT
 ):
     logger.debug(f"update_existing_couple (Trainer): Updating couple ID {couple_id}.")
     db_couple = crud_couple.get_couple(db, couple_id=couple_id)
     if db_couple is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Couple not found")
     
+    # Prüfen, ob die neue E-Mail bereits von einem ANDEREN Paar verwendet wird
     if couple_in.email and couple_in.email != db_couple.email:
         existing_couple_with_new_email = crud_couple.get_couple_by_email(db, email=couple_in.email)
-        if existing_couple_with_new_email:
+        if existing_couple_with_new_email and existing_couple_with_new_email.id != couple_id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="New email already registered for another couple.")
 
     couple = crud_couple.update_couple(db=db, couple_id=couple_id, couple_in=couple_in)

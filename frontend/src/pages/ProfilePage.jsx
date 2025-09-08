@@ -1,11 +1,12 @@
 // /DaSpCoRate/frontend/src/pages/ProfilePage.jsx
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { getMe, updateMyCoupleProfile, changeMyPassword } from '../api/client';
 
 function ProfilePage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
 
   // States für die Formulare
   const [profileData, setProfileData] = useState({});
@@ -14,7 +15,6 @@ function ProfilePage() {
     new_password: '',
     confirm_new_password: '',
   });
-  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -33,7 +33,7 @@ function ProfilePage() {
           // Logik für Trainerprofil (können wir später hinzufügen)
         }
       } catch (err) {
-        setError(err.message);
+        toast.error(err.message);
       } finally {
         setLoading(false);
       }
@@ -51,30 +51,28 @@ function ProfilePage() {
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    setSuccessMessage('');
-    setError(null);
+
     try {
       // Momentan unterstützen wir nur die Profiländerung für Paare
       if (user.start_class) {
         await updateMyCoupleProfile(profileData);
-        setSuccessMessage('Profil erfolgreich aktualisiert!');
+        toast.success('Profil erfolgreich aktualisiert!');
       }
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
   
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    setSuccessMessage('');
-    setError(null);
+
     try {
       await changeMyPassword(passwordData);
-      setSuccessMessage('Passwort erfolgreich geändert!');
+      toast.success('Passwort erfolgreich geändert!');
       // Formular zurücksetzen
       setPasswordData({ current_password: '', new_password: '', confirm_new_password: '' });
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -83,8 +81,7 @@ function ProfilePage() {
   return (
     <div className="space-y-8">
       {/* Erfolgs- und Fehlermeldungen */}
-      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">{error}</div>}
-      {successMessage && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">{successMessage}</div>}
+      
 
       {/* Profil bearbeiten Formular (nur für Paare im Moment) */}
       {user && user.start_class && (

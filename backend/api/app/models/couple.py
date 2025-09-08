@@ -20,6 +20,14 @@ class Couple(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Beziehung zu den Bewertungen, die dieses Paar erhalten hat
-    ratings = relationship("Rating", back_populates="couple")
+    ratings = relationship(
+        "Rating",
+        back_populates="couple",
+        cascade="all, delete-orphan"
+    )
     # Beziehung zu den Session-Anmeldungen dieses Paares
-    enrollments = relationship("SessionEnrollment", back_populates="couple")
+    enrollments = relationship(
+        "SessionEnrollment",
+        back_populates="couple",
+        cascade="all, delete-orphan"
+    )
