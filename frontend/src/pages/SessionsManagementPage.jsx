@@ -1,6 +1,6 @@
 // /DaSpCoRate/frontend/src/pages/SessionsManagementPage.jsx
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { getSessions, createSession, deleteSession } from '../api/client';
 import Modal from '../components/Modal';
@@ -8,6 +8,12 @@ import Modal from '../components/Modal';
 function SessionsManagementPage() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const getNavLinkClass = ({ isActive }) => {
+    return isActive
+      ? 'font-bold text-blue-800 underline' // Klassen für den aktiven Link
+      : 'text-blue-600 hover:underline';    // Klassen für inaktive Links
+  };
 
   // State für das Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -112,9 +118,9 @@ function SessionsManagementPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-gray-500">{new Date(session.created_at).toLocaleString('de-DE')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center gap-4"> {/* NEU: Flex-Container */}
-                      <Link to={`/dashboard/sessions/${session.id}`} className="text-indigo-600 hover:text-indigo-900">
+                      <NavLink to={`/dashboard/sessions/${session.id}`} className="text-indigo-600 hover:text-indigo-900">
                         Start
-                      </Link>
+                      </NavLink>
                       <button onClick={() => openDeleteModal(session)} className="text-red-600 hover:text-red-900">
                         Löschen
                       </button>

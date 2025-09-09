@@ -7,18 +7,18 @@ from app.models import session as models_session
 from app.schemas import session as schemas_session
 
 # Funktion zum Abrufen einer Session anhand ihrer ID
-def get_session(db: Session, session_id: int):
+def get_session(self, db: Session, session_id: int):
     return db.query(models_session.Session).filter(models_session.Session.id == session_id).first()
 
 # Funktion zum Abrufen mehrerer Sessions (mit Pagination und optional nach Trainer-ID)
-def get_sessions(db: Session, trainer_id: Optional[int] = None, skip: int = 0, limit: int = 100) -> List[models_session.Session]:
+def get_sessions(self, db: Session, trainer_id: Optional[int] = None, skip: int = 0, limit: int = 100) -> List[models_session.Session]:
     query = db.query(models_session.Session)
     if trainer_id:
         query = query.filter(models_session.Session.trainer_id == trainer_id)
     return query.offset(skip).limit(limit).all()
 
 # Funktion zum Erstellen einer neuen Session
-def create_session(db: Session, session: schemas_session.SessionCreate, trainer_id: int):
+def create_session(self, db: Session, session: schemas_session.SessionCreate, trainer_id: int):
     db_session = models_session.Session(
         session_date=session.session_date,
         title=session.title,
@@ -30,7 +30,7 @@ def create_session(db: Session, session: schemas_session.SessionCreate, trainer_
     return db_session
 
 # Funktion zum Aktualisieren einer Session
-def update_session(db: Session, session_id: int, session_in: schemas_session.SessionUpdate):
+def update_session(self, db: Session, session_id: int, session_in: schemas_session.SessionUpdate):
     db_session = db.query(models_session.Session).filter(models_session.Session.id == session_id).first()
     if db_session:
         update_data = session_in.dict(exclude_unset=True)
@@ -42,10 +42,18 @@ def update_session(db: Session, session_id: int, session_in: schemas_session.Ses
     return db_session
 
 # Funktion zum Löschen einer Session
-def delete_session(db: Session, session_id: int):
+def delete_session(self, db: Session, session_id: int):
     db_session = db.query(models_session.Session).filter(models_session.Session.id == session_id).first()
     if db_session:
         db.delete(db_session)
         db.commit()
         return True
     return False
+
+session = type('CRUDSession', (), {
+    'get': get_session,
+    'get_multi': get_sessions,
+    'create': create_session,
+    'update': update_session,
+    'delete': delete_session,
+})()

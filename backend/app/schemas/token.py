@@ -8,5 +8,5 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    email: Optional[str] = Field(None, alias="sub") # Das ist der 'sub'-Wert aus dem JWT
-    role: Optional[str] = None # Z.B. 'trainer', 'couple'
+    email: Optional[str] = None 
+    role: Optional[str] = None

@@ -1,30 +1,29 @@
-# /DaSpCoRate/backend/app/core/config.py
-
+# /DaSpCoRate/backend/app/core/config.py (Final und Robust)
 import os
-from dotenv import load_dotenv
+from typing import List
+from pydantic_settings import BaseSettings
 
-# Lade Umgebungsvariablen aus einer .env Datei (falls vorhanden)
-load_dotenv()
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "DaSpCoRate"
+    API_V1_STR: str = "/api/v1"
 
-class Settings:
-    PROJECT_NAME: str = "Tanzsport-App API"
-    PROJECT_VERSION: str = "0.1.0"
+    BACKEND_CORS_ORIGINS: List[str] = [
+        "http://localhost:5173",
+        "http://localhost",
+    ]
 
-    # Datenbank-Einstellungen
-    MYSQL_USER: str = os.getenv("MYSQL_USER", "root") # Standardwert "root", aber besser über .env
-    MYSQL_PASSWORD: str = os.getenv("MYSQL_PASSWORD", "password") # Standardwert "password", ABER UNBEDINGT ÄNDERN!
-    MYSQL_HOST: str = os.getenv("MYSQL_HOST", "127.0.0.1")
-    MYSQL_PORT: str = os.getenv("MYSQL_PORT", "3306")
-    MYSQL_DATABASE: str = os.getenv("MYSQL_DATABASE", "daspcorate_db")
+    MYSQL_USER: str = os.getenv("MYSQL_USER")
+    MYSQL_PASSWORD: str = os.getenv("MYSQL_PASSWORD")
+    MYSQL_DATABASE: str = os.getenv("MYSQL_DATABASE")
+    DATABASE_URL: str = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@db/{MYSQL_DATABASE}"
 
-    # Generiere die DATABASE_URL basierend auf den Einstellungen
-    DATABASE_URL: str = (
-        f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
-    )
-
-    # JWT-Einstellungen für Authentifizierung
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "DEIN_SUPER_GEHEIMER_STANDARD_SCHLUESSEL") # **MUSS GEÄNDERT WERDEN**
+    SECRET_KEY: str = os.getenv("SECRET_KEY")
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30 # Minuten
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+
+    class Config:
+        env_file = ".env"
+        # Sie weist Pydantic an, unbekannte Umgebungsvariablen zu ignorieren.
+        extra = 'ignore'
 
 settings = Settings()

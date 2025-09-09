@@ -2,52 +2,25 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.endpoints import auth, couple_ops, sessions, enrollment_ops, ratings, users # Importiert Auth- und Couples-Router
+from app.api.v1.api import api_router
+from app.core.config import settings
 
 app = FastAPI(
-    title="Tanzsport-App API",
-    description="API für die Bewertung und das Feedback im Tanzsport.",
-    version="0.1.0",
-    debug=True,
+    title=settings.PROJECT_NAME, 
+    openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
-# Erlaubte Origins (Domains, von denen Anfragen kommen dürfen)
-origins = [
-    "http://localhost:5173", # Ihre React-App
-    "http://localhost:3000", # Manchmal laufen React-Apps auch hier
-    "http://127.0.0.1:5173", # Alternative Schreibweise für localhost
-]
+if settings.BACKEND_CORS_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins, # Erlaubt die oben definierten Origins
-    allow_credentials=True, # Erlaubt Cookies (wichtig für spätere Features)
-    allow_methods=["*"],    # Erlaubt alle HTTP-Methoden (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],    # Erlaubt alle HTTP-Header (inkl. Authorization)
-)
-
-# Router für Authentifizierung hinzufügen
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
-
-# Router für Paarverwaltung hinzufügen (geschützt durch Authentifizierung)
-app.include_router(couple_ops.router, prefix="/api/v1/couples", tags=["Couples"]) 
-
-# Router für Sessionverwaltung hinzufügen (geschützt durch Trainer-Authentifizierung)
-app.include_router(sessions.router, prefix="/api/v1/sessions", tags=["Sessions"])
-
-# Router für Session-Anmeldung hinzufügen
-app.include_router(enrollment_ops.router, prefix="/api/v1/enrollments", tags=["Enrollments"])
-
-# Router für Bewertungen hinzufügen
-app.include_router(ratings.router, prefix="/api/v1/ratings", tags=["Ratings"])
-
-# Router für allgemeine Benutzeraktionen (Passwort ändern etc.)
-app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
-async def read_root():
-    return {"message": "Welcome to the Tanzsport-App API!"}
-
-@app.get("/health")
-async def health_check():
-    return {"status": "ok", "timestamp": app.version}
+def read_root():
+    return {"message": "Willkommen zur DaSpCoRate API"}

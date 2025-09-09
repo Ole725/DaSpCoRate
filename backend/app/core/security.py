@@ -12,6 +12,17 @@ from app.core.config import settings # Importiert unsere JWT-Einstellungen
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+   # --- UNSER SPION ---
+    print("--- SECURITY: Vergleiche Passwörter ---")
+    print(f"    Eingabe (Klartext): '{plain_password}'")
+    print(f"    DB-Hash: '{hashed_password}'")
+    # --------------------
+    result = pwd_context.verify(plain_password, hashed_password)
+    # --- UNSER SPION ---
+    print(f"    Ergebnis des Vergleichs: {result}")
+    print("---------------------------------------")
+    # --------------------
+    return result
     """
     Vergleicht ein Klartext-Passwort mit einem gehashten Passwort.
     """

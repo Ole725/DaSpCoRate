@@ -7,19 +7,19 @@ from app.core import security # Wird benötigt für Passwort-Hashing bei Registr
 from typing import Optional
 
 # Funktion zum Abrufen eines Paares anhand seiner ID
-def get_couple(db: Session, couple_id: int):
+def get_couple(self, db: Session, couple_id: int):
     return db.query(models_couple.Couple).filter(models_couple.Couple.id == couple_id).first()
 
 # Funktion zum Abrufen eines Paares anhand seiner E-Mail-Adresse
-def get_couple_by_email(db: Session, email: str):
+def get_couple_by_email(self, db: Session, email: str):
     return db.query(models_couple.Couple).filter(models_couple.Couple.email == email).first()
 
 # Funktion zum Abrufen mehrerer Paare (mit Pagination)
-def get_couples(db: Session, skip: int = 0, limit: int = 100):
+def get_couples(self, db: Session, skip: int = 0, limit: int = 100):
     return db.query(models_couple.Couple).offset(skip).limit(limit).all()
 
 # Funktion zum Erstellen eines neuen Paares
-def create_couple(db: Session, couple: schemas_couple.CoupleCreate, password_hash: str):
+def create_couple(self, db: Session, couple: schemas_couple.CoupleCreate, password_hash: str):
     db_couple = models_couple.Couple(
         email=couple.email,
         password_hash=password_hash, # Gehashtes Passwort
@@ -36,7 +36,7 @@ def create_couple(db: Session, couple: schemas_couple.CoupleCreate, password_has
     return db_couple
 
 # Funktion zum Aktualisieren eines Paares
-def update_couple(db: Session, couple_id: int, couple_in: schemas_couple.CoupleUpdate):
+def update_couple(self, db: Session, couple_id: int, couple_in: schemas_couple.CoupleUpdate):
     db_couple = db.query(models_couple.Couple).filter(models_couple.Couple.id == couple_id).first()
     if db_couple:
         # Pydantic-Modell in ein Dictionary umwandeln und None-Werte ausschließen
@@ -49,7 +49,7 @@ def update_couple(db: Session, couple_id: int, couple_in: schemas_couple.CoupleU
     return db_couple
 
 # Funktion zum Löschen eines Paares
-def delete_couple(db: Session, couple_id: int):
+def delete_couple(self, db: Session, couple_id: int):
     db_couple = db.query(models_couple.Couple).filter(models_couple.Couple.id == couple_id).first()
     if db_couple:
         db.delete(db_couple)
@@ -58,7 +58,7 @@ def delete_couple(db: Session, couple_id: int):
     return False
 
 # Funktion zum Aktualisieren des Passworts eines Paares
-def update_couple_password(db: Session, couple_id: int, new_password_hash: str):
+def update_couple_password(self, db: Session, couple_id: int, new_password_hash: str):
     db_couple = db.query(models_couple.Couple).filter(models_couple.Couple.id == couple_id).first()
     if db_couple:
         db_couple.password_hash = new_password_hash
@@ -66,3 +66,13 @@ def update_couple_password(db: Session, couple_id: int, new_password_hash: str):
         db.commit()
         db.refresh(db_couple)
     return db_couple
+
+couple = type('CRUDCouple', (), {
+    'get': get_couple,
+    'get_by_email': get_couple_by_email,
+    'get_multi': get_couples,
+    'create': create_couple,
+    'update': update_couple,
+    'delete': delete_couple,
+    'update_password': update_couple_password,
+})()

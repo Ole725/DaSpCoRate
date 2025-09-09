@@ -28,7 +28,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/app:/app  # Synchronisiert deinen Code live in den Container
+      - ./backend:/code  # Synchronisiert deinen Code live in den Container
     env_file:
       - ./backend/.env # Lädt die .env-Datei in den Container
     depends_on:
