@@ -13,7 +13,6 @@ import CouplesManagementPage from './pages/CouplesManagementPage';
 import SessionsManagementPage from './pages/SessionsManagementPage';
 import SessionDetailPage from './pages/SessionDetailPage';
 import CoupleDashboardPage from './pages/CoupleDashboardPage';
-import AccountPage from './pages/AccountPage';
 import CoupleLayout from './components/CoupleLayout';
 import ProfilePage from './pages/ProfilePage';
 
@@ -36,7 +35,6 @@ function App() {
           <Route path="couples" element={<CouplesManagementPage />} />
           <Route path="sessions" element={<SessionsManagementPage />} />
           <Route path="sessions/:sessionId" element={<SessionDetailPage />} />
-          <Route path="account" element={<AccountPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Route>
@@ -45,7 +43,6 @@ function App() {
       <Route element={<ProtectedRoute allowedRoles={['couple']} />}>
         <Route path="/couple-dashboard" element={<CoupleLayout />}>
           <Route index element={<CoupleDashboardPage />} /> {/* Hauptseite */}
-          <Route path="account" element={<AccountPage />} />   {/* Zukünftige Account-Seite */}
           <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Route>

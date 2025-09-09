@@ -1,13 +1,14 @@
 # /DaSpCoRate/docker-compose.yml
+
 services:
   db:
     image: mysql:8.0
     container_name: daspcorate_mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: RootDSCRBW790356 # <--- HIER EIN STARKES PASSWORT EINSETZEN!
+      MYSQL_ROOT_PASSWORD: RootDSCRBW790356
       MYSQL_DATABASE: daspcorate_db
-      MYSQL_USER: DSPCR_Admin # <--- HIER DEINEN GEWÜNSCHTEN BENUTZERNAMEN EINSETZEN (z.B. 'daspcorate_user')
-      MYSQL_PASSWORD: DSCRBW790356 # <--- HIER EIN STARKES PASSWORT FÜR DEN APP-BENUTZER EINSETZEN!
+      MYSQL_USER: DSPCR_Admin
+      MYSQL_PASSWORD: DSCRBW790356
     ports:
       - "3306:3306"
     volumes:
@@ -17,6 +18,36 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: daspcorate_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app  # Synchronisiert deinen Code live in den Container
+    env_file:
+      - ./backend/.env # Lädt die .env-Datei in den Container
+    depends_on:
+      db:
+        condition: service_healthy # Wartet, bis die DB gesund ist
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: daspcorate_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Wichtige Zeile, um node_modules im Container zu behalten
+    depends_on:
+      - backend
     restart: unless-stopped
 
 volumes:
