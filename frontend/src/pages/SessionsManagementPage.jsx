@@ -10,30 +10,19 @@ function SessionsManagementPage() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const getNavLinkClass = ({ isActive }) => {
-    return isActive
-      ? 'font-bold text-blue-800 underline' // Klassen für den aktiven Link
-      : 'text-blue-600 hover:underline';    // Klassen für inaktive Links
-  };
-
-  // State für das Modal
+  // States for modals remain unchanged
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newSessionData, setNewSessionData] = useState({
-    title: '',
-    session_date: '', // Format: YYYY-MM-DD
-  });
-
+  const [newSessionData, setNewSessionData] = useState({ title: '', session_date: '' });
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState(null);
 
-  // Funktion zum Abrufen der Sessions
   const fetchSessions = async () => {
     try {
       setLoading(true);
       const data = await getSessions();
       setSessions(data);
     } catch (err) {
-      toast.error(`Fehler beim Laden der Sessions: ${err.message}`);
+      toast.error(`Fehler beim Laden des Trainings: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -42,7 +31,8 @@ function SessionsManagementPage() {
   useEffect(() => {
     fetchSessions();
   }, []);
-
+  
+  // Handlers for input, submit, and modals remain unchanged
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewSessionData((prevData) => ({ ...prevData, [name]: value }));
@@ -52,21 +42,20 @@ function SessionsManagementPage() {
     e.preventDefault();
     try {
       await createSession(newSessionData);
-      toast.success('Session erfolgreich hinzugefügt!');
-      setIsModalOpen(false); // Schließe das Modal bei Erfolg
-      setNewSessionData({ title: '', session_date: '' }); // Formular zurücksetzen
-      fetchSessions(); // Lade die Session-Liste neu
+      toast.success('Training erfolgreich hinzugefügt!');
+      setIsModalOpen(false);
+      setNewSessionData({ title: '', session_date: '' });
+      fetchSessions();
     } catch (err) {
       toast.error(err.message);
     }
   };
-
-  // Handler für den Lösch-Workflow
+  
   const openDeleteModal = (session) => {
     setSessionToDelete(session);
     setIsDeleteModalOpen(true);
   };
-
+  
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
     setSessionToDelete(null);
@@ -77,84 +66,99 @@ function SessionsManagementPage() {
     try {
       await deleteSession(sessionToDelete.id);
       toast.success(`Session "${sessionToDelete.title}" wurde gelöscht.`);
-      fetchSessions(); // Liste neu laden
+      fetchSessions();
     } catch (err) {
       toast.error(`Fehler beim Löschen: ${err.message}`);
     } finally {
-      closeDeleteModal(); // Modal immer schließen
+      closeDeleteModal();
     }
   };
+
+  // NEU: Logik zum Aufteilen und Sortieren der Sessions
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Wichtig: Zeit entfernen für einen sauberen Datumsvergleich
+
+  const upcomingSessions = sessions
+    .filter(s => new Date(s.session_date) >= today)
+    .sort((a, b) => new Date(a.session_date) - new Date(b.session_date)); // Aufsteigend sortieren
+
+  const pastSessions = sessions
+    .filter(s => new Date(s.session_date) < today)
+    .sort((a, b) => new Date(b.session_date) - new Date(a.session_date)); // Absteigend sortieren
+
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <ClipLoader
-          color={"#3b82f6"} // Eine passende blaue Farbe
-          loading={loading}
-          size={50} // Größe des Spinners
-          aria-label="Loading Spinner"
-          data-testid="loader"
-        />
+        <ClipLoader color={"#3b82f6"} loading={loading} size={50} />
       </div>
     );
   }
 
-  return (
-    <>
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">Session-Verwaltung</h2>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            + Session hinzufügen
-          </button>
-        </div>
-        <div className="overflow-x-auto">
+  // NEU: Eine wiederverwendbare Tabellenkomponente innerhalb dieser Datei
+  const SessionTable = ({ sessionList, title }) => (
+    <div className="mb-10">
+      <h3 className="text-xl font-semibold mb-3 text-gray-700">{title}</h3>
+      {sessionList.length > 0 ? (
+        <div className="overflow-x-auto border rounded-lg">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel</th>
-               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Erstellt am</th>
-                <th className="relative px-6 py-3">
-                   <span className="sr-only">Aktionen</span>
-               </th>
+                <th className="relative px-6 py-3"><span className="sr-only">Aktionen</span></th>
               </tr>
             </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {sessions.map((session) => (
-                  <tr key={session.id}>
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{session.title}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">{new Date(session.session_date).toLocaleDateString('de-DE')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">{new Date(session.created_at).toLocaleString('de-DE')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end items-center gap-4"> {/* Flex-Container */}
-                      <NavLink to={`/dashboard/sessions/${session.id}`} className="text-indigo-600 hover:text-indigo-900">
-                        Start
-                      </NavLink>
-                      <button onClick={() => openDeleteModal(session)} className="text-red-600 hover:text-red-900">
-                        Löschen
-                      </button>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {sessionList.map((session) => (
+                <tr key={session.id}>
+                  <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{session.title}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{new Date(session.session_date).toLocaleDateString('de-DE')}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{new Date(session.created_at).toLocaleString('de-DE')}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex justify-end items-center gap-4">
+                      <NavLink to={`/dashboard/sessions/${session.id}`} className="text-indigo-600 hover:text-indigo-900">Start</NavLink>
+                      <button onClick={() => openDeleteModal(session)} className="text-red-600 hover:text-red-900">Löschen</button>
                     </div>
                   </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      ) : (
+        <p className="text-gray-500 italic">Kein Training in dieser Kategorie.</p>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-semibold">Trainings-Verwaltung</h2>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            + Training hinzufügen
+          </button>
+        </div>
+        
+        {/* NEU: Angepasste JSX-Struktur mit zwei Tabellen */}
+        <SessionTable sessionList={upcomingSessions} title="Anstehende Trainings" />
+        <SessionTable sessionList={pastSessions} title="Vergangene Trainings" />
+
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Neue Session hinzufügen"
-      >
+      {/* Modals for adding and deleting sessions remain unchanged */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Neue Training hinzufügen">
+        {/* ... form content ... */}
         <form onSubmit={handleAddSessionSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
-              Titel der Session
+              Titel des Trainings
             </label>
             <input
               id="title"
@@ -191,15 +195,12 @@ function SessionsManagementPage() {
           </div>
         </form>
       </Modal>
-      {/* Modal zum Bestätigen des Löschens */}
-      <Modal
-        isOpen={isDeleteModalOpen}
-        onClose={closeDeleteModal}
-        title="Session löschen"
-      >
-       <div>
+
+      <Modal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} title="Session löschen">
+        {/* ... delete confirmation content ... */}
+        <div>
           <p>
-            Möchtest du die Session <span className="font-bold">"{sessionToDelete?.title}"</span> wirklich endgültig löschen? Alle zugehörigen Anmeldungen und Bewertungen gehen dabei verloren.
+            Möchtest du das Training <span className="font-bold">"{sessionToDelete?.title}"</span> wirklich endgültig löschen? Alle zugehörigen Anmeldungen und Bewertungen gehen dabei verloren.
          </p>
          <div className="flex justify-end mt-6 space-x-4">
             <button

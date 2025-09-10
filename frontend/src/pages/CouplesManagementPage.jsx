@@ -180,7 +180,7 @@ function CouplesManagementPage() {
             <tbody className="bg-white divide-y divide-gray-200">
               {couples.map((couple) => (
                 <tr key={couple.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">{couple.mr_first_name} & {couple.mrs_first_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{couple.mrs_first_name} & {couple.mr_first_name}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{couple.start_group} - {couple.start_class}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{couple.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
