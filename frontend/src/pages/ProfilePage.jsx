@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { getMe, updateMyCoupleProfile, changeMyPassword } from '../api/client';
 import { ClipLoader } from 'react-spinners';
+import { useTheme } from '../context/ThemeContext';
 
 function ProfilePage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
 
   // States für die Formulare
   const [profileData, setProfileData] = useState({});
@@ -98,26 +98,26 @@ function ProfilePage() {
 
       {/* Profil bearbeiten Formular (nur für Paare im Moment) */}
       {user && user.start_class && (
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold mb-4">Profil bearbeiten</h2>
           <form onSubmit={handleProfileSubmit} className="space-y-4">
             <input name="mr_first_name" value={profileData.mr_first_name} onChange={handleProfileChange} placeholder="Vorname Herr" className="shadow appearance-none border rounded w-full py-2 px-3" />
             <input name="mrs_first_name" value={profileData.mrs_first_name} onChange={handleProfileChange} placeholder="Vorname Dame" className="shadow appearance-none border rounded w-full py-2 px-3" />
             <input name="start_group" value={profileData.start_group} onChange={handleProfileChange} placeholder="Startgruppe" className="shadow appearance-none border rounded w-full py-2 px-3" />
             <input name="start_class" value={profileData.start_class} onChange={handleProfileChange} placeholder="Klasse" className="shadow appearance-none border rounded w-full py-2 px-3" />
-            <button type="submit" className="bg-blue-600 text-white font-bold py-2 px-4 rounded">Profil speichern</button>
+            <button type="submit" className="bg-blue-600 dark:bg-blue-700 text-white font-bold py-2 px-4 rounded">Profil speichern</button>
           </form>
         </div>
       )}
 
       {/* Passwort ändern Formular */}
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold mb-4">Passwort ändern</h2>
         <form onSubmit={handlePasswordSubmit} className="space-y-4">
           <input name="current_password" type="password" value={passwordData.current_password} onChange={handlePasswordChange} placeholder="Aktuelles Passwort" required className="shadow appearance-none border rounded w-full py-2 px-3" />
           <input name="new_password" type="password" value={passwordData.new_password} onChange={handlePasswordChange} placeholder="Neues Passwort" required className="shadow appearance-none border rounded w-full py-2 px-3" />
           <input name="confirm_new_password" type="password" value={passwordData.confirm_new_password} onChange={handlePasswordChange} placeholder="Neues Passwort bestätigen" required className="shadow appearance-none border rounded w-full py-2 px-3" />
-          <button type="submit" className="bg-blue-600 text-white font-bold py-2 px-4 rounded">Passwort ändern</button>
+          <button type="submit" className="bg-blue-600 dark:bg-blue-700 text-white font-bold py-2 px-4 rounded">Passwort ändern</button>
         </form>
       </div>
     </div>

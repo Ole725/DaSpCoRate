@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { getCouples, createCouple, updateCouple, deleteCouple } from '../api/client';
 import Modal from '../components/Modal';
 import { ClipLoader } from 'react-spinners';
+import { useTheme } from '../context/ThemeContext';
 
 const START_GROUPS = [
   { value: 'Mas IV', label: 'Masters IV (Mas IV)' },
@@ -160,20 +161,20 @@ function CouplesManagementPage() {
   }
 
   if (error) {
-    return <p className="text-red-500 text-center">Fehler beim Laden der Paare: {error}</p>;
+    return <p className="text-red-500 dark:text-red-400 text-center">Fehler beim Laden der Paare: {error}</p>;
   }
-  
-  const commonInputClasses = "mb-4 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline";
+
+  const commonInputClasses = "mb-4 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none focus:shadow-outline";
 
   return (
     // <> ist ein React Fragment, um mehrere Top-Level-Elemente zu ermöglichen
     <>
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">Paar-Verwaltung</h2>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
             + Paar hinzufügen
           </button>
@@ -181,18 +182,18 @@ function CouplesManagementPage() {
 
         {/* --- HIER KOMMT DER TABELLEN-BLOCK HIN --- */}
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Startgruppe/Klasse</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-Mail</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Startgruppe/Klasse</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">E-Mail</th>
                   <th className="relative px-6 py-3">
                     <span className="sr-only">Aktionen</span>
                   </th>
                 </tr>
              </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
               {couples.map((couple) => (
                 <tr key={couple.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{couple.mrs_first_name} & {couple.mr_first_name}</td>
@@ -201,13 +202,13 @@ function CouplesManagementPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
                     <button
                       onClick={() => openEditModal(couple)}
-                      className="text-indigo-600 hover:text-indigo-900"
+                      className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
                     >
                       Bearbeiten
                     </button>
                     <button
                       onClick={() => openDeleteModal(couple)}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                     >
                       Löschen
                     </button>
@@ -243,8 +244,8 @@ function CouplesManagementPage() {
           <input name="password" type="password" value={newCoupleData.password} onChange={handleInputChange} placeholder="Passwort (min. 8 Zeichen)" required className={commonInputClasses} />
           
           <div className="flex justify-end mt-4">
-            <button type="button" onClick={() => setIsModalOpen(false)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Abbrechen</button>
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Speichern</button>
+            <button type="button" onClick={() => setIsModalOpen(false)} className="bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded mr-2">Abbrechen</button>
+            <button type="submit" className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Speichern</button>
           </div>
         </form>
       </Modal>
@@ -271,8 +272,8 @@ function CouplesManagementPage() {
           </select>
             
           <div className="flex justify-end mt-4">
-            <button type="button" onClick={closeEditModal} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Abbrechen</button>
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Änderungen speichern</button>
+            <button type="button" onClick={closeEditModal} className="bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded mr-2">Abbrechen</button>
+            <button type="submit" className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Änderungen speichern</button>
           </div>
         </form>
       </Modal>
@@ -290,13 +291,13 @@ function CouplesManagementPage() {
           <div className="flex justify-end mt-6 space-x-4">
             <button
               onClick={closeDeleteModal}
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              className="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
             >
               Abbrechen
             </button>
             <button
               onClick={handleDeleteConfirm}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              className="px-4 py-2 bg-red-600 dark:bg-red-700 text-white rounded hover:bg-red-700 dark:hover:bg-red-600"
             >
               Löschen
             </button>

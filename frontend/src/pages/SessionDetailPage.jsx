@@ -18,6 +18,7 @@ import ResultsDisplay from '../components/ResultsDisplay';
 import { ClipLoader } from 'react-spinners';
 import { FaExchangeAlt } from 'react-icons/fa'; // Icon importieren
 import { ALL_CRITERIA_KEYS } from '../lib/criteria';
+import { useTheme } from '../context/ThemeContext';
 
 function SessionDetailPage() {
   const { sessionId } = useParams();
@@ -149,13 +150,13 @@ function SessionDetailPage() {
 
   return (
     <>
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-2xl font-semibold mb-1">{session.title}</h2>
-            <p className="text-gray-600">Datum: {new Date(session.session_date).toLocaleDateString('de-DE')}</p>
+            <p className="text-gray-600 dark:text-gray-400">Datum: {new Date(session.session_date).toLocaleDateString('de-DE')}</p>
           </div>
-          {!isFinished && <button onClick={openAddCoupleModal} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">+ Paar zur Session hinzufügen</button>}
+          {!isFinished && <button onClick={openAddCoupleModal} className="bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white font-bold py-2 px-4 rounded">+ Paar zur Session hinzufügen</button>}
         </div>
 
         {!isFinished ? (
@@ -179,15 +180,15 @@ function SessionDetailPage() {
           <div className="mt-6 flex justify-between items-center">
             <button
               onClick={() => setIsTransposedView(!isTransposedView)}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded flex items-center gap-2"
+              className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold py-2 px-4 rounded flex items-center gap-2"
               title="Ansicht wechseln"
             >
               <FaExchangeAlt />
               {isTransposedView ? 'Standardansicht' : 'Kompaktansicht'}
             </button>
             <div className="flex gap-4">
-              <button onClick={handleNextRound} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Nächste Runde</button>
-              <button onClick={handleFinishTraining} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Training beenden</button>
+              <button onClick={handleNextRound} className="bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Nächste Runde</button>
+              <button onClick={handleFinishTraining} className="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Training beenden</button>
             </div>
           </div>
         )}
@@ -200,7 +201,7 @@ function SessionDetailPage() {
             <ul className="max-h-80 overflow-y-auto">
               {availableCouples.map(couple => (
                 <li key={couple.id} className="border-b last:border-b-0">
-                  <button onClick={() => handleAddCoupleToSession(couple.id)} className="w-full text-left p-3 hover:bg-blue-50 transition-colors duration-150">{couple.mrs_first_name} & {couple.mr_first_name}</button>
+                  <button onClick={() => handleAddCoupleToSession(couple.id)} className="w-full text-left p-3 hover:bg-blue-50 dark:hover:bg-blue-600 transition-colors duration-150">{couple.mrs_first_name} & {couple.mr_first_name}</button>
                 </li>
               ))}
             </ul>
@@ -212,8 +213,8 @@ function SessionDetailPage() {
         <div>
           <p>Möchtest du das Paar <span className="font-bold">{enrollmentToRemove?.coupleName}</span> wirklich aus der Session entfernen? Alle Bewertungen für dieses Paar in dieser Session werden ebenfalls gelöscht.</p>
          <div className="flex justify-end mt-6 space-x-4">
-            <button onClick={closeRemoveConfirmModal} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Abbrechen</button>
-            <button onClick={handleRemoveConfirm} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Entfernen</button>
+            <button onClick={closeRemoveConfirmModal} className="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 dark:hover:bg-gray-500">Abbrechen</button>
+            <button onClick={handleRemoveConfirm} className="px-4 py-2 bg-red-600 dark:bg-red-700 text-white rounded hover:bg-red-700 dark:hover:bg-red-800">Entfernen</button>
           </div>
         </div>
       </Modal>

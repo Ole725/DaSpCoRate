@@ -4,6 +4,7 @@ import { getMyRatings } from '../api/client';
 import { toast } from 'react-hot-toast';
 import { ClipLoader } from 'react-spinners';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const CoupleDashboardPage = () => {
   const { user } = useAuth();
@@ -49,21 +50,21 @@ const CoupleDashboardPage = () => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-4">
         Willkommen, {user ? `${user.mrs_first_name} & ${user.mr_first_name}` : 'Paar'}!
       </h2>
-      <p className="text-gray-600 mb-6">
+      <p className="text-gray-600 dark:text-gray-400 mb-6">
         Hier ist eine Zusammenfassung eurer gemeinsamen Entwicklung.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-green-100 p-4 rounded-lg text-center">
-          <p className="text-4xl font-bold text-green-800">{stats.attendedSessionsCount}</p>
-          <p className="text-green-600 font-semibold">Teilgenommene Trainings</p>
+        <div className="bg-green-100 dark:bg-green-800 p-4 rounded-lg text-center">
+          <p className="text-4xl font-bold text-green-800 dark:text-green-400">{stats.attendedSessionsCount}</p>
+          <p className="text-green-600 dark:text-green-300 font-semibold">Teilgenommene Trainings</p>
         </div>
-        <div className="bg-indigo-100 p-4 rounded-lg text-center">
-          <p className="text-4xl font-bold text-indigo-800">{stats.totalPoints}</p>
-          <p className="text-indigo-600 font-semibold">Gesammelte Punkte</p>
+        <div className="bg-indigo-100 dark:bg-indigo-800 p-4 rounded-lg text-center">
+          <p className="text-4xl font-bold text-indigo-800 dark:text-indigo-400">{stats.totalPoints}</p>
+          <p className="text-indigo-600 dark:text-indigo-300 font-semibold">Gesammelte Punkte</p>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 // /DaSpCoRate/frontend/src/components/RatingViewTable.jsx
 
 import React from 'react'; // React importieren
+import { useTheme } from '../context/ThemeContext';
 
 const criteria = [
   { key: 'Technical Quality', label: 'Technical Quality', isMain: true, abbr: 'TQ' },
@@ -20,9 +21,9 @@ function RatingViewTable({ ratings, round }) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full border-collapse">
-        <thead className="bg-gray-50">
+        <thead className="bg-gray-50 dark:bg-gray-800">
           <tr>
-            <th className="sticky left-0 bg-gray-100 border p-2 text-left z-10">Kriterium</th>
+            <th className="sticky left-0 bg-gray-100 dark:bg-gray-800 border p-2 text-left z-10">Kriterium</th>
             <th className="border p-2">Bewertung</th>
           </tr>
         </thead>
@@ -32,18 +33,18 @@ function RatingViewTable({ ratings, round }) {
               (r) => r.category === criterion.key && r.round === round
             );
             return (
-              <tr key={criterion.key} className="hover:bg-gray-50">
+              <tr key={criterion.key} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                 {/* HIER: Die gleiche bedingte Klassenanwendung */}
-                <td className={`sticky left-0 bg-white border p-2 z-10 transition-all ${
+                <td className={`sticky left-0 bg-white dark:bg-gray-800 border p-2 z-10 transition-all ${
                   criterion.isMain ? 'font-bold' : 'pl-8' // Hauptkriterien fett, Unterkriterien eingerückt
                 }`}>
                   {criterion.label}
                 </td>
                 <td className="border p-2 text-center">
                   <div className="flex justify-center items-center gap-2">
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center ${rating?.points === 1 ? 'bg-blue-500 text-white font-bold' : 'bg-gray-200'}`}>1</span>
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center ${rating?.points === 2 ? 'bg-blue-500 text-white font-bold' : 'bg-gray-200'}`}>2</span>
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center ${rating?.points === 3 ? 'bg-blue-500 text-white font-bold' : 'bg-gray-200'}`}>3</span>
+                    <span className={`w-8 h-8 rounded-full flex items-center justify-center ${rating?.points === 1 ? 'bg-blue-500 dark:bg-blue-600 text-white font-bold' : 'bg-gray-200 dark:bg-gray-700'}`}>1</span>
+                    <span className={`w-8 h-8 rounded-full flex items-center justify-center ${rating?.points === 2 ? 'bg-blue-500 dark:bg-blue-600 text-white font-bold' : 'bg-gray-200 dark:bg-gray-700'}`}>2</span>
+                    <span className={`w-8 h-8 rounded-full flex items-center justify-center ${rating?.points === 3 ? 'bg-blue-500 dark:bg-blue-600 text-white font-bold' : 'bg-gray-200 dark:bg-gray-700'}`}>3</span>
                   </div>
                 </td>
               </tr>
@@ -51,8 +52,8 @@ function RatingViewTable({ ratings, round }) {
           })}
         </tbody>
         <tfoot>
-          <tr className="bg-gray-100 font-bold">
-            <td className="sticky left-0 bg-gray-100 border p-2 text-right z-10">Gesamtpunktzahl Runde {round}:</td>
+          <tr className="bg-gray-100 dark:bg-gray-800 font-bold">
+            <td className="sticky left-0 bg-gray-100 dark:bg-gray-800 border p-2 text-right z-10">Gesamtpunktzahl Runde {round}:</td>
             <td className="border p-2 text-center text-lg">{roundTotal}</td>
           </tr>
         </tfoot>

@@ -6,10 +6,12 @@ import { getSessions, createSession, deleteSession } from '../api/client';
 import Modal from '../components/Modal';
 import { ClipLoader } from 'react-spinners';
 import { ALL_CRITERIA, ALL_CRITERIA_KEYS } from '../lib/criteria';
+import { useTheme } from '../context/ThemeContext';
 
 function SessionsManagementPage() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
 
   // States for modals remain unchanged
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -131,28 +133,28 @@ function SessionsManagementPage() {
   // Eine wiederverwendbare Tabellenkomponente innerhalb dieser Datei
   const SessionTable = ({ sessionList, title }) => (
     <div className="mb-10">
-      <h3 className="text-xl font-semibold mb-3 text-gray-700">{title}</h3>
+      <h3 className="text-xl font-semibold mb-3 text-gray-700 dark:text-gray-300">{title}</h3>
       {sessionList.length > 0 ? (
         <div className="overflow-x-auto border rounded-lg">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Erstellt am</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Titel</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Datum</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Erstellt am</th>
                 <th className="relative px-6 py-3"><span className="sr-only">Aktionen</span></th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {sessionList.map((session) => (
                 <tr key={session.id}>
-                  <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{session.title}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{new Date(session.session_date).toLocaleDateString('de-DE')}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{new Date(session.created_at).toLocaleString('de-DE')}</td>
+                  <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">{session.title}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">{new Date(session.session_date).toLocaleDateString('de-DE')}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">{new Date(session.created_at).toLocaleString('de-DE')}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center gap-4">
-                      <NavLink to={`/dashboard/sessions/${session.id}`} className="text-indigo-600 hover:text-indigo-900">Start</NavLink>
-                      <button onClick={() => openDeleteModal(session)} className="text-red-600 hover:text-red-900">Löschen</button>
+                      <NavLink to={`/dashboard/sessions/${session.id}`} className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">Start</NavLink>
+                      <button onClick={() => openDeleteModal(session)} className="text-red-600 dark:text-red-400 hover:text-red-900">Löschen</button>
                     </div>
                   </td>
                 </tr>
@@ -161,19 +163,19 @@ function SessionsManagementPage() {
           </table>
         </div>
       ) : (
-        <p className="text-gray-500 italic">Kein Training in dieser Kategorie.</p>
+        <p className="text-gray-500 dark:text-gray-400 italic">Kein Training in dieser Kategorie.</p>
       )}
     </div>
   );
 
   return (
     <>
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-semibold">Trainings-Verwaltung</h2>
           <button
             onClick={openAddModal}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white font-bold py-2 px-4 rounded"
           >
             + Training hinzufügen
           </button>
@@ -189,7 +191,7 @@ function SessionsManagementPage() {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Neues Training hinzufügen">
         <form onSubmit={handleAddSessionSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
+            <label className="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" htmlFor="title">
               Titel des Trainings
             </label>
             <input
@@ -198,11 +200,11 @@ function SessionsManagementPage() {
               value={newSessionData.title}
               onChange={handleInputChange}
               required
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="session_date">
+            <label className="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" htmlFor="session_date">
               Datum
             </label>
             <input
@@ -212,15 +214,15 @@ function SessionsManagementPage() {
               value={newSessionData.session_date}
               onChange={handleInputChange}
               required
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">
               Wertungskriterien für dieses Training
             </label>
-            <div className="flex flex-wrap gap-2 p-2 bg-gray-100 rounded-md">
+            <div className="flex flex-wrap gap-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
               {ALL_CRITERIA.map(criterion => (
                 <button
                   type="button"
@@ -228,8 +230,8 @@ function SessionsManagementPage() {
                   onClick={() => handleCriteriaToggle(criterion.key)}
                   className={`px-3 py-1 text-sm rounded-full transition-colors ${
                     newSessionData.criteria.includes(criterion.key)
-                      ? 'bg-blue-600 text-white font-semibold'
-                      : 'bg-gray-300 hover:bg-gray-400'
+                      ? 'bg-blue-600 dark:bg-blue-700 text-white font-semibold'
+                      : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
                   }`}
                 >
                   {criterion.abbr}
@@ -242,13 +244,13 @@ function SessionsManagementPage() {
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+              className="bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-400 font-bold py-2 px-4 rounded mr-2"
             >
               Abbrechen
             </button>
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white dark:text-gray-400 font-bold py-2 px-4 rounded"
             >
               Speichern
             </button>
@@ -265,13 +267,13 @@ function SessionsManagementPage() {
          <div className="flex justify-end mt-6 space-x-4">
             <button
              onClick={closeDeleteModal}
-             className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+             className="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
             >
               Abbrechen
             </button>
            <button
              onClick={handleDeleteConfirm}
-             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+             className="px-4 py-2 bg-red-600 dark:bg-red-700 text-white rounded hover:bg-red-700 dark:hover:bg-red-800"
            >
              Löschen
            </button>

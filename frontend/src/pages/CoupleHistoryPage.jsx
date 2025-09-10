@@ -6,6 +6,7 @@ import RatingViewTable from '../components/RatingViewTable';
 import { ClipLoader } from 'react-spinners';
 import { FaListUl, FaTable, FaChartLine } from 'react-icons/fa';
 import PerformanceChart from '../components/PerformanceChart';
+import { useTheme } from '../context/ThemeContext';
 
 const criteria = [
   { key: 'Technical Quality', label: 'Technical Quality', isMain: true, abbr: 'TQ' },
@@ -125,22 +126,22 @@ function CoupleHistoryPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-        <h2 className="text-3xl font-bold text-gray-800">Wertungen</h2>
-          <div className="flex bg-gray-200 rounded-lg p-1">
-            <button onClick={() => setViewMode('default')} className={`flex-1 px-4 py-2 text-sm font-semibold rounded-md flex items-center justify-center gap-2 transition-colors ${viewMode === 'default' ? 'bg-green-500 text-white' : 'text-gray-600 hover:bg-gray-300'}`}>
+        <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Wertungen</h2>
+          <div className="flex bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
+            <button onClick={() => setViewMode('default')} className={`flex-1 px-4 py-2 text-sm font-semibold rounded-md flex items-center justify-center gap-2 transition-colors ${viewMode === 'default' ? 'bg-green-500 dark:text-green-900 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:border-gray-600'}`}>
               <FaListUl /> Standard
            </button>
-            <button onClick={() => setViewMode('compact')} className={`flex-1 px-4 py-2 text-sm font-semibold rounded-md flex items-center justify-center gap-2 transition-colors ${viewMode === 'compact' ? 'bg-green-500 text-white' : 'text-gray-600 hover:bg-gray-300'}`}>
+            <button onClick={() => setViewMode('compact')} className={`flex-1 px-4 py-2 text-sm font-semibold rounded-md flex items-center justify-center gap-2 transition-colors ${viewMode === 'compact' ? 'bg-green-500 dark:text-green-900 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:border-gray-600'}`}>
               <FaTable /> Kompakt
             </button>
-            <button onClick={() => setViewMode('graph')} className={`flex-1 px-4 py-2 text-sm font-semibold rounded-md flex items-center justify-center gap-2 transition-colors ${viewMode === 'graph' ? 'bg-green-500 text-white' : 'text-gray-600 hover:bg-gray-300'}`}>
+            <button onClick={() => setViewMode('graph')} className={`flex-1 px-4 py-2 text-sm font-semibold rounded-md flex items-center justify-center gap-2 transition-colors ${viewMode === 'graph' ? 'bg-green-500 dark:text-green-900 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:border-gray-600'}`}>
               <FaChartLine /> Verlauf
            </button>
           </div>
       </div>
       
       {sessionsWithRatings.length === 0 && (
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
           <p>Du hast noch keine Bewertungen erhalten.</p>
         </div>
       )}
@@ -148,8 +149,8 @@ function CoupleHistoryPage() {
       {/* NEU: Bedingtes Rendern basierend auf viewMode */}
       {/* Ansicht 1: Standard (deine bisherige Ansicht) */}
       {viewMode === 'default' && sessionsWithRatings.length > 0 && sessionsWithRatings.map(sessionGroup => (
-        <div key={sessionGroup.sessionInfo.id} className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-md mb-6 flex justify-between items-center">
+        <div key={sessionGroup.sessionInfo.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div className="bg-green-100 dark:bg-green-800 border-l-4 border-green-500 dark:border-green-400 text-green-800 dark:text-green-400 p-4 rounded-md mb-6 flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-lg">{sessionGroup.sessionInfo.title}</h3>
                 <p className="text-sm">
@@ -177,21 +178,21 @@ function CoupleHistoryPage() {
       ))}
       {/* Ansicht 2: Kompakt-Tabelle */}
       {viewMode === 'compact' && sessionsWithRatings.length > 0 && (
-        <div className="bg-white p-6 rounded-lg shadow-lg overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg overflow-x-auto">
           <table className="min-w-full border-collapse">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="sticky left-0 bg-gray-100 border p-2 text-left z-10">Training</th>
+              <tr className="bg-gray-50 dark:bg-gray-700">
+                <th className="sticky left-0 bg-gray-100 dark:bg-gray-800 border p-2 text-left z-10">Training</th>
                 {criteria.map(c => <th key={c.key} className="border p-2" title={c.label}>{c.abbr}</th>)}
                 <th className="border p-2 font-bold">Gesamt</th>
               </tr>
             </thead>
             <tbody>
               {sessionsWithRatings.map(sessionGroup => (
-                <tr key={sessionGroup.sessionInfo.id} className="hover:bg-gray-50">
-                  <td className="sticky left-0 bg-white border p-2 font-semibold z-10">
+                <tr key={sessionGroup.sessionInfo.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="sticky left-0 bg-white dark:bg-gray-800 border p-2 font-semibold z-10">
                     <div>{sessionGroup.sessionInfo.title}</div>
-                    <div className="text-xs text-gray-500">{new Date(sessionGroup.sessionInfo.session_date).toLocaleDateString('de-DE')}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{new Date(sessionGroup.sessionInfo.session_date).toLocaleDateString('de-DE')}</div>
                   </td>
                   {criteria.map(criterion => {
                     const criterionTotal = Object.values(sessionGroup.rounds)
@@ -200,7 +201,7 @@ function CoupleHistoryPage() {
                                                  .reduce((sum, rating) => sum + rating.points, 0);
                     return <td key={criterion.key} className="border p-2 text-center">{criterionTotal > 0 ? criterionTotal : '-'}</td>;
                   })}
-                  <td className="border p-2 text-center font-bold text-lg bg-gray-50">{sessionGroup.totalScore}</td>
+                  <td className="border p-2 text-center font-bold text-lg bg-gray-50 dark:bg-gray-700">{sessionGroup.totalScore}</td>
                 </tr>
               ))}
             </tbody>
@@ -210,7 +211,7 @@ function CoupleHistoryPage() {
       
       {/* Ansicht 3: Platzhalter für den Graphen */}
       {viewMode === 'graph' && sessionsWithRatings.length > 0 && (
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
           <h3 className="text-xl font-semibold mb-4">Leistungsverlauf</h3>
           <PerformanceChart data={chartData} rounds={availableRounds} />
         </div>

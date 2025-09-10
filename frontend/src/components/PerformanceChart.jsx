@@ -10,21 +10,22 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import { useTheme } from '../context/ThemeContext';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-white p-4 border border-gray-300 rounded-lg shadow-lg">
-        <p className="font-bold text-gray-800">{`Training am ${label}`}</p>
-        
+      <div className="bg-white dark:bg-gray-800 p-4 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg">
+        <p className="font-bold text-gray-800 dark:text-gray-200">{`Training am ${label}`}</p>
+
         {/* Zeige die Gesamtpunktzahl, wenn sie vorhanden ist */}
         {payload.find(p => p.dataKey === 'totalScore') && (
-           <p className="text-indigo-600 font-semibold">{`Gesamtpunktzahl: ${data.totalScore}`}</p>
+           <p className="text-indigo-600 dark:text-indigo-400 font-semibold">{`Gesamtpunktzahl: ${data.totalScore}`}</p>
         )}
 
         <div className="mt-2 border-t pt-2">
-          <p className="text-sm text-gray-600">Runden-Details:</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Runden-Details:</p>
           <ul className="list-disc list-inside text-sm">
             {/* Iteriere über die Payload, um die Runden im Tooltip anzuzeigen */}
             {payload.filter(p => p.dataKey.startsWith('round_')).map(p => (
