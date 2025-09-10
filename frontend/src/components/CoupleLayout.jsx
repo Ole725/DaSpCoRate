@@ -1,69 +1,129 @@
-// /DaSpCoRate/frontend/src/components/CoupleLayout.jsx (ABGESICHERTE VERSION)
-import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
+// /DaSpCoRate/frontend/src/components/CoupleLayout.jsx
+
+import React, { useState } from 'react'; // Wichtig: useState importieren
+import { NavLink, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
+import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'; // Icons importieren
 
 function CoupleLayout() {
-  const { logout, user } = useAuth(); // Holen Sie sich den Benutzer aus dem Context
-  const navigate = useNavigate();
+  const { logout, user } = useAuth();
+  const [nav, setNav] = useState(false);
+
+  const handleNav = () => {
+    setNav(!nav);
+  };
 
   const handleLogout = () => {
+    // Falls das Menü auf dem Handy offen ist, schliessen wir es beim Logout
+    if (nav) {
+      setNav(false);
+    }
     logout();
     toast.success('Erfolgreich ausgeloggt.');
-    // 'navigate' ist hier nicht mehr nötig, da der logout-Handler das schon macht.
   };
 
-  const getNavLinkClass = ({ isActive }) => {
-    return isActive
-      ? 'font-bold text-green-800 underline'
-      : 'text-green-600 hover:underline';
-  };
+  // Die Links für die Paar-Ansicht
+  const navItems = [
+    { id: 1, text: 'Meine Bewertungen', to: '/couple-dashboard' },
+    { id: 2, text: 'Mein Profil', to: '/couple-dashboard/profile' }
+  ];
 
-  // --- HIER IST DIE ABSICHERUNG ---
-  // Wenn der user-State noch nicht geladen ist, zeigen wir eine Lade-Meldung.
-  // Das verhindert den Absturz und den WebSocket-Fehler.
   if (!user) {
     return <div>Lade Benutzerdaten...</div>;
   }
-  // -------------------------------
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow">
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* ===== Header mit der gesamten Navigation ===== */}
+      <header className="bg-white shadow-md sticky top-0 z-50">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-green-600">
-            <Link to="/couple-dashboard" className="hover:underline">Paar-Ansicht</Link>
-            : {`${user.mrs_first_name} & ${user.mr_first_name}`}
+            <Link to="/couple-dashboard">DaSpCoRate</Link>: {`${user.mrs_first_name} & ${user.mr_first_name}`}
           </h1>
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Logout
-          </button>
-        </div>
-      </header>
-      <div className="container mx-auto mt-4 p-4 flex">
-        <aside className="w-1/4 pr-8">
-          <nav className="bg-white p-4 rounded-lg shadow-lg">
-            <ul>
-              <li className="mb-2">
-                <NavLink to="/couple-dashboard" end className={getNavLinkClass}>
-                  Meine Bewertungen
-                </NavLink>
-              </li>
-              <li className="mt-4 border-t pt-4">
-                <NavLink to="/couple-dashboard/profile" className={getNavLinkClass}>
-                  Mein Profil
-                </NavLink>
+
+          {/* ===== Desktop Navigation ===== */}
+          <nav className="hidden md:flex items-center">
+            <ul className="flex items-center space-x-4">
+              {navItems.map(item => (
+                <li key={item.id}>
+                  <NavLink
+                    to={item.to}
+                    end={item.to === '/couple-dashboard'} // 'end' für die Haupt-Dashboard-Route
+                    className={({ isActive }) =>
+                      `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        isActive ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-200'
+                      }`
+                    }
+                  >
+                    {item.text}
+                  </NavLink>
+                </li>
+              ))}
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors"
+                >
+                  Logout
+                </button>
               </li>
             </ul>
           </nav>
-        </aside>
-        <main className="w-3/4">
-          <Outlet />
-        </main>
+
+          {/* ===== Mobile Navigation Icon ===== */}
+          <div onClick={handleNav} className="block md:hidden cursor-pointer">
+            {nav ? <AiOutlineClose size={25} /> : <AiOutlineMenu size={25} />}
+          </div>
+        </div>
+      </header>
+
+      {/* ===== Mobile Navigation Menu (Overlay) ===== */}
+      <div
+        className={
+          nav
+            ? 'fixed left-0 top-0 w-[60%] h-full border-r border-r-gray-300 bg-white ease-in-out duration-300 z-40 md:hidden'
+            : 'fixed left-[-100%] ease-in-out duration-300'
+        }
+      >
+        <div className="p-4">
+            <h1 className="text-xl font-bold text-green-600">Menü</h1>
+        </div>
+        <nav>
+          <ul className="pt-2">
+            {navItems.map(item => (
+              <li key={item.id} className="border-b border-gray-200">
+                <NavLink
+                  to={item.to}
+                  onClick={handleNav} // Schliesst das Menü nach dem Klick
+                  end={item.to === '/couple-dashboard'}
+                  className={({ isActive }) =>
+                    `block w-full text-left p-4 transition-colors ${
+                      isActive ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-200'
+                    }`
+                  }
+                >
+                  {item.text}
+                </NavLink>
+              </li>
+            ))}
+            <li className="p-4 mt-4">
+                 <button
+                  onClick={handleLogout}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors"
+                >
+                  Logout
+                </button>
+            </li>
+          </ul>
+        </nav>
       </div>
+
+      {/* ===== Hauptinhalt der Seite ===== */}
+      {/* Die alte Sidebar-Struktur wurde komplett entfernt */}
+      <main className="container mx-auto p-4 flex-grow">
+        <Outlet />
+      </main>
     </div>
   );
 }

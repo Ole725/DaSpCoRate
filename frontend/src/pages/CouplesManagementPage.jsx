@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { getCouples, createCouple, updateCouple, deleteCouple } from '../api/client';
 import Modal from '../components/Modal';
+import { ClipLoader } from 'react-spinners';
 
 function CouplesManagementPage() {
   const [couples, setCouples] = useState([]);
@@ -27,8 +28,8 @@ function CouplesManagementPage() {
 
   const fetchCouples = async () => {
     try {
-      setError(null);
       setLoading(true);
+      setError(null);
       const data = await getCouples();
       setCouples(data);
     } catch (err) {
@@ -131,6 +132,24 @@ function CouplesManagementPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <ClipLoader
+          color={"#3b82f6"} // Eine passende blaue Farbe
+          loading={loading}
+          size={50} // Größe des Spinners
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="text-red-500 text-center">Fehler beim Laden der Paare: {error}</p>;
+  }
+
   return (
     // <> ist ein React Fragment, um mehrere Top-Level-Elemente zu ermöglichen
     <>
@@ -146,9 +165,6 @@ function CouplesManagementPage() {
         </div>
 
         {/* --- HIER KOMMT DER TABELLEN-BLOCK HIN --- */}
-        {loading && <p>Lade Paare...</p>}
-        {error && <p className="text-red-500">Fehler: {error}</p>}
-        {!loading && !error && (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -186,7 +202,6 @@ function CouplesManagementPage() {
             </tbody>
           </table>
           </div>
-        )}
         {/* --- ENDE DES TABELLEN-BLOCKS --- */}
       </div>
       {/* Modal zum Hinzufügen eines Paares */}

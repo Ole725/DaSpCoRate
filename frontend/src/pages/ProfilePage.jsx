@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { getMe, updateMyCoupleProfile, changeMyPassword } from '../api/client';
+import { ClipLoader } from 'react-spinners';
 
 function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -76,7 +77,19 @@ function ProfilePage() {
     }
   };
 
-  if (loading) return <div>Lade Profil...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <ClipLoader
+          color={"#3b82f6"} // Eine passende blaue Farbe
+          loading={loading}
+          size={50} // Größe des Spinners
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

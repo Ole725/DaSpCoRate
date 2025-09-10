@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { getMyRatings, getSessions } from '../api/client';
 import RatingViewTable from '../components/RatingViewTable';
+import { ClipLoader } from 'react-spinners';
 
 function CoupleDashboardPage() {
   const [ratings, setRatings] = useState([]);
@@ -62,7 +63,19 @@ function CoupleDashboardPage() {
 
   }, [ratings, sessions]);
 
-  if (loading) return <p>Lade deine Bewertungen...</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <ClipLoader
+          color={"#3b82f6"} // Eine passende blaue Farbe
+          loading={loading}
+          size={50} // Größe des Spinners
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getCouples, getSessions } from '../api/client';
 import { toast } from 'react-hot-toast';
+import { ClipLoader } from 'react-spinners';
 
 const DashboardOverviewPage = () => {
   const { user } = useAuth();
@@ -11,7 +12,7 @@ const DashboardOverviewPage = () => {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      setLoading(true);
+
       try {
         // Wir rufen die importierten Funktionen direkt auf
         const [couplesData, sessionsData] = await Promise.all([
@@ -37,8 +38,19 @@ const DashboardOverviewPage = () => {
     fetchDashboardData();
   }, []);
 
+// --- Verbesserte Ladeanzeige ---
   if (loading) {
-    return <div>Lade Übersichtsdaten...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <ClipLoader
+          color={"#3b82f6"} // Eine passende blaue Farbe
+          loading={loading}
+          size={50} // Größe des Spinners
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div>
+    );
   }
 
   return (

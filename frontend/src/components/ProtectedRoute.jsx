@@ -14,7 +14,6 @@ function ProtectedRoute({ allowedRoles }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // --- HIER IST DIE FINALE KORREKTUR ---
   if (user && allowedRoles) {
     // 1. Bestimme die Rolle des Benutzers robust, genau wie im AuthContext
     const userRole = 'last_name' in user ? 'trainer' : 'couple';
@@ -26,7 +25,6 @@ function ProtectedRoute({ allowedRoles }) {
       return <Navigate to={redirectTo} replace />;
     }
   }
-  // ------------------------------------
 
   // 4. Wenn alles passt (authentifiziert UND autorisiert), zeige die geschützte Seite.
   // In der v6-Struktur von react-router wird hier der Outlet für die verschachtelten Routen gerendert.

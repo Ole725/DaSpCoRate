@@ -42,13 +42,11 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       setIsAuthenticated(true);
 
-      // --- DIE FINALE, KORREKTE WEICHE ---
       // Wir prüfen auf ein Attribut, das nur Trainer haben (z.B. last_name).
       const isTrainer = 'last_name' in userData;
       const targetPath = isTrainer ? '/dashboard' : '/couple-dashboard';
       console.log(`Login erfolgreich, navigiere zu: ${targetPath}`);
       navigate(targetPath); // Direkte Navigation
-      // ------------------------------------
 
     } catch (error) {
       console.error("Login fehlgeschlagen:", error);

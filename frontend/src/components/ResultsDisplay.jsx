@@ -1,4 +1,5 @@
 // /DaSpCoRate/frontend/src/components/ResultsDisplay.jsx
+
 import { useMemo } from 'react';
 
 function ResultsDisplay({ ratings, enrolledCouples, session }) {

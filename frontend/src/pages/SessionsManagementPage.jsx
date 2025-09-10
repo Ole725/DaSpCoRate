@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { getSessions, createSession, deleteSession } from '../api/client';
 import Modal from '../components/Modal';
+import { ClipLoader } from 'react-spinners';
 
 function SessionsManagementPage() {
   const [sessions, setSessions] = useState([]);
@@ -84,6 +85,20 @@ function SessionsManagementPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <ClipLoader
+          color={"#3b82f6"} // Eine passende blaue Farbe
+          loading={loading}
+          size={50} // Größe des Spinners
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -97,19 +112,17 @@ function SessionsManagementPage() {
           </button>
         </div>
         <div className="overflow-x-auto">
-          {loading && <p>Lade Sessions...</p>}
-          {!loading && (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel</th>
-                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Erstellt am</th>
-                  <th className="relative px-6 py-3">
-                    <span className="sr-only">Aktionen</span>
-                 </th>
-                </tr>
-              </thead>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel</th>
+               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Erstellt am</th>
+                <th className="relative px-6 py-3">
+                   <span className="sr-only">Aktionen</span>
+               </th>
+              </tr>
+            </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {sessions.map((session) => (
                   <tr key={session.id}>
@@ -117,7 +130,7 @@ function SessionsManagementPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-gray-500">{new Date(session.session_date).toLocaleDateString('de-DE')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-500">{new Date(session.created_at).toLocaleString('de-DE')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end items-center gap-4"> {/* NEU: Flex-Container */}
+                    <div className="flex justify-end items-center gap-4"> {/* Flex-Container */}
                       <NavLink to={`/dashboard/sessions/${session.id}`} className="text-indigo-600 hover:text-indigo-900">
                         Start
                       </NavLink>
@@ -130,7 +143,6 @@ function SessionsManagementPage() {
                 ))}
               </tbody>
             </table>
-          )}
         </div>
       </div>
 

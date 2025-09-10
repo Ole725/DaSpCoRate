@@ -32,10 +32,8 @@ def get_token_data(token: str = Depends(oauth2_scheme)) -> TokenData:
         if not email or not role:
             raise credentials_exception
         
-        # --- DER FINALE FIX: Eindeutige Zuweisung ---
         # Wir erstellen das Objekt nur mit den Feldern, die es kennt.
         token_data = TokenData(email=email, role=role)
-        # ---------------------------------------------
 
     except JWTError:
         raise credentials_exception

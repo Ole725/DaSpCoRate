@@ -15,6 +15,7 @@ import RatingTable from '../components/RatingTable';
 import Modal from '../components/Modal';
 import ResultsDisplay from '../components/ResultsDisplay';
 import { unenrollCouple } from '../api/client';
+import { ClipLoader } from 'react-spinners';
 
 function SessionDetailPage() {
   const { sessionId } = useParams();
@@ -162,7 +163,20 @@ function SessionDetailPage() {
   };
 
   // Lade- und Fehlerzustände
-  if (loading) return <div>Lade Session-Daten...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <ClipLoader
+          color={"#3b82f6"} // Eine passende blaue Farbe
+          loading={loading}
+          size={50} // Größe des Spinners
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div>
+    );
+  }
+
   if (!session) return null;
 
   // Berechnete Werte für die Anzeige (JETZT INNERHALB DER KOMPONENTE)
