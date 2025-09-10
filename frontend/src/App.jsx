@@ -13,6 +13,7 @@ import CouplesManagementPage from './pages/CouplesManagementPage';
 import SessionsManagementPage from './pages/SessionsManagementPage';
 import SessionDetailPage from './pages/SessionDetailPage';
 import CoupleDashboardPage from './pages/CoupleDashboardPage';
+import CoupleHistoryPage from './pages/CoupleHistoryPage';
 import CoupleLayout from './components/CoupleLayout';
 import ProfilePage from './pages/ProfilePage';
 
@@ -43,6 +44,7 @@ function App() {
       <Route element={<ProtectedRoute allowedRoles={['couple']} />}>
         <Route path="/couple-dashboard" element={<CoupleLayout />}>
           <Route index element={<CoupleDashboardPage />} /> {/* Hauptseite */}
+          <Route path="history" element={<CoupleHistoryPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Route>

@@ -25,8 +25,9 @@ function CoupleLayout() {
 
   // Die Links für die Paar-Ansicht
   const navItems = [
-    { id: 1, text: 'Meine Bewertungen', to: '/couple-dashboard' },
-    { id: 2, text: 'Mein Profil', to: '/couple-dashboard/profile' }
+    { id: 1, text: 'Übersicht', to: '/couple-dashboard' },
+    { id: 2, text: 'Bewertungen', to: '/couple-dashboard/history' },
+    { id: 3, text: 'Paar Profil', to: '/couple-dashboard/profile' }
   ];
 
   if (!user) {

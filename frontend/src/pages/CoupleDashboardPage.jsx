@@ -1,121 +1,73 @@
-// /DaSpCoRate/frontend/src/pages/CoupleDashboardPage.jsx
-import { useState, useEffect, useMemo } from 'react';
-import toast from 'react-hot-toast';
-import { getMyRatings, getSessions } from '../api/client';
-import RatingViewTable from '../components/RatingViewTable';
+// /frontend/src/pages/CoupleDashboardPage.jsx
+import React, { useState, useEffect } from 'react';
+import { getMyRatings } from '../api/client';
+import { toast } from 'react-hot-toast';
 import { ClipLoader } from 'react-spinners';
+import { useAuth } from '../context/AuthContext';
 
-function CoupleDashboardPage() {
-  const [ratings, setRatings] = useState([]);
-  const [sessions, setSessions] = useState([]);
+const CoupleDashboardPage = () => {
+  const { user } = useAuth();
+  const [stats, setStats] = useState({
+    attendedSessionsCount: 0,
+    totalPoints: 0,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchStatsData = async () => {
       try {
-        const [ratingsData, sessionsData] = await Promise.all([
-          getMyRatings(),
-          getSessions(),
-        ]);
-        setRatings(ratingsData);
-        setSessions(sessionsData);
-      } catch (err) {
-        toast.error(`Fehler beim Laden deiner Daten: ${err.message}`);
+        const ratingsData = await getMyRatings();
+        
+        // Berechne die Gesamtpunkte
+        const totalPoints = ratingsData.reduce((sum, rating) => sum + rating.points, 0);
+
+        // Berechne die Anzahl der einzigartigen Sessions
+        const uniqueSessionIds = new Set(ratingsData.map(rating => rating.session_id));
+        
+        setStats({
+          attendedSessionsCount: uniqueSessionIds.size,
+          totalPoints: totalPoints,
+        });
+
+      } catch (error) {
+        console.error("Fehler beim Laden der Dashboard-Daten:", error);
+        toast.error("Übersichtsdaten konnten nicht geladen werden.");
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
-  }, []);
-  
-  // Gruppiere die Bewertungen jetzt primär nach Session
-  const sessionsWithRatings = useMemo(() => {
-    const sessionGroups = {};
-    
-    ratings.forEach(rating => {
-      const sessionId = rating.session_id;
-      if (!sessionGroups[sessionId]) {
-        // Finde die Session-Infos
-        const sessionInfo = sessions.find(s => s.id === sessionId);
-        sessionGroups[sessionId] = {
-          sessionInfo: sessionInfo || { title: `Session ID: ${sessionId}`, session_date: '' },
-          totalScore: 0,
-          rounds: {}
-        };
-      }
-      
-      const round = rating.round;
-      if (!sessionGroups[sessionId].rounds[round]) {
-        sessionGroups[sessionId].rounds[round] = {
-          roundNumber: round,
-          ratings: [],
-          roundTotal: 0
-        };
-      }
-      
-      sessionGroups[sessionId].rounds[round].ratings.push(rating);
-      sessionGroups[sessionId].rounds[round].roundTotal += rating.points;
-      sessionGroups[sessionId].totalScore += rating.points;
-    });
-    
-    return Object.values(sessionGroups)
-                 .sort((a, b) => new Date(b.sessionInfo.session_date) - new Date(a.sessionInfo.session_date));
 
-  }, [ratings, sessions]);
+    fetchStatsData();
+  }, []);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <ClipLoader
-          color={"#3b82f6"} // Eine passende blaue Farbe
-          loading={loading}
-          size={50} // Größe des Spinners
-          aria-label="Loading Spinner"
-          data-testid="loader"
-        />
+        <ClipLoader color={"#3b82f6"} loading={loading} size={50} />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-3xl font-bold text-gray-800">Unsere Bewertungshistorie</h2>
-      {sessionsWithRatings.length > 0 ? (
-        sessionsWithRatings.map(sessionGroup => (
-          <div key={sessionGroup.sessionInfo.id} className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-md mb-6 flex justify-between items-center">
-              <div>
-                <h3 className="font-bold text-lg">{sessionGroup.sessionInfo.title}</h3>
-                <p className="text-sm">
-                  Datum: {new Date(sessionGroup.sessionInfo.session_date).toLocaleDateString('de-DE')}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold">{sessionGroup.totalScore}</p>
-                <p className="text-sm">Gesamtpunkte</p>
-              </div>
-            </div>
-
-            {/* Zeige die Detail-Tabellen für jede Runde in dieser Session */}
-            <div className="space-y-6">
-              {Object.values(sessionGroup.rounds)
-                     .sort((a, b) => a.roundNumber - b.roundNumber)
-                     .map(roundGroup => (
-                <div key={roundGroup.roundNumber}>
-                  <h4 className="text-lg font-semibold mb-2">Details für Runde {roundGroup.roundNumber}</h4>
-                  <RatingViewTable ratings={roundGroup.ratings} round={roundGroup.roundNumber} />
-                </div>
-              ))}
-            </div>
-          </div>
-        ))
-      ) : (
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <p>Du hast noch keine Bewertungen erhalten.</p>
+    <div className="bg-white p-6 rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold mb-4">
+        Willkommen, {user ? `${user.mrs_first_name} & ${user.mr_first_name}` : 'Paar'}!
+      </h2>
+      <p className="text-gray-600 mb-6">
+        Hier ist eine Zusammenfassung eurer gemeinsamen Entwicklung.
+      </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-green-100 p-4 rounded-lg text-center">
+          <p className="text-4xl font-bold text-green-800">{stats.attendedSessionsCount}</p>
+          <p className="text-green-600 font-semibold">Teilgenommene Trainings</p>
         </div>
-      )}
+        <div className="bg-indigo-100 p-4 rounded-lg text-center">
+          <p className="text-4xl font-bold text-indigo-800">{stats.totalPoints}</p>
+          <p className="text-indigo-600 font-semibold">Gesammelte Punkte</p>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default CoupleDashboardPage;
