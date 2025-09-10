@@ -7,16 +7,19 @@ FROM node:20-alpine
 WORKDIR /app
 
 # 3. Kopiere package.json und yarn.lock
-COPY package.json yarn.lock ./
+COPY package*.json ./
 
-# 4. Installiere die Frontend-Abhängigkeiten mit yarn
-RUN yarn install
+# 4.Lösche den node_modules Ordner und den Vite-Cache, falls vorhanden
+RUN rm -rf node_modules .vite
 
-# 5. Kopiere den gesamten Frontend-Code
+# 5. Installiere die Frontend-Abhängigkeiten mit yarn
+RUN npm install
+
+# 6. Kopiere den gesamten Frontend-Code
 COPY . .
 
-# 6. Exponiere den Port, auf dem Vite läuft
+# 7. Exponiere den Port, auf dem Vite läuft
 EXPOSE 5173
 
-# 7. Der Startbefehl, der den Vite-Dev-Server für das Netzwerk zugänglich macht
-CMD ["yarn", "dev", "--host", "0.0.0.0"]
+# 8. Der Startbefehl, der den Vite-Dev-Server für das Netzwerk zugänglich macht
+CMD ["npm", "run", "dev"]

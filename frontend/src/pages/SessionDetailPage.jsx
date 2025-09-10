@@ -17,6 +17,7 @@ import Modal from '../components/Modal';
 import ResultsDisplay from '../components/ResultsDisplay';
 import { ClipLoader } from 'react-spinners';
 import { FaExchangeAlt } from 'react-icons/fa'; // Icon importieren
+import { ALL_CRITERIA_KEYS } from '../lib/criteria';
 
 function SessionDetailPage() {
   const { sessionId } = useParams();
@@ -168,6 +169,7 @@ function SessionDetailPage() {
                 onRemoveCouple={openRemoveConfirmModal}
                 round={currentRound}
                 isTransposedView={isTransposedView}
+                activeCriteria={session.criteria || ALL_CRITERIA_KEYS}
               />
             ) : <p>Noch keine Paare für diese Session angemeldet.</p>}
           </div>

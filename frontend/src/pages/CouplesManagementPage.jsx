@@ -5,21 +5,42 @@ import { getCouples, createCouple, updateCouple, deleteCouple } from '../api/cli
 import Modal from '../components/Modal';
 import { ClipLoader } from 'react-spinners';
 
+const START_GROUPS = [
+  { value: 'Mas IV', label: 'Masters IV (Mas IV)' },
+  { value: 'Mas III', label: 'Masters III (Mas III)' },
+  { value: 'Mas II', label: 'Masters II (Mas II)' },
+  { value: 'Hgr II', label: 'Hauptgruppe II (Hgr II)' },
+  { value: 'Hgr', label: 'Hauptgruppe (Hgr)' },
+  { value: 'Jug', label: 'Jugend (Jug)' },
+  { value: 'Mas I', label: 'Masters I (Mas I)' },
+  { value: 'Jun II', label: 'Junioren II (Jun II)' },
+  { value: 'Jun I', label: 'Junioren I (Jun I)' },
+  { value: 'Kin II', label: 'Kinder II (Kin II)' },
+  { value: 'Kin I', label: 'Kinder I (Kin I)' },
+];
+
+const START_CLASSES = [
+  { value: 'S', label: 'S' }, { value: 'A', label: 'A' }, { value: 'B', label: 'B' },
+  { value: 'C', label: 'C' }, { value: 'D', label: 'D' }, { value: 'E', label: 'E' },
+];
+
+const DANCE_STYLES = [
+  { value: 'Std', label: 'Standard (Std)' },
+  { value: 'Lat', label: 'Latein (Lat)' },
+  { value: 'Std & Lat', label: 'Standard & Latein (Std & Lat)' },
+];
+
 function CouplesManagementPage() {
   const [couples, setCouples] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newCoupleData, setNewCoupleData] = useState({
-    mr_first_name: '',
-    mrs_first_name: '',
-    start_group: '',
-    start_class: '',
-    dance_style: '',
-    email: '',
-    password: '',
-  });
+  const initialCoupleData = {
+    mr_first_name: '', mrs_first_name: '', start_group: '', start_class: '',
+    dance_style: '', email: '', password: '',
+  };
+  const [newCoupleData, setNewCoupleData] = useState(initialCoupleData);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingCoupleData, setEditingCoupleData] = useState(null);
@@ -54,15 +75,7 @@ function CouplesManagementPage() {
     await createCouple(newCoupleData);
     setIsModalOpen(false);
     toast.success('Paar erfolgreich hinzugefügt!'); // ERFOLGSMELDUNG
-    setNewCoupleData({ // Formular zurücksetzen
-      mr_first_name: '',
-      mrs_first_name: '',
-      start_group: '',
-      start_class: '',
-      dance_style: '',
-      email: '',
-      password: '',
-    });
+    setNewCoupleData(initialCoupleData);
     fetchCouples();
   } catch (err) {
     toast.error(err.message); // ERSETZT alert()
@@ -149,6 +162,8 @@ function CouplesManagementPage() {
   if (error) {
     return <p className="text-red-500 text-center">Fehler beim Laden der Paare: {error}</p>;
   }
+  
+  const commonInputClasses = "mb-4 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline";
 
   return (
     // <> ist ein React Fragment, um mehrere Top-Level-Elemente zu ermöglichen
@@ -205,55 +220,62 @@ function CouplesManagementPage() {
         {/* --- ENDE DES TABELLEN-BLOCKS --- */}
       </div>
       {/* Modal zum Hinzufügen eines Paares */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Neues Paar hinzufügen"
-      >
-        <form onSubmit={handleAddCoupleSubmit}>
-          <input name="mr_first_name" value={newCoupleData.mr_first_name} onChange={handleInputChange} placeholder="Vorname Herr" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
-          <input name="mrs_first_name" value={newCoupleData.mrs_first_name} onChange={handleInputChange} placeholder="Vorname Dame" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
-          <input name="start_group" value={newCoupleData.start_group} onChange={handleInputChange} placeholder="Startgruppe" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
-          <input name="start_class" value={newCoupleData.start_class} onChange={handleInputChange} placeholder="Klasse" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
-          <input name="dance_style" value={newCoupleData.dance_style} onChange={handleInputChange} placeholder="Tanzstil (z.B. Std, Lat)" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
-          <input name="email" type="email" value={newCoupleData.email} onChange={handleInputChange} placeholder="E-Mail" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
-          <input name="password" type="password" value={newCoupleData.password} onChange={handleInputChange} placeholder="Passwort (min. 8 Zeichen)" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Neues Paar hinzufügen">
+        <form onSubmit={handleAddCoupleSubmit} className="space-y-4">
+          <input name="mr_first_name" value={newCoupleData.mr_first_name} onChange={handleInputChange} placeholder="Vorname Herr" required className={commonInputClasses} />
+          <input name="mrs_first_name" value={newCoupleData.mrs_first_name} onChange={handleInputChange} placeholder="Vorname Dame" required className={commonInputClasses} />
+          
+          {/* GEÄNDERT: Text-Inputs durch Select-Dropdowns ersetzt */}
+          <select name="start_group" value={newCoupleData.start_group} onChange={handleInputChange} required className={commonInputClasses}>
+            <option value="" disabled>Startgruppe auswählen...</option>
+            {START_GROUPS.map(group => <option key={group.value} value={group.value}>{group.label}</option>)}
+          </select>
+          <select name="start_class" value={newCoupleData.start_class} onChange={handleInputChange} required className={commonInputClasses}>
+            <option value="" disabled>Klasse auswählen...</option>
+            {START_CLASSES.map(cls => <option key={cls.value} value={cls.value}>{cls.label}</option>)}
+          </select>
+          <select name="dance_style" value={newCoupleData.dance_style} onChange={handleInputChange} required className={commonInputClasses}>
+            <option value="" disabled>Tanzstil auswählen...</option>
+            {DANCE_STYLES.map(style => <option key={style.value} value={style.value}>{style.label}</option>)}
+          </select>
+
+          <input name="email" type="email" value={newCoupleData.email} onChange={handleInputChange} placeholder="E-Mail" required className={commonInputClasses} />
+          <input name="password" type="password" value={newCoupleData.password} onChange={handleInputChange} placeholder="Passwort (min. 8 Zeichen)" required className={commonInputClasses} />
           
           <div className="flex justify-end mt-4">
-            <button type="button" onClick={() => setIsModalOpen(false)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">
-              Abbrechen
-            </button>
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              Speichern
-            </button>
+            <button type="button" onClick={() => setIsModalOpen(false)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Abbrechen</button>
+            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Speichern</button>
           </div>
         </form>
       </Modal>
+
       {/* Modal zum Bearbeiten eines Paares */}
-      {/* Wir rendern das Modal nur, wenn editingCoupleData existiert, um Fehler zu vermeiden */}
       {editingCoupleData && (
-      <Modal
-        isOpen={isEditModalOpen}
-        onClose={closeEditModal}
-        title="Paardaten bearbeiten"
-      >
-        <form onSubmit={handleUpdateCoupleSubmit}>
-          <input name="mr_first_name" value={editingCoupleData.mr_first_name} onChange={handleEditInputChange} placeholder="Vorname Herr" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
-          <input name="mrs_first_name" value={editingCoupleData.mrs_first_name} onChange={handleEditInputChange} placeholder="Vorname Dame" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
-          <input name="start_group" value={editingCoupleData.start_group} onChange={handleEditInputChange} placeholder="Startgruppe" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
-            <input name="start_class" value={editingCoupleData.start_class} onChange={handleEditInputChange} placeholder="Klasse" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
-            <input name="dance_style" value={editingCoupleData.dance_style} onChange={handleEditInputChange} placeholder="Tanzstil (z.B. Std, Lat)" required className="mb-2 shadow appearance-none border rounded w-full py-2 px-3" />
+      <Modal isOpen={isEditModalOpen} onClose={closeEditModal} title="Paardaten bearbeiten">
+        <form onSubmit={handleUpdateCoupleSubmit} className="space-y-4">
+          <input name="mr_first_name" value={editingCoupleData.mr_first_name} onChange={handleEditInputChange} placeholder="Vorname Herr" required className={commonInputClasses} />
+          <input name="mrs_first_name" value={editingCoupleData.mrs_first_name} onChange={handleEditInputChange} placeholder="Vorname Dame" required className={commonInputClasses} />
+          
+          {/* GEÄNDERT: Auch hier die Dropdowns verwenden für Konsistenz */}
+          <select name="start_group" value={editingCoupleData.start_group} onChange={handleEditInputChange} required className={commonInputClasses}>
+            <option value="" disabled>Startgruppe auswählen...</option>
+            {START_GROUPS.map(group => <option key={group.value} value={group.value}>{group.label}</option>)}
+          </select>
+          <select name="start_class" value={editingCoupleData.start_class} onChange={handleEditInputChange} required className={commonInputClasses}>
+            <option value="" disabled>Klasse auswählen...</option>
+            {START_CLASSES.map(cls => <option key={cls.value} value={cls.value}>{cls.label}</option>)}
+          </select>
+          <select name="dance_style" value={editingCoupleData.dance_style} onChange={handleEditInputChange} required className={commonInputClasses}>
+            <option value="" disabled>Tanzstil auswählen...</option>
+            {DANCE_STYLES.map(style => <option key={style.value} value={style.value}>{style.label}</option>)}
+          </select>
             
-            <div className="flex justify-end mt-4">
-              <button type="button" onClick={closeEditModal} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">
-                Abbrechen
-              </button>
-              <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Änderungen speichern
-              </button>
-            </div>
-          </form>
-        </Modal>
+          <div className="flex justify-end mt-4">
+            <button type="button" onClick={closeEditModal} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Abbrechen</button>
+            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Änderungen speichern</button>
+          </div>
+        </form>
+      </Modal>
       )}
       {/* Modal zum Bestätigen des Löschens */}
       <Modal

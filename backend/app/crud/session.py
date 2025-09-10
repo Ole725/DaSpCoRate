@@ -22,7 +22,8 @@ def create_session(self, db: Session, session: schemas_session.SessionCreate, tr
     db_session = models_session.Session(
         session_date=session.session_date,
         title=session.title,
-        trainer_id=trainer_id # Die Trainer-ID kommt vom authentifizierten Benutzer
+        trainer_id=trainer_id,  # Die Trainer-ID kommt vom authentifizierten Benutzer
+        criteria=session.criteria
     )
     db.add(db_session)
     db.commit()
@@ -33,7 +34,7 @@ def create_session(self, db: Session, session: schemas_session.SessionCreate, tr
 def update_session(self, db: Session, session_id: int, session_in: schemas_session.SessionUpdate):
     db_session = db.query(models_session.Session).filter(models_session.Session.id == session_id).first()
     if db_session:
-        update_data = session_in.dict(exclude_unset=True)
+        update_data = session_in.model_dump(exclude_unset=True)
         for key, value in update_data.items():
             setattr(db_session, key, value)
         db.add(db_session)

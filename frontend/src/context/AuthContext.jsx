@@ -1,4 +1,4 @@
-// /DaSpCoRate/frontend/src/context/AuthContext.jsx (FINALE VERSION)
+// /DaSpCoRate/frontend/src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, getMe } from '../api/client';
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = { isAuthenticated, user, login, logout, loading };
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

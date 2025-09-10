@@ -1,22 +1,15 @@
-import React from 'react';
+// /DaSpCoRate/frontend/src/components/RatingTable.jsx
 
-const criteria = [
-  { key: 'Technical Quality', label: 'Technical Quality', isMain: true, abbr: 'TQ' },
-  { key: 'Posture & Balance', label: 'Posture & Balance', isMain: false, abbr: 'P&B' },
-  { key: 'Movement to Music', label: 'Movement to Music', isMain: true, abbr: 'M2M' },
-  { key: 'Start/Ending', label: 'Start/Ending', isMain: false, abbr: 'S/E' },
-  { key: 'Partnering Skill', label: 'Partnering Skill', isMain: true, abbr: 'PS' },
-  { key: 'Floorcraft', label: 'Floorcraft', isMain: false, abbr: 'FC' },
-  { key: 'Stamina', label: 'Stamina', isMain: false, abbr: 'ST' },
-  { key: 'Choreography and Presentation', label: 'Choreography & Presentation', isMain: true, abbr: 'C&P' },
-  { key: 'Appearance', label: 'Appearance', isMain: false, abbr: 'AP' },
-];
+import React from 'react';
+import { ALL_CRITERIA } from '../lib/criteria';
 
 // Prop 'isTransposedView' wird empfangen
-function RatingTable({ enrolledCouples, existingRatings, onRate, onRemoveCouple, round = 1, isTransposedView }) {
+function RatingTable({ enrolledCouples, existingRatings, onRate, onRemoveCouple, round = 1, isTransposedView, activeCriteria }) {
 
   // Die sortierte Liste der Paare wird an beiden Stellen gebraucht
   const sortedCouples = [...enrolledCouples].sort((a, b) => a.start_number - b.start_number);
+  
+  const criteriaToDisplay = ALL_CRITERIA.filter(c => activeCriteria.includes(c.key));
 
   // --- ANSICHT 2: Kompaktansicht (Paare in Reihen) ---
   if (isTransposedView) {
@@ -26,7 +19,8 @@ function RatingTable({ enrolledCouples, existingRatings, onRate, onRemoveCouple,
           <thead>
             <tr>
               <th className="sticky left-0 bg-gray-200 border p-2 text-left z-10">Paar</th>
-              {criteria.map(criterion => (
+              {/* KORREKTUR: Iteriere über die gefilterte Liste */}
+              {criteriaToDisplay.map(criterion => (
                 <th key={criterion.key} className="border p-2 min-w-[120px]" title={criterion.label}>
                   {criterion.abbr}
                 </th>
@@ -41,7 +35,8 @@ function RatingTable({ enrolledCouples, existingRatings, onRate, onRemoveCouple,
                   <div className="text-xs text-gray-600">{couple.mr_first_name} & {couple.mrs_first_name}</div>
                   <button onClick={() => onRemoveCouple(couple.id)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity" title="Paar aus Session entfernen">&times;</button>
                 </td>
-                {criteria.map(criterion => {
+                {/* KORREKTUR: Iteriere auch hier über die gefilterte Liste */}
+                {criteriaToDisplay.map(criterion => {
                   const rating = existingRatings.find(r => r.couple_id === couple.id && r.category === criterion.key && r.round === round);
                   return (
                     <td key={criterion.key} className="border p-2 text-center">
@@ -80,7 +75,8 @@ function RatingTable({ enrolledCouples, existingRatings, onRate, onRemoveCouple,
           </tr>
         </thead>
         <tbody>
-          {criteria.map(criterion => (
+          {/* KORREKTUR: Iteriere über die gefilterte Liste */}
+          {criteriaToDisplay.map(criterion => (
             <tr key={criterion.key} className="hover:bg-gray-50">
               <td className={`sticky left-0 bg-white border p-2 z-10 transition-all ${criterion.isMain ? 'font-bold' : 'pl-8'}`}>
                 {criterion.label}

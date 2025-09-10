@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { getSessions, createSession, deleteSession } from '../api/client';
 import Modal from '../components/Modal';
 import { ClipLoader } from 'react-spinners';
+import { ALL_CRITERIA, ALL_CRITERIA_KEYS } from '../lib/criteria';
 
 function SessionsManagementPage() {
   const [sessions, setSessions] = useState([]);
@@ -12,7 +13,14 @@ function SessionsManagementPage() {
 
   // States for modals remain unchanged
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newSessionData, setNewSessionData] = useState({ title: '', session_date: '' });
+
+  const initialSessionData = {
+    title: 'Competition Training',
+    session_date: '',
+    criteria: ALL_CRITERIA_KEYS
+  };
+
+  const [newSessionData, setNewSessionData] = useState(initialSessionData);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState(null);
 
@@ -31,7 +39,32 @@ function SessionsManagementPage() {
   useEffect(() => {
     fetchSessions();
   }, []);
+
+  const openAddModal = () => {
+    setNewSessionData(initialSessionData); // Setzt das Formular zurück
+    setIsModalOpen(true);                  // Öffnet das Modal
+  };
   
+  // Handler zum Umschalten der Kriterien-Auswahl
+  const handleCriteriaToggle = (criterionKey) => {
+    setNewSessionData(prevData => {
+      const currentCriteria = prevData.criteria;
+      // Prüfe, ob das Kriterium bereits ausgewählt ist
+      if (currentCriteria.includes(criterionKey)) {
+        // Wenn ja, entferne es (aber nur, wenn es nicht das letzte ist)
+        if (currentCriteria.length > 1) {
+          return { ...prevData, criteria: currentCriteria.filter(key => key !== criterionKey) };
+        } else {
+          toast.error('Es muss mindestens ein Kriterium ausgewählt sein.');
+          return prevData;
+        }
+      } else {
+        // Wenn nein, füge es hinzu
+        return { ...prevData, criteria: [...currentCriteria, criterionKey] };
+      }
+    });
+  };
+
   // Handlers for input, submit, and modals remain unchanged
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,7 +77,7 @@ function SessionsManagementPage() {
       await createSession(newSessionData);
       toast.success('Training erfolgreich hinzugefügt!');
       setIsModalOpen(false);
-      setNewSessionData({ title: '', session_date: '' });
+      setNewSessionData(initialSessionData);
       fetchSessions();
     } catch (err) {
       toast.error(err.message);
@@ -74,7 +107,7 @@ function SessionsManagementPage() {
     }
   };
 
-  // NEU: Logik zum Aufteilen und Sortieren der Sessions
+  // Logik zum Aufteilen und Sortieren der Sessions
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Wichtig: Zeit entfernen für einen sauberen Datumsvergleich
 
@@ -95,7 +128,7 @@ function SessionsManagementPage() {
     );
   }
 
-  // NEU: Eine wiederverwendbare Tabellenkomponente innerhalb dieser Datei
+  // Eine wiederverwendbare Tabellenkomponente innerhalb dieser Datei
   const SessionTable = ({ sessionList, title }) => (
     <div className="mb-10">
       <h3 className="text-xl font-semibold mb-3 text-gray-700">{title}</h3>
@@ -139,22 +172,21 @@ function SessionsManagementPage() {
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-semibold">Trainings-Verwaltung</h2>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={openAddModal}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
             + Training hinzufügen
           </button>
         </div>
         
-        {/* NEU: Angepasste JSX-Struktur mit zwei Tabellen */}
+        {/* Angepasste JSX-Struktur mit zwei Tabellen */}
         <SessionTable sessionList={upcomingSessions} title="Anstehende Trainings" />
         <SessionTable sessionList={pastSessions} title="Vergangene Trainings" />
 
       </div>
 
       {/* Modals for adding and deleting sessions remain unchanged */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Neue Training hinzufügen">
-        {/* ... form content ... */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Neues Training hinzufügen">
         <form onSubmit={handleAddSessionSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
@@ -165,9 +197,8 @@ function SessionsManagementPage() {
               name="title"
               value={newSessionData.title}
               onChange={handleInputChange}
-              placeholder="z.B. Standard Workshop"
               required
-              className="shadow appearance-none border rounded w-full py-2 px-3"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           <div className="mb-4">
@@ -181,15 +212,44 @@ function SessionsManagementPage() {
               value={newSessionData.session_date}
               onChange={handleInputChange}
               required
-              className="shadow appearance-none border rounded w-full py-2 px-3"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Wertungskriterien für dieses Training
+            </label>
+            <div className="flex flex-wrap gap-2 p-2 bg-gray-100 rounded-md">
+              {ALL_CRITERIA.map(criterion => (
+                <button
+                  type="button"
+                  key={criterion.key}
+                  onClick={() => handleCriteriaToggle(criterion.key)}
+                  className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                    newSessionData.criteria.includes(criterion.key)
+                      ? 'bg-blue-600 text-white font-semibold'
+                      : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                >
+                  {criterion.abbr}
+                </button>
+              ))}
+            </div>
+          </div>
+          
           <div className="flex justify-end mt-6">
-            <button type="button" onClick={() => setIsModalOpen(false)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+            >
               Abbrechen
             </button>
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
               Speichern
             </button>
           </div>
