@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { useTheme } from '../context/ThemeContext';
 import { FaSun, FaMoon } from 'react-icons/fa';
+import Footer from '../components/Footer';
 
 const DashboardLayout = () => {
   const { logout, user } = useAuth();
@@ -35,7 +36,7 @@ const DashboardLayout = () => {
       <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400">
-            <Link to="/dashboard">DaSpCoRate</Link>: {`${user.first_name}`}
+            <Link to="/dashboard">DaSpCoRate</Link>: {`${user.first_name} ${user.last_name}`}
           </h1>
 
           <nav className="hidden md:flex items-center">
@@ -103,6 +104,9 @@ const DashboardLayout = () => {
       <main className="container mx-auto p-4 flex-grow">
         <Outlet />
       </main>
+      <footer className="bg-white dark:bg-gray-800 shadow-inner mt-4">
+        <Footer />
+      </footer>
     </div>
   );
 };

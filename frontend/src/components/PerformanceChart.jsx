@@ -64,7 +64,7 @@ function PerformanceChart({ data, rounds }) {
           activeDot={{ r: 8 }}
         />
         
-        {/* NEU: Dynamisches Rendern der Linien für jede Runde */}
+        {/* Dynamisches Rendern der Linien für jede Runde */}
         {rounds.map((roundNum, index) => (
           <Line
             key={roundNum}

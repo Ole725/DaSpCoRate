@@ -30,7 +30,7 @@ function RatingTable({ enrolledCouples, existingRatings, onRate, onRemoveCouple,
           </thead>
           <tbody>
             {sortedCouples.map(couple => (
-              <tr key={couple.id} className="hover:bg-gray-50">
+              <tr key={couple.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td className="sticky left-0 bg-white dark:bg-gray-800 border p-2 font-semibold z-10 min-w-[150px] group relative">
                   <div className="text-2xl font-bold">{couple.start_number}</div>
                   <div className="text-xs text-gray-600 dark:text-gray-400">{couple.mr_first_name} & {couple.mrs_first_name}</div>

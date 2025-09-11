@@ -1,0 +1,9 @@
+# Anweisung für alle Crawler
+User-agent: *
+
+# Bitte diese Seiten nicht besuchen
+Disallow: /impressum
+Disallow: /datenschutz
+
+# Erlaube alles andere
+Allow: /

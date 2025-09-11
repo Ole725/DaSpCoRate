@@ -16,6 +16,9 @@ import CoupleDashboardPage from './pages/CoupleDashboardPage';
 import CoupleHistoryPage from './pages/CoupleHistoryPage';
 import CoupleLayout from './components/CoupleLayout';
 import ProfilePage from './pages/ProfilePage';
+import PublicLayout from './components/PublicLayout';
+import ImpressumPage from './pages/ImpressumPage';
+import DatenschutzPage from './pages/DatenschutzPage';
 
 function App() {
   const { isAuthenticated, user } = useAuth();
@@ -28,6 +31,12 @@ function App() {
         path="/login"
         element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />}
       />
+
+      {/* Eine Layout-Route für alle öffentlichen Seiten */}
+        <Route element={<PublicLayout />}>
+          <Route path="/impressum" element={<ImpressumPage />} />
+          <Route path="/datenschutz" element={<DatenschutzPage />} />
+        </Route>
 
       {/* Geschützte Trainer-Routen */}
       <Route element={<ProtectedRoute allowedRoles={['trainer']} />}>

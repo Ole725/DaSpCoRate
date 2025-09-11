@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { useTheme } from '../context/ThemeContext';
 import { FaSun, FaMoon } from 'react-icons/fa';
+import Footer from '../components/Footer';
 
 function CoupleLayout() {
   const { logout, user } = useAuth();
@@ -112,6 +113,9 @@ function CoupleLayout() {
       <main className="container mx-auto p-4 flex-grow">
         <Outlet />
       </main>
+      <footer className="bg-white dark:bg-gray-800 shadow-inner mt-4">
+        <Footer />
+      </footer>
     </div>
   );
 }
