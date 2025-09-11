@@ -223,3 +223,8 @@ export const getMyRatings = async () => {
     throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Bewertungen');
   }
 };
+
+// Neue Funktion zum Senden des Kontaktformulars
+export const sendContactForm = async (formData) => {
+  return apiClient.post('/api/v1/contact', formData);
+};

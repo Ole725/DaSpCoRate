@@ -19,6 +19,7 @@ import ProfilePage from './pages/ProfilePage';
 import PublicLayout from './components/PublicLayout';
 import ImpressumPage from './pages/ImpressumPage';
 import DatenschutzPage from './pages/DatenschutzPage';
+import ContactPage from './pages/ContactPage';
 
 function App() {
   const { isAuthenticated, user } = useAuth();
@@ -36,6 +37,7 @@ function App() {
         <Route element={<PublicLayout />}>
           <Route path="/impressum" element={<ImpressumPage />} />
           <Route path="/datenschutz" element={<DatenschutzPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Route>
 
       {/* Geschützte Trainer-Routen */}

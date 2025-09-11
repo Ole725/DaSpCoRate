@@ -24,6 +24,14 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    environment:
+      MAIL_USERNAME: "daspcorate@gmail.com"
+      MAIL_PASSWORD: "hmrw adyv epby wmat"
+      MAIL_FROM: "daspcorate@gmail.com"
+      MAIL_PORT: 587
+      MAIL_SERVER: "smtp.gmail.com"
+      MAIL_STARTTLS: "True"
+      MAIL_SSL_TLS: "False"
     container_name: daspcorate_backend
     ports:
       - "8000:8000"
