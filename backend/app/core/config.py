@@ -1,6 +1,7 @@
-# /DaSpCoRate/backend/app/core/config.py (Final und Robust)
+# /DaSpCoRate/backend/app/core/config.py
+
 import os
-from typing import List
+from typing import List, Optional
 from pydantic_settings import BaseSettings
 from fastapi_mail import ConnectionConfig
 
@@ -11,32 +12,36 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = [
         "http://localhost:5173",
         "http://localhost",
+        "https://daspcorate-frontend-139554468209.europe-west3.run.app"
     ]
 
-    MYSQL_USER: str = os.getenv("MYSQL_USER")
-    MYSQL_PASSWORD: str = os.getenv("MYSQL_PASSWORD")
-    MYSQL_DATABASE: str = os.getenv("MYSQL_DATABASE")
-    DATABASE_URL: str = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@db/{MYSQL_DATABASE}"
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
 
     SECRET_KEY: str = os.getenv("SECRET_KEY")
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
     class Config:
-        env_file = ".env"
-        # Sie weist Pydantic an, unbekannte Umgebungsvariablen zu ignorieren.
+        env_file = None
         extra = 'ignore'
 
 settings = Settings()
 
-conf = ConnectionConfig(
-    MAIL_USERNAME = os.getenv("MAIL_USERNAME"),
-    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD"),
-    MAIL_FROM = os.getenv("MAIL_FROM"),
-    MAIL_PORT = int(os.getenv("MAIL_PORT", 587)),
-    MAIL_SERVER = os.getenv("MAIL_SERVER"),
-    MAIL_STARTTLS = os.getenv("MAIL_STARTTLS", "True").lower() in ("true", "1", "t"),
-    MAIL_SSL_TLS = os.getenv("MAIL_SSL_TLS", "False").lower() in ("true", "1", "t"),
-    USE_CREDENTIALS = True,
-    VALIDATE_CERTS = True
-)
+try:
+    conf = ConnectionConfig(
+        MAIL_USERNAME = os.getenv("MAIL_USERNAME"),
+        MAIL_PASSWORD = os.getenv("MAIL_PASSWORD"),
+        MAIL_FROM = os.getenv("MAIL_FROM"),
+        MAIL_PORT = int(os.getenv("MAIL_PORT", 587)),
+        MAIL_SERVER = os.getenv("MAIL_SERVER"),
+        MAIL_STARTTLS = str(os.getenv("MAIL_STARTTLS", "True")).lower() in ("true", "1", "t"),
+        MAIL_SSL_TLS = str(os.getenv("MAIL_SSL_TLS", "False")).lower() in ("true", "1", "t"),
+        USE_CREDENTIALS = True,
+        VALIDATE_CERTS = True
+    )
+    if not conf.MAIL_USERNAME:
+        print("WARNUNG: Keine E-Mail-Konfiguration gefunden. E-Mail-Versand ist deaktiviert.")
+        conf = None
+except Exception as e:
+    print(f"WARNUNG: Fehler beim Laden der E-Mail-Konfiguration: {e}. E-Mail-Versand ist deaktiviert.")
+    conf = None
