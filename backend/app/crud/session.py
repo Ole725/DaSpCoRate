@@ -1,7 +1,9 @@
 # /DaSpCoRate/backend/app/crud/session.py
 
 from sqlalchemy.orm import Session
+from datetime import date
 from typing import List, Optional
+from app.models.session import Session as SessionModel
 
 from app.models import session as models_session
 from app.schemas import session as schemas_session
@@ -51,10 +53,18 @@ def delete_session(self, db: Session, session_id: int):
         return True
     return False
 
+def count_upcoming_sessions(self, db: Session, today: date) -> int:
+    return db.query(models_session.Session).filter(models_session.Session.session_date >= today).count()
+
+def count_past_sessions(self, db: Session, today: date) -> int:
+    return db.query(models_session.Session).filter(models_session.Session.session_date < today).count()
+
 session = type('CRUDSession', (), {
     'get': get_session,
     'get_multi': get_sessions,
     'create': create_session,
     'update': update_session,
     'delete': delete_session,
+    'count_upcoming': count_upcoming_sessions,
+    'count_past': count_past_sessions
 })()

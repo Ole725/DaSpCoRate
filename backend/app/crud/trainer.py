@@ -3,6 +3,7 @@
 from sqlalchemy.orm import Session
 from app.models import trainer as models_trainer
 from app.schemas import trainer as schemas_trainer
+from app.core.security import get_password_hash
 
 # Funktion zum Abrufen eines Trainers anhand seiner ID
 def get_trainer(self, db: Session, trainer_id: int):
@@ -17,17 +18,22 @@ def get_trainers(self, db: Session, skip: int = 0, limit: int = 100):
     return db.query(models_trainer.Trainer).offset(skip).limit(limit).all()
 
 # Funktion zum Erstellen eines neuen Trainers
-def create_trainer(self, db: Session, trainer: schemas_trainer.TrainerCreate, password_hash: str):
+def create_trainer(self, db: Session, trainer: schemas_trainer.TrainerCreate):
+    """
+    Erstellt einen neuen Trainer. Das Passwort wird innerhalb dieser Funktion gehasht.
+    """
+    hashed_password = get_password_hash(trainer.password) # Passwort hashen
     db_trainer = models_trainer.Trainer(
         email=trainer.email,
         first_name=trainer.first_name,
         last_name=trainer.last_name,
         phone_number=trainer.phone_number,
-        password_hash=password_hash # Das gehashte Passwort wird hier gespeichert
+        password_hash=hashed_password,  # Gehashten Wert speichern
+        role='trainer'  # Setze die Rolle auf 'trainer'
     )
-    db.add(db_trainer) # Fügt das Objekt der Session hinzu
-    db.commit() # Speichert die Änderungen in der Datenbank
-    db.refresh(db_trainer) # Aktualisiert das Objekt mit den neu generierten Werten (z.B. ID)
+    db.add(db_trainer)
+    db.commit()
+    db.refresh(db_trainer)
     return db_trainer
 
 # Funktion zum Aktualisieren eines Trainers
@@ -61,6 +67,9 @@ def update_trainer_password(self, db: Session, trainer_id: int, new_password_has
         db.refresh(db_trainer)
     return db_trainer
 
+def count_all_trainers(self, db: Session) -> int: # <-- self hinzufügen
+    return db.query(models_trainer.Trainer).count()
+
 trainer = type('CRUDTrainer', (), {
     'get': get_trainer,
     'get_by_email': get_trainer_by_email,
@@ -69,4 +78,5 @@ trainer = type('CRUDTrainer', (), {
     'update': update_trainer,
     'delete': delete_trainer,
     'update_password': update_trainer_password,
+    'count_all': count_all_trainers
 })()

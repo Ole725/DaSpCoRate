@@ -2,8 +2,19 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.core.database import engine
+from app.models import trainer, couple, session, rating, session_enrollment, admin
+
+trainer.Base.metadata.create_all(bind=engine)
+couple.Base.metadata.create_all(bind=engine)
+session.Base.metadata.create_all(bind=engine)
+rating.Base.metadata.create_all(bind=engine)
+session_enrollment.Base.metadata.create_all(bind=engine)
+admin.Base.metadata.create_all(bind=engine)
+
 from app.api.v1.api import api_router
 from app.core.config import settings
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME, 

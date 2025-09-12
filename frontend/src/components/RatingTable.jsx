@@ -20,7 +20,6 @@ function RatingTable({ enrolledCouples, existingRatings, onRate, onRemoveCouple,
           <thead>
             <tr>
               <th className="sticky left-0 bg-gray-200 dark:bg-gray-800 border p-2 text-left z-10">Paar</th>
-              {/* KORREKTUR: Iteriere über die gefilterte Liste */}
               {criteriaToDisplay.map(criterion => (
                 <th key={criterion.key} className="border p-2 min-w-[120px]" title={criterion.label}>
                   {criterion.abbr}
@@ -36,7 +35,6 @@ function RatingTable({ enrolledCouples, existingRatings, onRate, onRemoveCouple,
                   <div className="text-xs text-gray-600 dark:text-gray-400">{couple.mr_first_name} & {couple.mrs_first_name}</div>
                   <button onClick={() => onRemoveCouple(couple.id)} className="absolute top-1 right-1 bg-red-500 dark:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity" title="Paar aus Session entfernen">&times;</button>
                 </td>
-                {/* KORREKTUR: Iteriere auch hier über die gefilterte Liste */}
                 {criteriaToDisplay.map(criterion => {
                   const rating = existingRatings.find(r => r.couple_id === couple.id && r.category === criterion.key && r.round === round);
                   return (

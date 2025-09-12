@@ -1,46 +1,64 @@
-// /DaSpCoRate/frontend/src/App.jsx
+// /DaSpCoRate/frontend/src/App.jsx (FINALE, SAUBERE VERSION)
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useAuth } from './context/AuthContext'; // Nur für die Root-Route
+import { useAuth } from './context/AuthContext';
 
-// Importiere unsere Komponenten und Seiten
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminLayout from './components/AdminLayout';
 import DashboardLayout from './components/DashboardLayout';
-import LoginPage from './pages/LoginPage';
+import CoupleLayout from './components/CoupleLayout';
+import PublicLayout from './components/PublicLayout';
+import AdminDashboardPage from './pages/AdminDashboardPage';
 import DashboardOverviewPage from './pages/DashboardOverviewPage';
 import CouplesManagementPage from './pages/CouplesManagementPage';
 import SessionsManagementPage from './pages/SessionsManagementPage';
 import SessionDetailPage from './pages/SessionDetailPage';
 import CoupleDashboardPage from './pages/CoupleDashboardPage';
 import CoupleHistoryPage from './pages/CoupleHistoryPage';
-import CoupleLayout from './components/CoupleLayout';
 import ProfilePage from './pages/ProfilePage';
-import PublicLayout from './components/PublicLayout';
 import ImpressumPage from './pages/ImpressumPage';
 import DatenschutzPage from './pages/DatenschutzPage';
 import ContactPage from './pages/ContactPage';
+import LoginPage from './pages/LoginPage';
+import AdminTrainerManagementPage from './pages/AdminTrainerManagementPage'; 
+import AdminCouplesManagementPage from './pages/AdminCouplesManagementPage';
 
 function App() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
+
+  if (loading) {
+    return <div>Lade Anwendung...</div>; 
+  }
 
   return (
     <div>
     <Routes>
-      {/* Route für die Login-Seite */}
-      <Route
-        path="/login"
-        element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />}
-      />
+      {/* Route für die Login-Seite: Leitet eingeloggte Nutzer sofort weg */}
+      <Route path="/login" element={<LoginPage />} />
+      {/* Öffentliche Seiten für Impressum etc. */}
+      <Route element={<PublicLayout />}>
+        <Route path="/impressum" element={<ImpressumPage />} />
+        <Route path="/datenschutz" element={<DatenschutzPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+      </Route>
 
-      {/* Eine Layout-Route für alle öffentlichen Seiten */}
-        <Route element={<PublicLayout />}>
-          <Route path="/impressum" element={<ImpressumPage />} />
-          <Route path="/datenschutz" element={<DatenschutzPage />} />
-          <Route path="/contact" element={<ContactPage />} />
+      {/* --- GESCHÜTZTE BEREICHE --- */}
+      <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboardPage />} />
         </Route>
+      </Route>
 
-      {/* Geschützte Trainer-Routen */}
+      <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+         <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="trainers" element={<AdminTrainerManagementPage />} />
+          <Route path="couples" element={<AdminCouplesManagementPage />} />
+        </Route>
+      </Route>
+
+
       <Route element={<ProtectedRoute allowedRoles={['trainer']} />}>
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardOverviewPage />} />
@@ -51,43 +69,32 @@ function App() {
         </Route>
       </Route>
 
-      {/* Geschützte Paar-Routen */}
       <Route element={<ProtectedRoute allowedRoles={['couple']} />}>
         <Route path="/couple-dashboard" element={<CoupleLayout />}>
-          <Route index element={<CoupleDashboardPage />} /> {/* Hauptseite */}
+          <Route index element={<CoupleDashboardPage />} />
           <Route path="history" element={<CoupleHistoryPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Route>
       
-      {/* Root-Route, die zur richtigen Startseite weiterleitet */}
+      {/* --- DIE EINE, WAHRE ROOT-ROUTE --- */}
       <Route
         path="/"
         element={
-          !isAuthenticated ? (
-            <Navigate to="/login" />
-          ) : user?.role === 'trainer' ? (
-            <Navigate to="/dashboard" />
+          isAuthenticated && user ? (
+            user.role === 'admin'   ? <Navigate to="/admin" replace /> :
+            user.role === 'trainer' ? <Navigate to="/dashboard" replace /> :
+            <Navigate to="/couple-dashboard" replace />
           ) : (
-            <Navigate to="/couple-dashboard" />
+            <Navigate to="/login" replace />
           )
         }
       />
       
-      {/* Not Found Route */}
-      <Route path="*" element={<Navigate to="/" />} />
+      {/* Not Found Route: Leitet alle unbekannten Pfade zur Root-Route um */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-          <Toaster
-        position="top-right" // Position (andere Optionen: 'top-center', 'bottom-right' etc.)
-        toastOptions={{
-          // Standard-Optionen für alle Toasts
-          duration: 5000, // 5 Sekunden sichtbar
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-        }}
-      />
+    <Toaster /* ... */ />
     </div>
   );
 }

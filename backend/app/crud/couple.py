@@ -19,16 +19,23 @@ def get_couples(self, db: Session, skip: int = 0, limit: int = 100):
     return db.query(models_couple.Couple).offset(skip).limit(limit).all()
 
 # Funktion zum Erstellen eines neuen Paares
-def create_couple(self, db: Session, couple: schemas_couple.CoupleCreate, password_hash: str):
+def create_couple(self, db: Session, couple: schemas_couple.CoupleCreate): # <-- password_hash Argument entfernt
+    """
+    Erstellt ein neues Paar. Das Passwort wird INNERHALB dieser Funktion gehasht.
+    """
+    # 1. Das Passwort-Hashing findet jetzt HIER statt
+    hashed_password = security.get_password_hash(couple.password)
+    
     db_couple = models_couple.Couple(
         email=couple.email,
-        password_hash=password_hash, # Gehashtes Passwort
+        password_hash=hashed_password, # Den frisch erstellten Hash verwenden
         mr_first_name=couple.mr_first_name,
         mrs_first_name=couple.mrs_first_name,
         start_group=couple.start_group,
         start_class=couple.start_class,
         dance_style=couple.dance_style,
-        phone_number=couple.phone_number
+        phone_number=couple.phone_number,
+        role='couple'
     )
     db.add(db_couple)
     db.commit()
@@ -67,6 +74,9 @@ def update_couple_password(self, db: Session, couple_id: int, new_password_hash:
         db.refresh(db_couple)
     return db_couple
 
+def count_all_couples(self, db: Session) -> int:
+    return db.query(models_couple.Couple).count()
+
 couple = type('CRUDCouple', (), {
     'get': get_couple,
     'get_by_email': get_couple_by_email,
@@ -75,4 +85,5 @@ couple = type('CRUDCouple', (), {
     'update': update_couple,
     'delete': delete_couple,
     'update_password': update_couple_password,
+    'count_all': count_all_couples
 })()

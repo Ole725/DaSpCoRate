@@ -25,6 +25,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     environment:
+      PYTHONDONTWRITEBYTECODE: 1
       MAIL_USERNAME: "daspcorate@gmail.com"
       MAIL_PASSWORD: "hmrw adyv epby wmat"
       MAIL_FROM: "daspcorate@gmail.com"

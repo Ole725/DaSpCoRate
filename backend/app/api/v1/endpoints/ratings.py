@@ -9,7 +9,6 @@ from app.schemas import rating as schemas_rating
 from app.crud import rating as crud_rating
 from app.crud import session as crud_session
 from app.crud import couple as crud_couple
-# KORREKTUR: Importiere die neuen, korrekten Abhängigkeiten
 from app.dependencies.dependencies import get_current_trainer, get_current_couple
 from app.models.trainer import Trainer
 from app.models.couple import Couple

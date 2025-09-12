@@ -9,7 +9,6 @@ from app.schemas import session_enrollment as schemas_enrollment
 from app.crud import session_enrollment as crud_enrollment
 from app.crud import session as crud_session
 from app.crud import couple as crud_couple
-# KORREKTUR: Importiere die neuen, korrekten Abhängigkeiten
 from app.dependencies.dependencies import get_current_trainer, get_current_couple, get_current_user
 from app.models.trainer import Trainer
 from app.models.couple import Couple

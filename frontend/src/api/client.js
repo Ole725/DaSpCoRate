@@ -1,14 +1,12 @@
 // /DaSpCoRate/frontend/src/api/client.js
+
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
-
-// Erstelle eine axios-Instanz
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: 'http://localhost:8000/api/v1', // Passe die Basis-URL an deine Backend-API an
 });
 
-// Füge einen Interceptor hinzu, der den Token bei jeder Anfrage mitsendet
+// Fügt bei jeder Anfrage automatisch den Auth-Token hinzu.
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken');
@@ -22,209 +20,278 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Funktion zum Anfordern eines Login-Tokens (jetzt mit axios)
+// --- AUTH FUNKTIONEN ---
+
 export const loginUser = async (email, password) => {
-  
   const formData = new URLSearchParams();
   formData.append('username', email);
   formData.append('password', password);
-
   try {
-    const response = await apiClient.post('/api/v1/auth/token', formData, {
+    const response = await apiClient.post('/auth/token', formData, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.detail || 'Login fehlgeschlagen');
   }
-
 };
 
-// Funktion zum Abrufen aller Paare mit axios
-export const getCouples = async () => {
-  try {
-    const response = await apiClient.get('/api/v1/couples/');
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Paare');
-  }
-};
-
-// Funktion zum Erstellen eines neuen Paares
-export const createCouple = async (coupleData) => {
-  try {
-    const response = await apiClient.post('/api/v1/couples/', coupleData);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Erstellen des Paares');
-  }
-
-};
-
-// Funktion zum Aktualisieren eines vorhandenen Paares
-export const updateCouple = async (coupleId, coupleData) => {
-  try {
-    const response = await apiClient.put(`/api/v1/couples/${coupleId}`, coupleData);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Aktualisieren des Paares');
-  }
-};
-
-// Funktion zum Löschen eines Paares
-export const deleteCouple = async (coupleId) => {
-  try {
-    const response = await apiClient.delete(`/api/v1/couples/${coupleId}`);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Löschen des Paares');
-  }
-};
-
-// Holt die Daten des aktuell eingeloggten Benutzers
 export const getMe = async () => {
   try {
-    const response = await apiClient.get('/api/v1/users/me');
+    const response = await apiClient.get('/users/me');
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Profildaten');
   }
 };
 
-// Aktualisiert das Profil eines Paares
-export const updateMyCoupleProfile = async (profileData) => {
-  try {
-    const response = await apiClient.put('/api/v1/couples/me', profileData);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Aktualisieren des Profils');
-  }
-};
-
-// Ändert das Passwort des aktuellen Benutzers
 export const changeMyPassword = async (passwordData) => {
   try {
-    await apiClient.put('/api/v1/users/me/password', passwordData);
+    await apiClient.put('/users/me/password', passwordData);
     return { message: 'Passwort erfolgreich geändert.' };
   } catch (error) {
     throw new Error(error.response?.data?.detail || 'Fehler beim Ändern des Passworts');
   }
 };
 
-// Funktion zum Abrufen aller Sessions eines Trainers
+
+// --- PAAR-FUNKTIONEN (COUPLES) ---
+
+export const getCouples = async () => {
+  try {
+    const response = await apiClient.get('/couples/');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Paare');
+  }
+};
+
+export const createCouple = async (coupleData) => {
+  try {
+    const response = await apiClient.post('/couples/', coupleData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Erstellen des Paares');
+  }
+};
+
+export const updateCouple = async (coupleId, coupleData) => {
+  try {
+    const response = await apiClient.put(`/couples/${coupleId}`, coupleData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Aktualisieren des Paares');
+  }
+};
+
+export const deleteCouple = async (coupleId) => {
+  try {
+    await apiClient.delete(`/couples/${coupleId}`);
+    return { message: 'Paar erfolgreich gelöscht.' }; // Bessere Rückgabe
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Löschen des Paares');
+  }
+};
+
+export const updateMyCoupleProfile = async (profileData) => {
+  try {
+    const response = await apiClient.put('/couples/me', profileData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Aktualisieren des Profils');
+  }
+};
+
+
+// --- SESSION-FUNKTIONEN ---
+
 export const getSessions = async () => {
   try {
-    const response = await apiClient.get('/api/v1/sessions/');
+    const response = await apiClient.get('/sessions/');
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Sessions');
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Trainings');
   }
 };
 
-// Funktion zum Erstellen einer neuen Session
 export const createSession = async (sessionData) => {
   try {
-    const response = await apiClient.post('/api/v1/sessions/', sessionData);
+    const response = await apiClient.post('/sessions/', sessionData);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Erstellen der Session');
+    throw new Error(error.response?.data?.detail || 'Fehler beim Erstellen des Trainings');
   }
 };
 
-// Holt die Details für eine einzelne Session
 export const getSessionDetails = async (sessionId) => {
   try {
-    const response = await apiClient.get(`/api/v1/sessions/${sessionId}`);
+    const response = await apiClient.get(`/sessions/${sessionId}`);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Session-Details');
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Trainings-Details');
   }
 };
 
-// Holt alle Anmeldungen (Paare) für eine Session
+export const deleteSession = async (sessionId) => {
+  try {
+    await apiClient.delete(`/sessions/${sessionId}`);
+    return true;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Löschen des Trainings');
+  }
+};
+
+
+// --- ANMELDUNGS-FUNKTIONEN (ENROLLMENTS) ---
+
 export const getEnrollmentsForSession = async (sessionId) => {
   try {
-    const response = await apiClient.get(`/api/v1/enrollments/session/${sessionId}`);
+    const response = await apiClient.get(`/enrollments/session/${sessionId}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Anmeldungen');
   }
 };
 
-// Holt alle Bewertungen für eine Session
-export const getRatingsForSession = async (sessionId) => {
-  try {
-    const response = await apiClient.get(`/api/v1/ratings/session/${sessionId}`);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Bewertungen');
-  }
-};
-
-// Erstellt eine neue Bewertung
-export const createRating = async (ratingData) => {
-  try {
-    const response = await apiClient.post('/api/v1/ratings/', ratingData);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Speichern der Bewertung');
-  }
-};
-
-// Funktion für Trainer, um ein Paar zu einer Session anzumelden
 export const enrollCoupleByTrainer = async (sessionId, coupleId, startNumber) => {
   try {
-    const response = await apiClient.post(
-      `/api/v1/enrollments/by-trainer`,
-      { session_id: sessionId, couple_id: coupleId, start_number: startNumber }
-    );
+    const response = await apiClient.post('/enrollments/by-trainer', {
+      session_id: sessionId,
+      couple_id: coupleId,
+      start_number: startNumber,
+    });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.detail || 'Fehler beim Anmelden des Paares');
   }
 };
 
-// Funktion zum Aktualisieren einer Bewertung
-export const updateRating = async (ratingId, points) => {
-  try {
-    const response = await apiClient.put(`/api/v1/ratings/${ratingId}`, { points });
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Aktualisieren der Bewertung');
-  }
-};
-
-export const deleteSession = async (sessionId) => {
-  try {
-    // DELETE-Anfragen geben oft keinen Body zurück, daher erwarten wir eine 204-Antwort
-    await apiClient.delete(`/api/v1/sessions/${sessionId}`);
-    return true; // Erfolg
-  } catch (error) {
-    throw new Error(error.response?.data?.detail || 'Fehler beim Löschen der Session');
-  }
-};
-
-// Funktion zum Löschen einer Anmeldung (Abmelden)
 export const unenrollCouple = async (enrollmentId) => {
   try {
-    await apiClient.delete(`/api/v1/enrollments/${enrollmentId}`);
+    await apiClient.delete(`/enrollments/${enrollmentId}`);
     return true;
   } catch (error) {
     throw new Error(error.response?.data?.detail || 'Fehler beim Abmelden des Paares');
   }
 };
 
-// Funktion für ein Paar, um die eigene Bewertungshistorie abzurufen
-export const getMyRatings = async () => {
+
+// --- BEWERTUNGS-FUNKTIONEN (RATINGS) ---
+
+export const getRatingsForSession = async (sessionId) => {
   try {
-    const response = await apiClient.get('/api/v1/ratings/me');
+    const response = await apiClient.get(`/ratings/session/${sessionId}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Bewertungen');
   }
 };
 
-// Neue Funktion zum Senden des Kontaktformulars
+export const createRating = async (ratingData) => {
+  try {
+    const response = await apiClient.post('/ratings/', ratingData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Speichern der Bewertung');
+  }
+};
+
+export const updateRating = async (ratingId, points) => {
+  try {
+    const response = await apiClient.put(`/ratings/${ratingId}`, { points });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Aktualisieren der Bewertung');
+  }
+};
+
+export const getMyRatings = async () => {
+  try {
+    const response = await apiClient.get('/ratings/me');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Bewertungen');
+  }
+};
+
+
+// --- KONTAKT-FUNKTION ---
+
 export const sendContactForm = async (formData) => {
-  return apiClient.post('/api/v1/contact', formData);
+  try {
+    const response = await apiClient.post('/contact', formData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Senden der Nachricht');
+  }
+};
+
+
+// --- ADMIN-FUNKTIONEN ---
+
+export const getAllCouples = async () => { 
+  try {
+    // Der Endpunkt /couples/all existiert bereits im Backend
+    const response = await apiClient.get('/couples/all');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Paare');
+  }
+};
+
+export const getAllSessionsForAdmin = async () => {
+  try {
+    const response = await apiClient.get('/sessions/all');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen aller Trainings');
+  }
+};
+
+export const getAdminStats = async () => {
+  try {
+    const response = await apiClient.get('/admin/stats');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Admin-Statistiken');
+  }
+};
+
+// --- TRAINER-VERWALTUNG (NUR ADMIN) ---
+
+export const getTrainers = async () => {
+  try {
+    const response = await apiClient.get('/trainers/');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Abrufen der Trainer');
+  }
+};
+
+export const createTrainer = async (trainerData) => {
+  try {
+    const response = await apiClient.post('/trainers/', trainerData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Erstellen des Trainers');
+  }
+};
+
+export const updateTrainer = async (trainerId, trainerData) => {
+  try {
+    const response = await apiClient.put(`/trainers/${trainerId}`, trainerData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Aktualisieren des Trainers');
+  }
+};
+
+export const deleteTrainer = async (trainerId) => {
+  try {
+    // Bei DELETE erwarten wir oft keine Daten zurück, nur einen Erfolgsstatus
+    await apiClient.delete(`/trainers/${trainerId}`);
+    return true; 
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Fehler beim Löschen des Trainers');
+  }
 };
