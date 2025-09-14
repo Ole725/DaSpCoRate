@@ -26,13 +26,13 @@ function DatenschutzPage() {
             <p>
               Verantwortlich für die Datenverarbeitung im Sinne der DSGVO ist:
               <br />
-              <strong>[Vollständiger Name]</strong>
+              <strong>[Bernhard Wallenfels]</strong>
               <br />
-              [Anschrift – Straße, PLZ, Ort]
+              [Wulfsiepen 17, 44267 Dortmund]
               <br />
               E-Mail:{" "}
-              <a href="mailto:[email@example.com]" className="text-blue-600 dark:text-blue-400">
-                [email@example.com]
+              <a href="mailto:daspcotarte@gmail.com" className="text-blue-600 dark:text-blue-400">
+                daspcotarte@gmail.com
               </a>
             </p>
           </div>

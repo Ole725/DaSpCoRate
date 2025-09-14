@@ -20,4 +20,4 @@ COPY . /code/
 
 # 6. Den Befehl zum Starten der Anwendung definieren
 # FastAPI wird auf allen Netzwerk-Interfaces innerhalb des Containers lauschen
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}

@@ -1,0 +1,16 @@
+# /frontend/cloudbuild.yaml
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '--tag'
+    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest'
+    - '--build-arg'
+    - 'VITE_API_URL=${_VITE_API_URL}'
+    - '.'
+
+images:
+- 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest'
+
+substitutions:
+  _VITE_API_URL: 'https://default-url.com' # Standardwert, wird überschrieben

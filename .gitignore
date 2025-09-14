@@ -71,6 +71,9 @@ venv.bak/
 # Docker
 docker-compose.override.yml
 
+# Google Cloud
+env.yaml
+
 # Mac specific
 .DS_Store
 

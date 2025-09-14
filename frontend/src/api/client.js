@@ -2,9 +2,13 @@
 
 import axios from 'axios';
 
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000/api/v1', // Passe die Basis-URL an deine Backend-API an
+  baseURL: baseURL,
 });
+
+export default apiClient;
 
 // Fügt bei jeder Anfrage automatisch den Auth-Token hinzu.
 apiClient.interceptors.request.use(

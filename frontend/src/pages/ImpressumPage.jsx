@@ -16,26 +16,26 @@ function ImpressumPage() {
             <div>
             <h3>Angaben gemäß § 5 TMG</h3>
             <p>
-              [Dein Name]<br />
-              [Deine Straße und Hausnummer]<br />
-              [Deine PLZ und Stadt]
+              [Bernhard Wallenfels]<br />
+              [Wulfsiepen 17]<br />
+              [44267 Dortmund]
             </p>
           </div>
           
           <div>
             <h2>Kontakt</h2>
             <p>
-              Telefon: [Deine Telefonnummer]<br />
-              E-Mail: [Deine E-Mail-Adresse]
+              Telefon: [01621762323]<br />
+              E-Mail: [daspcotarte@gmail.com]
             </p>
           </div>
           
           <div>
             <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
             <p>
-              [Dein Name]<br />
-              [Deine Straße und Hausnummer]<br />
-              [Deine PLZ und Stadt]
+              [Bernhard Wallenfels]<br />
+              [Wulfsiepen 17]<br />
+              [44267 Dortmund]
             </p>
           </div>
         </div>
