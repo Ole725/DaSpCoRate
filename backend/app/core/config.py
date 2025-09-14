@@ -13,6 +13,8 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         "http://localhost",
         "https://daspcorate-frontend-139554468209.europe-west3.run.app"
+        "https://danscor.app",
+        "https://www.danscor.app"
     ]
 
     DATABASE_URL: str = os.getenv("DATABASE_URL")
