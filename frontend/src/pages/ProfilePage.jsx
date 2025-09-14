@@ -162,7 +162,7 @@ function ProfilePage() {
                   {START_CLASSES.map(cls => <option key={cls.value} value={cls.value}>{cls.label}</option>)}
                 </select>
                 <label htmlFor="start_class" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Stiehl
+                  Stil
                 </label>
                 <select name="dance_style" value={profileData.dance_style} onChange={handleProfileChange} required className="shadow appearance-none border rounded w-full py-2 px-3 dark:bg-gray-700 dark:text-gray-300">
                 <option value="" disabled>Tanzstil auswählen...</option>

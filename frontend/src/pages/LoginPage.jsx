@@ -1,14 +1,11 @@
 // /DaSpCoRate/frontend/src/pages/LoginPage.jsx
 
 import { useState } from 'react';
-// Navigate wird nicht mehr benötigt
-// import { Navigate } from 'react-router-dom'; 
 import { useAuth } from '../context/AuthContext';
 import { MdMan, MdWoman } from 'react-icons/md';
 import Footer from '../components/Footer';
 
 function LoginPage() {
-  // Wir brauchen 'isAuthenticated' hier nicht mehr für die Weiterleitung
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,29 +18,14 @@ function LoginPage() {
     setError(null);
     try {
       await login(email, password);
-      // Nach dem erfolgreichen Login wird die Weiterleitung
-      // nun automatisch vom AuthContext übernommen.
-      // Wir müssen hier nichts mehr tun.
     } catch (err) {
       setError('E-Mail oder Passwort ist ungültig. Bitte versuchen Sie es erneut.');
       setLoading(false);
     }
-    // setLoading(false) wird im Erfolgsfall nicht mehr erreicht,
-    // da die Seite vorher wegnavigiert. Das ist in Ordnung.
   };
-
-  // *** DIESER BLOCK WIRD ENTFERNT ***
-  // Die Weiterleitung findet jetzt im AuthContext statt.
-  // Die Root-Route ("/") in App.jsx kümmert sich um bereits eingeloggte Benutzer.
-  /*
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-  */
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-      {/* ... Rest der Komponente bleibt unverändert ... */}
        <header className="bg-white dark:bg-gray-800 shadow-md">
         <div className="container mx-auto p-4 flex justify-center items-center">
           <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400">DanSCoR</h1>

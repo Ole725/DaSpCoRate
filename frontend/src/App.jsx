@@ -21,8 +21,8 @@ import ImpressumPage from './pages/ImpressumPage';
 import DatenschutzPage from './pages/DatenschutzPage';
 import ContactPage from './pages/ContactPage';
 import LoginPage from './pages/LoginPage';
-import AdminTrainerManagementPage from './pages/AdminTrainerManagementPage'; 
-import AdminCouplesManagementPage from './pages/AdminCouplesManagementPage';
+import AdminTrainerManagementPage from './pages/AdminTrainerManagementPage';
+import CouplesRatingPage from './pages/CouplesRatingPage';
 
 function App() {
   const { isAuthenticated, user, loading } = useAuth();
@@ -54,8 +54,9 @@ function App() {
          <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboardPage />} />
           <Route path="trainers" element={<AdminTrainerManagementPage />} />
-          <Route path="couples" element={<AdminCouplesManagementPage />} />
-        </Route>
+          <Route path="couples" element={<CouplesManagementPage />} />
+          <Route path="wertungen/:coupleId" element={<CouplesRatingPage />} />
+         </Route>
       </Route>
 
 
@@ -63,6 +64,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardOverviewPage />} />
           <Route path="couples" element={<CouplesManagementPage />} />
+          <Route path="wertungen/:coupleId" element={<CouplesRatingPage />} />
           <Route path="sessions" element={<SessionsManagementPage />} />
           <Route path="sessions/:sessionId" element={<SessionDetailPage />} />
           <Route path="profile" element={<ProfilePage />} />

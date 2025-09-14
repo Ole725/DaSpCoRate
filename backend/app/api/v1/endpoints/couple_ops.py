@@ -59,6 +59,19 @@ def create_couple(
         raise HTTPException(status_code=400, detail="A couple with this email already exists.")
     return crud_couple.create(db=db, couple=couple_in)
 
+# Endpunkt zum auslesen der Wertung für Trainer
+@router.get("/{couple_id}", response_model=schemas_couple.CoupleInDB)
+def get_a_couple_by_id(
+    couple_id: int,
+    db: Session = Depends(get_db),
+    current_user: Union[Trainer, Admin] = Depends(dependencies.get_current_trainer_or_admin)
+):
+    """Get a single couple by ID. Accessible by Admins and Trainers."""
+    db_couple = crud_couple.get(db, couple_id=couple_id)
+    if not db_couple:
+        raise HTTPException(status_code=404, detail="Couple not found.")
+    return db_couple
+
 # Die restlichen Endpunkte für Update/Delete, die ebenfalls für beide Rollen funktionieren
 @router.put("/{couple_id}", response_model=schemas_couple.CoupleInDB)
 def update_a_couple(

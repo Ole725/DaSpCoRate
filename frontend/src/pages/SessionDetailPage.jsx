@@ -1,24 +1,15 @@
 // /DaSpCoRate/frontend/src/pages/SessionDetailPage.jsx
+
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { 
-  getSessionDetails, 
-  getEnrollmentsForSession, 
-  getRatingsForSession, 
-  createRating, 
-  getCouples,
-  updateRating,
-  enrollCoupleByTrainer,
-  unenrollCouple 
-} from '../api/client';
+import { getSessionDetails, getEnrollmentsForSession, getRatingsForSession, createRating, getCouples, updateRating, enrollCoupleByTrainer, unenrollCouple } from '../api/client';
 import RatingTable from '../components/RatingTable';
 import Modal from '../components/Modal';
 import ResultsDisplay from '../components/ResultsDisplay';
 import { ClipLoader } from 'react-spinners';
-import { FaExchangeAlt } from 'react-icons/fa'; // Icon importieren
-import { ALL_CRITERIA_KEYS } from '../lib/criteria';
-import { useTheme } from '../context/ThemeContext';
+import { FaExchangeAlt } from 'react-icons/fa';
+import { ALL_CRITERIA, ALL_CRITERIA_KEYS } from '../lib/criteria';
 
 function SessionDetailPage() {
   const { sessionId } = useParams();
@@ -30,16 +21,27 @@ function SessionDetailPage() {
   
   const [currentRound, setCurrentRound] = useState(1); 
   const [isFinished, setIsFinished] = useState(false);
+  
+  const [roundCriteria, setRoundCriteria] = useState(() => {
+    const storageKey = `sessionCriteria_${sessionId}`;
+    const savedCriteria = localStorage.getItem(storageKey);
+    if (savedCriteria) {
+      try {
+        return JSON.parse(savedCriteria);
+      } catch (e) {
+        console.error("Fehler beim Parsen der Kriterien aus localStorage", e);
+        return { 1: ALL_CRITERIA_KEYS };
+      }
+    }
+    return { 1: ALL_CRITERIA_KEYS };
+  });
 
+  const [isTransposedView, setIsTransposedView] = useState(false);
   const [isAddCoupleModalOpen, setIsAddCoupleModalOpen] = useState(false);
   const [isRemoveConfirmModalOpen, setIsRemoveConfirmModalOpen] = useState(false);
   const [enrollmentToRemove, setEnrollmentToRemove] = useState(null);
   
-  // HIER IST DIE KORREKTUR: Die fehlende State-Deklaration
-  const [isTransposedView, setIsTransposedView] = useState(false);
-
   useEffect(() => {
-    // ... fetchData bleibt unverändert
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -62,7 +64,16 @@ function SessionDetailPage() {
     fetchData();
   }, [sessionId]);
 
-  // ... alle anderen Handler (openAddCoupleModal, handleAddCoupleToSession etc.) bleiben unverändert
+  useEffect(() => {
+    if (sessionId) {
+      const storageKey = `sessionCriteria_${sessionId}`;
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(roundCriteria));
+      } catch (e) {
+        console.error("Fehler beim Speichern der Kriterien im localStorage", e);
+      }
+    }
+  }, [roundCriteria, sessionId]);
 
   const openAddCoupleModal = () => setIsAddCoupleModalOpen(true);
 
@@ -134,6 +145,26 @@ function SessionDetailPage() {
     }
   };
 
+  // Handler zum Umschalten der Kriterien für die AKTUELLE RUNDE
+  const handleCriteriaToggle = (criterionKey) => {
+    setRoundCriteria(prev => {
+      const criteriaForCurrentRound = prev[currentRound] || ALL_CRITERIA_KEYS;
+      let newCriteria;
+
+      if (criteriaForCurrentRound.includes(criterionKey)) {
+        if (criteriaForCurrentRound.length > 1) {
+          newCriteria = criteriaForCurrentRound.filter(key => key !== criterionKey);
+        } else {
+          toast.error('Es muss mindestens ein Kriterium ausgewählt sein.');
+          return prev;
+        }
+      } else {
+        newCriteria = [...criteriaForCurrentRound, criterionKey];
+      }
+      return { ...prev, [currentRound]: newCriteria };
+    });
+  };
+
   const handleNextRound = () => setCurrentRound(prevRound => prevRound + 1);
   const handleFinishTraining = () => setIsFinished(true);
 
@@ -147,6 +178,8 @@ function SessionDetailPage() {
   
   const availableCouples = allCouples.filter(c => !enrollments.some(e => e.couple_id === c.id));
   const ratingsForCurrentRound = ratings.filter(r => r.round === currentRound);
+
+  const activeCriteriaForCurrentRound = roundCriteria[currentRound] || ALL_CRITERIA_KEYS;
 
   return (
     <>
@@ -162,6 +195,27 @@ function SessionDetailPage() {
         {!isFinished ? (
           <div>
             <h3 className="text-xl font-semibold my-4">Bewertungstabelle (Runde {currentRound})</h3>
+            <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-md">
+              <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
+                Wertungskriterien für Runde {currentRound}
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {ALL_CRITERIA.map(criterion => (
+                  <button
+                    type="button"
+                    key={criterion.key}
+                    onClick={() => handleCriteriaToggle(criterion.key)}
+                    className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                      activeCriteriaForCurrentRound.includes(criterion.key)
+                        ? 'bg-blue-600 text-white font-semibold'
+                        : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400'
+                    }`}
+                  >
+                    {criterion.abbr}
+                  </button>
+                ))}
+              </div>
+            </div>
             {enrolledCouplesDetails.length > 0 ? (
               <RatingTable 
                 enrolledCouples={enrolledCouplesDetails}
@@ -170,7 +224,7 @@ function SessionDetailPage() {
                 onRemoveCouple={openRemoveConfirmModal}
                 round={currentRound}
                 isTransposedView={isTransposedView}
-                activeCriteria={session.criteria || ALL_CRITERIA_KEYS}
+                activeCriteria={activeCriteriaForCurrentRound}
               />
             ) : <p>Noch keine Paare für diese Session angemeldet.</p>}
           </div>

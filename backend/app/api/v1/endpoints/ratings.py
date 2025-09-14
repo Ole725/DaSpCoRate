@@ -2,14 +2,15 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Union
 
 from app.core.database import get_db
 from app.schemas import rating as schemas_rating
 from app.crud import rating as crud_rating
 from app.crud import session as crud_session
 from app.crud import couple as crud_couple
-from app.dependencies.dependencies import get_current_trainer, get_current_couple
+from app.dependencies.dependencies import get_current_trainer, get_current_couple, get_current_trainer_or_admin
+from app.models.admin import Admin
 from app.models.trainer import Trainer
 from app.models.couple import Couple
 
@@ -100,4 +101,18 @@ def read_my_ratings(
     current_couple: Couple = Depends(get_current_couple)
 ):
     ratings = crud_rating.get_by_couple(db, couple_id=current_couple.id)
+    return ratings
+
+@router.get("/couple/{couple_id}", response_model=List[schemas_rating.RatingInDB])
+def read_ratings_for_a_couple(
+    couple_id: int,
+    db: Session = Depends(get_db),
+    current_user: Union[Trainer, Admin] = Depends(get_current_trainer_or_admin)
+):
+    """Get all ratings for a specific couple by ID. Accessible by Admins and Trainers."""
+    db_couple = crud_couple.get(db, couple_id=couple_id)
+    if not db_couple:
+        raise HTTPException(status_code=404, detail="Couple not found.")
+        
+    ratings = crud_rating.get_by_couple(db, couple_id=couple_id)
     return ratings

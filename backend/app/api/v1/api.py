@@ -9,8 +9,6 @@ from .endpoints import contact
 api_router = APIRouter()
 
 # Binde die einzelnen Router in den Haupt-Router ein.
-# Jeder bekommt ein "prefix" (das in der URL vorangestellt wird)
-# und "tags" (für die automatische API-Dokumentation).
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(users_ops.router, prefix="/users", tags=["users"])
 api_router.include_router(couple_ops.router, prefix="/couples", tags=["couples"])

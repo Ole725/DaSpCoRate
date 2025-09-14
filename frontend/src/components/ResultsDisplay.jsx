@@ -1,10 +1,10 @@
 // /DaSpCoRate/frontend/src/components/ResultsDisplay.jsx
 
 import { useMemo } from 'react';
-import { useTheme } from '../context/ThemeContext';
+import { Link } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 
 function ResultsDisplay({ ratings, enrolledCouples, session }) {
-  // ... (useMemo-Hook zum Berechnen der Ergebnisse bleibt gleich) ...
   const results = useMemo(() => {
     if (!enrolledCouples) return [];
     const coupleScores = {};
@@ -35,13 +35,11 @@ function ResultsDisplay({ ratings, enrolledCouples, session }) {
 
   return (
     <div>
-      {/* NEU: Grüner Ergebnis-Container */}
       <div className="bg-green-100 dark:bg-green-800 border-l-4 border-green-500 text-green-700 dark:text-green-300 p-4 rounded-lg shadow-md mb-6">
         <h3 className="font-bold text-lg">Training abgeschlossen</h3>
         <p>
           Session: <strong>{session?.title}</strong> am {session ? new Date(session.session_date).toLocaleDateString('de-DE') : ''}
         </p>
-        {/* Hier könnte man eine Gesamtpunktzahl über alle Paare und Runden anzeigen, falls gewünscht */}
       </div>
       
       <h3 className="text-2xl font-bold mb-4">Gesamtergebnis</h3>
@@ -55,12 +53,21 @@ function ResultsDisplay({ ratings, enrolledCouples, session }) {
             <div className="text-right">
               <p className="text-lg font-bold">{result.total_score} Punkte</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {/* Zeige die Punkte pro Runde an */}
                 {Object.entries(result.rounds).map(([round, score]) => `R${round}: ${score}`).join(' | ')}
               </p>
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-8 flex justify-center">
+        <Link
+          to="/dashboard/sessions"
+          className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg flex items-center gap-2 transition-colors duration-200"
+        >
+          <FaArrowLeft />
+          <span>Zurück zur Übersicht</span>
+        </Link>
       </div>
     </div>
   );

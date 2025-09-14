@@ -25,7 +25,6 @@ apiClient.interceptors.request.use(
 );
 
 // --- AUTH FUNKTIONEN ---
-
 export const loginUser = async (email, password) => {
   const formData = new URLSearchParams();
   formData.append('username', email);
@@ -77,6 +76,18 @@ export const createCouple = async (coupleData) => {
   } catch (error) {
     throw new Error(error.response?.data?.detail || 'Fehler beim Erstellen des Paares');
   }
+};
+
+// Holt alle Wertungen für eine spezifische Paar-ID
+export const getRatingsByCoupleId = async (coupleId) => {
+  const response = await apiClient.get(`/ratings/couple/${coupleId}`);
+  return response.data;
+};
+
+// Holt die Detail-Informationen für eine spezifische Paar-ID
+export const getCoupleById = async (coupleId) => {
+  const response = await apiClient.get(`/couples/${coupleId}`);
+  return response.data;
 };
 
 export const updateCouple = async (coupleId, coupleData) => {
