@@ -1,0 +1,22 @@
+# /DaSpCoRate/frontend/Dockerfile.dev
+
+# 1. Start-Image für Node.js
+FROM node:20-alpine
+
+# 2. Arbeitsverzeichnis im Container
+WORKDIR /app
+
+# 3. Kopiere package.json
+COPY package*.json ./
+
+# 4. Installiere die Frontend-Abhängigkeiten
+RUN npm install
+
+# 5. Kopiere den gesamten Frontend-Code
+COPY . .
+
+# 6. Exponiere den Vite-Port
+EXPOSE 5173
+
+# 7. Starte den Vite-Entwicklungs-Server
+CMD ["npm", "run", "dev"]

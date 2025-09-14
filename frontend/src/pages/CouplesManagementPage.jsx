@@ -7,6 +7,7 @@ import { ClipLoader } from 'react-spinners';
 import { useTheme } from '../context/ThemeContext';
 
 const START_GROUPS = [
+  { value: 'Mas V', label: 'Masters V (Mas V)' },
   { value: 'Mas IV', label: 'Masters IV (Mas IV)' },
   { value: 'Mas III', label: 'Masters III (Mas III)' },
   { value: 'Mas II', label: 'Masters II (Mas II)' },
@@ -39,7 +40,7 @@ function CouplesManagementPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const initialCoupleData = {
     mr_first_name: '', mrs_first_name: '', start_group: '', start_class: '',
-    dance_style: '', email: '', password: '',
+    dance_style: '',phone_number:'', email: '', password: '',
   };
   const [newCoupleData, setNewCoupleData] = useState(initialCoupleData);
 
@@ -198,6 +199,7 @@ function CouplesManagementPage() {
                 <tr key={couple.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{couple.mrs_first_name} & {couple.mr_first_name}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{couple.start_group} - {couple.start_class}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{couple.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
                     <button
@@ -223,23 +225,27 @@ function CouplesManagementPage() {
       {/* Modal zum Hinzufügen eines Paares */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Neues Paar hinzufügen">
         <form onSubmit={handleAddCoupleSubmit} className="space-y-4">
-          <input name="mr_first_name" value={newCoupleData.mr_first_name} onChange={handleInputChange} placeholder="Vorname Herr" required className={commonInputClasses} />
-          <input name="mrs_first_name" value={newCoupleData.mrs_first_name} onChange={handleInputChange} placeholder="Vorname Dame" required className={commonInputClasses} />
-          
-          {/* GEÄNDERT: Text-Inputs durch Select-Dropdowns ersetzt */}
-          <select name="start_group" value={newCoupleData.start_group} onChange={handleInputChange} required className={commonInputClasses}>
-            <option value="" disabled>Startgruppe auswählen...</option>
-            {START_GROUPS.map(group => <option key={group.value} value={group.value}>{group.label}</option>)}
-          </select>
-          <select name="start_class" value={newCoupleData.start_class} onChange={handleInputChange} required className={commonInputClasses}>
-            <option value="" disabled>Klasse auswählen...</option>
-            {START_CLASSES.map(cls => <option key={cls.value} value={cls.value}>{cls.label}</option>)}
-          </select>
-          <select name="dance_style" value={newCoupleData.dance_style} onChange={handleInputChange} required className={commonInputClasses}>
-            <option value="" disabled>Tanzstil auswählen...</option>
-            {DANCE_STYLES.map(style => <option key={style.value} value={style.value}>{style.label}</option>)}
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input name="mrs_first_name" value={newCoupleData.mrs_first_name} onChange={handleInputChange} placeholder="Vorname Dame" required className={commonInputClasses} />
+            <input name="mr_first_name" value={newCoupleData.mr_first_name} onChange={handleInputChange} placeholder="Vorname Herr" required className={commonInputClasses} />
+          </div>
 
+          <div className="gap-4">
+            <select name="start_group" value={newCoupleData.start_group} onChange={handleInputChange} required className={commonInputClasses}>
+              <option value="" disabled>Startgruppe auswählen...</option>
+              {START_GROUPS.map(group => <option key={group.value} value={group.value}>{group.label}</option>)}
+            </select>
+            <select name="start_class" value={newCoupleData.start_class} onChange={handleInputChange} required className={commonInputClasses}>
+              <option value="" disabled>Klasse auswählen...</option>
+              {START_CLASSES.map(cls => <option key={cls.value} value={cls.value}>{cls.label}</option>)}
+            </select>
+            <select name="dance_style" value={newCoupleData.dance_style} onChange={handleInputChange} required className={commonInputClasses}>
+              <option value="" disabled>Tanzstil auswählen...</option>
+              {DANCE_STYLES.map(style => <option key={style.value} value={style.value}>{style.label}</option>)}
+            </select>
+          </div>
+
+          <input name="phone_number" type="tel" value={newCoupleData.phone_number} onChange={handleInputChange} placeholder="Mobil (Optional)" optional className={commonInputClasses} />
           <input name="email" type="email" value={newCoupleData.email} onChange={handleInputChange} placeholder="E-Mail" required className={commonInputClasses} />
           <input name="password" type="password" value={newCoupleData.password} onChange={handleInputChange} placeholder="Passwort (min. 8 Zeichen)" required className={commonInputClasses} />
           
@@ -254,23 +260,28 @@ function CouplesManagementPage() {
       {editingCoupleData && (
       <Modal isOpen={isEditModalOpen} onClose={closeEditModal} title="Paardaten bearbeiten">
         <form onSubmit={handleUpdateCoupleSubmit} className="space-y-4">
-          <input name="mr_first_name" value={editingCoupleData.mr_first_name} onChange={handleEditInputChange} placeholder="Vorname Herr" required className={commonInputClasses} />
-          <input name="mrs_first_name" value={editingCoupleData.mrs_first_name} onChange={handleEditInputChange} placeholder="Vorname Dame" required className={commonInputClasses} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input name="mrs_first_name" value={editingCoupleData.mrs_first_name} onChange={handleEditInputChange} placeholder="Vorname Dame" required className={commonInputClasses} />
+            <input name="mr_first_name" value={editingCoupleData.mr_first_name} onChange={handleEditInputChange} placeholder="Vorname Herr" required className={commonInputClasses} />
+          </div>
+
+          <div className="gap-4">
+            <select name="start_group" value={editingCoupleData.start_group} onChange={handleEditInputChange} required className={commonInputClasses}>
+              <option value="" disabled>Startgruppe auswählen...</option>
+              {START_GROUPS.map(group => <option key={group.value} value={group.value}>{group.label}</option>)}
+            </select>
+            <select name="start_class" value={editingCoupleData.start_class} onChange={handleEditInputChange} required className={commonInputClasses}>
+              <option value="" disabled>Klasse auswählen...</option>
+              {START_CLASSES.map(cls => <option key={cls.value} value={cls.value}>{cls.label}</option>)}
+            </select>
+            <select name="dance_style" value={editingCoupleData.dance_style} onChange={handleEditInputChange} required className={commonInputClasses}>
+              <option value="" disabled>Tanzstil auswählen...</option>
+              {DANCE_STYLES.map(style => <option key={style.value} value={style.value}>{style.label}</option>)}
+            </select>
+          </div>
           
-          {/* GEÄNDERT: Auch hier die Dropdowns verwenden für Konsistenz */}
-          <select name="start_group" value={editingCoupleData.start_group} onChange={handleEditInputChange} required className={commonInputClasses}>
-            <option value="" disabled>Startgruppe auswählen...</option>
-            {START_GROUPS.map(group => <option key={group.value} value={group.value}>{group.label}</option>)}
-          </select>
-          <select name="start_class" value={editingCoupleData.start_class} onChange={handleEditInputChange} required className={commonInputClasses}>
-            <option value="" disabled>Klasse auswählen...</option>
-            {START_CLASSES.map(cls => <option key={cls.value} value={cls.value}>{cls.label}</option>)}
-          </select>
-          <select name="dance_style" value={editingCoupleData.dance_style} onChange={handleEditInputChange} required className={commonInputClasses}>
-            <option value="" disabled>Tanzstil auswählen...</option>
-            {DANCE_STYLES.map(style => <option key={style.value} value={style.value}>{style.label}</option>)}
-          </select>
-            
+          <input name="phone_number" type="tel" value={editingCoupleData.phone_number} onChange={handleInputChange} placeholder="Mobil (Optional)" optional className={commonInputClasses} />
+
           <div className="flex justify-end mt-4">
             <button type="button" onClick={closeEditModal} className="bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded mr-2">Abbrechen</button>
             <button type="submit" className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Änderungen speichern</button>

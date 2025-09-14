@@ -1,20 +1,17 @@
-# /DaSpCoRate/docker-compose.yml
+# /DaSpCoRate/docker-compose.yml (FINALE VERSION)
 
 services:
   db:
     image: mysql:8.0
     container_name: daspcorate_mysql_db
-    environment:
-      MYSQL_ROOT_PASSWORD: RootDSCRBW790356
-      MYSQL_DATABASE: daspcorate_db
-      MYSQL_USER: DSPCR_Admin
-      MYSQL_PASSWORD: DSCRBW790356
+    env_file:
+      - ./.env  # <-- Liest jetzt aus der zentralen Datei
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pRootDSCRBW790356"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,37 +21,30 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    environment:
-      PYTHONDONTWRITEBYTECODE: 1
-      MAIL_USERNAME: "daspcorate@gmail.com"
-      MAIL_PASSWORD: "hmrw adyv epby wmat"
-      MAIL_FROM: "daspcorate@gmail.com"
-      MAIL_PORT: 587
-      MAIL_SERVER: "smtp.gmail.com"
-      MAIL_STARTTLS: "True"
-      MAIL_SSL_TLS: "False"
     container_name: daspcorate_backend
+    env_file:
+      - ./.env  # <-- Liest jetzt auch aus der zentralen Datei
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/code  # Synchronisiert deinen Code live in den Container
-    env_file:
-      - ./backend/.env # Lädt die .env-Datei in den Container
+      - ./backend:/code
     depends_on:
       db:
-        condition: service_healthy # Wartet, bis die DB gesund ist
+        condition: service_healthy
     restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: daspcorate_frontend
     ports:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules # Wichtige Zeile, um node_modules im Container zu behalten
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
     depends_on:
       - backend
     restart: unless-stopped
