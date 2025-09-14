@@ -47,7 +47,7 @@ function ContactPage() {
             Kontakt & Feedback
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Hast du Fragen, Anregungen oder Feedback zur App? Ich freue mich auf deine Nachricht!
+            Hast du Fragen, Anregungen oder Feedback zur DanSCoR App? Ich freue mich auf deine Nachricht!
           </p>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

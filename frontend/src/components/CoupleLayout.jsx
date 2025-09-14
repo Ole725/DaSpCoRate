@@ -35,7 +35,7 @@ function CoupleLayout() {
       <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-green-600 dark:text-green-400">
-            <Link to="/couple-dashboard">DaSpCoRate</Link>: {`${user.mrs_first_name} & ${user.mr_first_name}`}
+            <Link to="/couple-dashboard">DanSCoR</Link>: {`${user.mrs_first_name} & ${user.mr_first_name}`}
           </h1>
 
           <nav className="hidden md:flex items-center">

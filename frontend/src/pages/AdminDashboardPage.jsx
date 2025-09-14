@@ -53,7 +53,7 @@ function AdminDashboardPage() {
         Willkommen, {user?.email || 'Admin'}!
       </h1>
       <p className="text-gray-600 dark:text-gray-400 mb-8">
-        Dies ist die globale Übersicht aller Aktivitäten in der DaSpCoRate-App.
+        Dies ist die globale Übersicht aller Aktivitäten in der DanSCoR-App.
       </p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

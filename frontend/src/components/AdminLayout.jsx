@@ -38,7 +38,7 @@ const AdminLayout = () => {
       <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
-            <Link to="/admin">DaSpCoRate Admin</Link>: {user.email}
+            <Link to="/admin">DanSCoR Admin</Link>: {user.email}
           </h1>
 
           {/* Desktop Navigation */}

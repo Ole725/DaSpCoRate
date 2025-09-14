@@ -46,7 +46,7 @@ function LoginPage() {
       {/* ... Rest der Komponente bleibt unverändert ... */}
        <header className="bg-white dark:bg-gray-800 shadow-md">
         <div className="container mx-auto p-4 flex justify-center items-center">
-          <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400">DaSpCoRate</h1>
+          <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400">DanSCoR</h1>
         </div>
       </header>
       
@@ -54,8 +54,8 @@ function LoginPage() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-4xl w-full flex flex-col md:flex-row overflow-hidden">
           <div className="w-full md:w-1/2 bg-blue-600 dark:bg-blue-700 text-white p-12 flex flex-col justify-center items-center text-center">
             <div className="flex items-center justify-center text-6xl mb-4 text-blue-200 gap-1"><MdMan /><MdWoman /></div>
-            <h1 className="text-3xl font-bold mb-2">Willkommen bei DaSpCoRate</h1>
-            <p className="text-blue-100 mb-6">Dein digitaler Begleiter für präzise Tanzsport-Bewertungen.</p>
+            <h1 className="text-3xl font-bold mb-2">Willkommen bei DanSCoR</h1>
+            <p className="text-blue-100 mb-6">Dein digitaler Begleiter für Trainings-Bewertungen.</p>
           </div>
           <div className="w-full md:w-1/2 p-8">
             <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200 mb-8">Anmelden</h2>

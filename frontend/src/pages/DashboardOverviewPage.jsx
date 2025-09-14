@@ -69,7 +69,7 @@ const DashboardOverviewPage = () => {
         Willkommen zurück, {user ? user.first_name : 'Trainer'}!
       </h2>
       <p className="text-gray-600 dark:text-gray-400 mb-6">
-        Hier ist eine Zusammenfassung deiner Aktivitäten in der DaSpCoRate-App.
+        Hier ist eine Zusammenfassung deiner Aktivitäten in der DanSCoR-App.
       </p>
       {/* GEÄNDERT: Grid-Layout für drei Spalten auf mittleren Bildschirmen */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
