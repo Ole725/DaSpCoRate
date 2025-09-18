@@ -1,4 +1,4 @@
-# /DaSpCoRate/cloudbuild.yaml
+# /DaSpCoRate/cloudbuild.yaml (Finale, korrigierte Version)
 
 steps:
 # --- Schritt 1: Backend-Image bauen ---
@@ -11,7 +11,6 @@ steps:
     - './backend'
 
 # --- Schritt 2: Frontend-Image bauen ---
-# Wir übergeben die Backend-URL als Build-Argument
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build Frontend'
   args:
@@ -29,11 +28,10 @@ steps:
     - 'push'
     - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/backend:latest'
 - name: 'gcr.io/cloud-builders/docker'
-  waitFor: ['Push Images'] 
+  waitFor: ['Push Images']
   args:
     - 'push'
     - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest'
-
 
 # --- Schritt 4: Backend auf Cloud Run deployen ---
 - name: 'gcr.io/google.com/sdk/gcloud'
@@ -69,3 +67,7 @@ steps:
 images:
 - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/backend:latest'
 - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest'
+
+# Definiert die Logging-Option explizit, um den Fehler zu beheben.
+options:
+  logging: CLOUD_LOGGING_ONLY
