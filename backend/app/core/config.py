@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = [
         "http://localhost:5173",
         "http://localhost",
-        "https://daspcorate-frontend-139554468209.europe-west3.run.app"
+        "https://daspcorate-frontend-139554468209.europe-west3.run.app",
         "https://danscor.app",
         "https://www.danscor.app"
     ]
