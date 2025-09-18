@@ -1,40 +1,26 @@
-# /DaSpCoRate/cloudbuild.yaml (Finale, korrigierte Version)
+# /DaSpCoRate/cloudbuild.yaml (Finale Version mit korrigiertem Builder-Pfad)
 
 steps:
 # --- Schritt 1: Backend-Image bauen ---
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build Backend'
-  args:
-    - 'build'
-    - '-t'
-    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/backend:latest'
-    - './backend'
+  args: [ 'build', '-t', 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/backend:latest', './backend' ]
 
 # --- Schritt 2: Frontend-Image bauen ---
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build Frontend'
-  args:
-    - 'build'
-    - '-t'
-    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest'
-    - '--build-arg'
-    - 'VITE_API_URL=${_VITE_API_URL}'
-    - './frontend'
+  args: [ 'build', '-t', 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest', '--build-arg', 'VITE_API_URL=${_VITE_API_URL}', './frontend' ]
 
 # --- Schritt 3: Images in die Artifact Registry hochladen ---
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push Images'
-  args:
-    - 'push'
-    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/backend:latest'
+  args: [ 'push', 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/backend:latest' ]
 - name: 'gcr.io/cloud-builders/docker'
   waitFor: ['Push Images']
-  args:
-    - 'push'
-    - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest'
+  args: [ 'push', 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest' ]
 
 # --- Schritt 4: Backend auf Cloud Run deployen ---
-- name: 'gcr.io/google.com/sdk/gcloud'
+- name: 'us-docker.pkg.dev/cloud-builders/gcloud'
   id: 'Deploy Backend'
   waitFor: ['Push Images']
   args:
@@ -49,7 +35,7 @@ steps:
     - '--update-env-vars=DATABASE_URL=${_DATABASE_URL},SECRET_KEY=${_SECRET_KEY},ALGORITHM=HS256,ACCESS_TOKEN_EXPIRE_MINUTES=30'
 
 # --- Schritt 5: Frontend auf Cloud Run deployen ---
-- name: 'gcr.io/google.com/sdk/gcloud'
+- name: 'us-docker.pkg.dev/cloud-builders/gcloud'
   id: 'Deploy Frontend'
   waitFor: ['Push Images']
   args:
@@ -63,11 +49,9 @@ steps:
     - '--allow-unauthenticated'
     - '--quiet'
 
-# Definiert, welche Images am Ende gespeichert werden sollen
 images:
 - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/backend:latest'
 - 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest'
 
-# Definiert die Logging-Option explizit, um den Fehler zu beheben.
 options:
   logging: CLOUD_LOGGING_ONLY
