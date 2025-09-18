@@ -15,7 +15,7 @@ steps:
   waitFor: ['Push Images']
   args: [ 'push', 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest' ]
 
-# --- Schritt 4: Backend auf Cloud Run deployen (mit Secret Manager) ---
+# --- Start von Schritt 4: Diesen kompletten Block ersetzen ---
 - name: 'google/cloud-sdk'
   id: 'Deploy Backend'
   entrypoint: gcloud
@@ -29,9 +29,8 @@ steps:
     - '--platform=managed'
     - '--quiet'
     - '--set-cloudsql-instances=${_DB_CONNECTION_NAME}'
-    # Wir holen die DATABASE_URL jetzt sicher aus dem Secret Manager
+    - '--remove-env-vars=DATABASE_URL'
     - '--set-secrets=DATABASE_URL=daspcorate-database-url:latest'
-    # Die restlichen Variablen sind unkritisch und können so bleiben
     - '--update-env-vars=SECRET_KEY=${_SECRET_KEY},ALGORITHM=HS256,ACCESS_TOKEN_EXPIRE_MINUTES=30'
 
 # --- Schritt 5: Frontend auf Cloud Run deployen (mit neuem Image) ---
