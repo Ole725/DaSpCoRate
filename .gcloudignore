@@ -1,0 +1,20 @@
+# /DaSpCoRate/.gcloudignore
+
+# Diese Datei überschreibt die Standard-Ignore-Regeln von gcloud.
+
+# Zuerst ignorieren wir alles, was in der .gitignore steht.
+.gitignore
+
+# Explizit das Git-Verzeichnis ignorieren.
+.git/
+
+# Explizit alle node_modules Verzeichnisse ignorieren.
+node_modules/
+frontend/node_modules/
+
+# Explizit sensible und generierte Dateien ignorieren.
+.env
+env.yaml
+
+# Das Ergebnis des Frontend-Builds ignorieren, da es im Container passiert.
+frontend/dist/
