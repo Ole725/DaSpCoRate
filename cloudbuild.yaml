@@ -15,7 +15,7 @@ steps:
   waitFor: ['Push Images']
   args: [ 'push', 'europe-west3-docker.pkg.dev/$PROJECT_ID/daspcorate-repo/frontend:latest' ]
 
-# --- Start von Schritt 4: Diesen kompletten Block ersetzen ---
+# --- Schritt 4: Backend auf Cloud Run deployen (Finale Version mit Brevo) ---
 - name: 'google/cloud-sdk'
   id: 'Deploy Backend'
   entrypoint: gcloud
@@ -29,9 +29,9 @@ steps:
     - '--platform=managed'
     - '--quiet'
     - '--set-cloudsql-instances=${_DB_CONNECTION_NAME}'
-    - '--remove-env-vars=DATABASE_URL'
-    - '--set-secrets=DATABASE_URL=daspcorate-database-url:latest'
-    - '--update-env-vars=SECRET_KEY=${_SECRET_KEY},ALGORITHM=HS256,ACCESS_TOKEN_EXPIRE_MINUTES=30'
+    - '--remove-env-vars=DATABASE_URL,MAIL_PASSWORD' # Alte Vars entfernen
+    - '--set-secrets=DATABASE_URL=daspcorate-database-url:latest,MAIL_PASSWORD=brevo-smtp-key:latest'
+    - '--update-env-vars=SECRET_KEY=${_SECRET_KEY},ALGORITHM=HS256,ACCESS_TOKEN_EXPIRE_MINUTES=30,MAIL_USERNAME=${_BREVO_USERNAME},MAIL_SERVER=smtp-relay.brevo.com,MAIL_FROM=noreply@danscor.app'
 
 # --- Schritt 5: Frontend auf Cloud Run deployen (mit neuem Image) ---
 - name: 'google/cloud-sdk'

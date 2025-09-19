@@ -31,8 +31,8 @@ function DatenschutzPage() {
               [Wulfsiepen 17, 44267 Dortmund]
               <br />
               E-Mail:{" "}
-              <a href="mailto:daspcotarte@gmail.com" className="text-blue-600 dark:text-blue-400">
-                daspcotarte@gmail.com
+              <a href="mailto:daspcorate@gmail.com" className="text-blue-600 dark:text-blue-400">
+                daspcorate@gmail.com
               </a>
             </p>
           </div>
@@ -46,37 +46,90 @@ function DatenschutzPage() {
               <li>
                 <strong>Tanzpaare:</strong> Vornamen, E-Mail-Adresse, Startgruppe, Startklasse, Tanzstil.
               </li>
+              <li>
+                <strong>Bewertungsdaten:</strong> Daten, die im Rahmen von Trainingsbewertungen durch Trainer und Paare entstehen.
+              </li>
+              <li>
+                <strong>Nutzungs- und Metadaten:</strong> IP-Adresse, Zugriffszeitpunkt, Browser-Informationen, die beim Zugriff auf unsere Anwendung technisch bedingt anfallen.
+              </li>
             </ul>
           </div>
           
           <div>
-            <h2>3. Zweck und Rechtsgrundlage</h2>
+            <h2>3. Zweck und Rechtsgrundlage der Verarbeitung</h2>
             <p>
-              Die Daten werden ausschließlich zur Organisation des Tanztrainings und
-              zur Kommunikation innerhalb der App verarbeitet. Rechtsgrundlage
-              ist die von der betroffenen Person erteilte Einwilligung gemäß Art. 6 Abs. 1
-              lit. a DSGVO.
+              Die Verarbeitung Ihrer Daten erfolgt zu folgenden Zwecken und auf Basis der folgenden Rechtsgrundlagen:
+            </p>
+            <ul>
+                <li>
+                    <strong>Zur Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO):</strong> Die Verarbeitung der unter Punkt 2 genannten Daten ist erforderlich, um Ihnen die Kernfunktionen der App bereitzustellen, das Training zu organisieren und die Kommunikation zwischen den Nutzergruppen zu ermöglichen.
+                </li>
+                <li>
+                    <strong>Aufgrund Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO):</strong> Für bestimmte Funktionen, wie z.B. den Versand von Benachrichtigungen, holen wir Ihre explizite Einwilligung ein.
+                </li>
+                <li>
+                    <strong>Aufgrund unseres berechtigten Interesses (Art. 6 Abs. 1 lit. f DSGVO):</strong> Wir verarbeiten Nutzungs- und Metadaten, um die Stabilität und Sicherheit unserer Anwendung zu gewährleisten und zu verbessern.
+                </li>
+            </ul>
+          </div>
+
+          <div>
+            <h2>4. Hosting und externe Dienstleister</h2>
+            <p>
+              Um einen sicheren und zuverlässigen Betrieb unserer Anwendung zu gewährleisten, nutze ich die Dienste eines externen Hosting-Anbieters.
+            </p>
+            <p>
+              <strong>Anbieter:</strong> Google Cloud Platform (GCP)
+              <br />
+              <strong>Betreiber:</strong> Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.
+              <br />
+              <strong>Serverstandort:</strong> Frankfurt am Main, Deutschland (Region europe-west3).
+            </p>
+            <p>
+              Im Rahmen des Hostings werden alle unter Punkt 2 genannten Daten sowie technische Server-Logfiles 
+              auf den Servern von Google verarbeitet und gespeichert. Dies ist notwendig, um die Anwendung bereitzustellen. 
+              Mein berechtigtes Interesse liegt hierbei in einer effizienten und sicheren Zurverfügungstellung meines 
+              Online-Angebots.
+            </p>
+            <p>
+              Ich habe mit Google einen **Auftragsverarbeitungsvertrag (AVV)** gemäß Art. 28 DSGVO abgeschlossen. 
+              Dieser Vertrag stellt sicher, dass Google die Daten der Nutzer dieser App nur im Rahmen meiner 
+              Weisungen und unter Einhaltung der DSGVO verarbeitet. Obwohl der primäre Serverstandort in Deutschland ist, 
+              kann es in Support- und Wartungsfällen zu Zugriffen aus Drittländern kommen. Diese Zugriffe sind durch 
+              EU-Standardvertragsklauseln abgesichert, um ein angemessenes Datenschutzniveau zu gewährleisten.
             </p>
           </div>
 
           <div>
-            <h2>4. Empfänger der Daten</h2>
+            <h2>5. Empfänger der Daten</h2>
             <p>
-              Die Daten werden nur innerhalb der App verwendet und sind nur für den jeweils zugehörigen Trainer und das Paar selbst einsehbar. Eine Weitergabe
-              an externe Dritte erfolgt nicht.
+              Innerhalb der Anwendung sind Ihre Daten nur für die zur Erfüllung der 
+              App-Funktionen notwendigen Parteien einsehbar (z.B. zugehöriger Trainer, das Paar selbst, Administratoren).
+            </p>
+            <p>
+              Eine Weitergabe an externe Dritte erfolgt nicht, mit Ausnahme unseres Hosting-Anbieters Google Cloud Platform, 
+              wie in Punkt 4 beschrieben.
+            </p>
+          </div>
+
+
+          <div>
+            <h2>6. Speicherdauer</h2> {/* Nummerierung angepasst */}
+            <p>
+              Ihre personenbezogenen Daten werden gelöscht, sobald der Zweck der Speicherung entfällt, 
+              Sie Ihr Konto löschen oder Ihre Einwilligung widerrufen.
             </p>
           </div>
 
           <div>
-            <h2>5. Speicherdauer</h2>
+            <h2>7. Rechte der Betroffenen</h2> {/* Nummerierung angepasst */}
             <p>
-              Die Daten werden gelöscht, sobald sie für die Organisation nicht mehr
-              erforderlich sind oder Sie Ihre Einwilligung widerrufen und Ihr Konto löschen.
+                Sie haben jederzeit das Recht auf Auskunft, Berichtigung, Löschung, 
+                Einschränkung der Verarbeitung, Widerspruch gegen die Verarbeitung 
+                sowie das Recht auf Datenübertragbarkeit. Um diese Rechte auszuüben, 
+                können Sie mich unter der in Punkt 1 genannten E-Mail-Adresse kontaktieren. 
+                Ihnen steht zudem ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu.
             </p>
-          </div>
-
-          <div>
-            <h2>6. Rechte der Betroffenen</h2>
             <ul>
               <li>Auskunft (Art. 15 DSGVO)</li>
               <li>Berichtigung (Art. 16 DSGVO)</li>
@@ -89,9 +142,9 @@ function DatenschutzPage() {
           </div>
 
           <div>
-            <h2>7. Änderungen dieser Erklärung</h2>
+            <h2>8. Änderungen dieser Erklärung</h2>
             <p>
-              Wir behalten uns vor, diese Datenschutzerklärung anzupassen, um sie an
+              Ich behalte mir vor, diese Datenschutzerklärung anzupassen, um sie an
               geänderte rechtliche Anforderungen oder Änderungen der App anzupassen.
             </p>
           </div>
