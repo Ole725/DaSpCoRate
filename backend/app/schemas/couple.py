@@ -29,10 +29,11 @@ class CoupleUpdate(BaseModel):
     phone_number: Optional[str] = None
 
 # Schema für das Lesen eines Paares aus der Datenbank
-# 'password_hash' wird hier NICHT zurückgegeben.
 class CoupleInDB(CoupleBase):
     id: int
     role: str
     created_at: datetime
+    consent_given_at: Optional[datetime] = None
+    consent_token: Optional[str] = None
 
-    model_config = ConfigDict(from_attributes=True) # Pydantic V2 Anpassung
+    model_config = ConfigDict(from_attributes=True)
