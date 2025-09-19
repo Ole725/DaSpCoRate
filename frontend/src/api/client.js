@@ -263,6 +263,18 @@ export const getAllSessionsForAdmin = async () => {
   }
 };
 
+// Holt die Liste der Paare, deren Einwilligung aussteht
+export const getPendingConsentCouples = async () => {
+  const response = await apiClient.get('/consent/admin/pending-consent');
+  return response.data;
+};
+
+// Löst den Versand der Einwilligungs-E-Mails aus
+export const sendConsentEmails = async () => {
+  const response = await apiClient.post('/consent/admin/send-consent-emails');
+  return response.data;
+};
+
 export const getAdminStats = async () => {
   try {
     const response = await apiClient.get('/admin/stats');

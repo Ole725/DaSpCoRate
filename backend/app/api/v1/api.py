@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth, users_ops, couple_ops, sessions, enrollment_ops, ratings, contact, admin_ops, trainer_ops
+from app.api.v1.endpoints import auth, users_ops, couple_ops, sessions, enrollment_ops, ratings, contact, admin_ops, trainer_ops, consent
 from .endpoints import contact
 
 # Erstelle einen Haupt-Router für die Version v1 der API
@@ -17,4 +17,5 @@ api_router.include_router(enrollment_ops.router, prefix="/enrollments", tags=["e
 api_router.include_router(ratings.router, prefix="/ratings", tags=["ratings"])
 api_router.include_router(contact.router, prefix="/contact", tags=["contact"])
 api_router.include_router(admin_ops.router, prefix="/admin", tags=["admin"])
-api_router.include_router(trainer_ops.router, prefix="/trainers", tags=["Trainer Management (Admin)"]) 
+api_router.include_router(trainer_ops.router, prefix="/trainers", tags=["Trainer Management (Admin)"])
+api_router.include_router(consent.router, prefix="/consent", tags=["Consent"])

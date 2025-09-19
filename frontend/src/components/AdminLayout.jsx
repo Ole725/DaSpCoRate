@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { useTheme } from '../context/ThemeContext';
-import { FaSun, FaMoon, FaTachometerAlt, FaChalkboardTeacher, FaUsers } from 'react-icons/fa';
+import { FaSun, FaMoon, FaTachometerAlt, FaChalkboardTeacher, FaUsers, FaEnvelopeOpenText } from 'react-icons/fa';
 import Footer from './Footer';
 
 const AdminLayout = () => {
@@ -27,6 +27,7 @@ const AdminLayout = () => {
     { id: 1, text: 'Admin Übersicht', to: '/admin', icon: <FaTachometerAlt /> },
     { id: 2, text: 'Trainer verwalten', to: '/admin/trainers', icon: <FaChalkboardTeacher /> },
     { id: 3, text: 'Paare verwalten', to: '/admin/couples', icon: <FaUsers /> },
+    { id: 4, text: 'Einwilligungen', to: '/admin/consent', icon: <FaEnvelopeOpenText /> },
   ];
 
   if (!user) {
@@ -54,7 +55,6 @@ const AdminLayout = () => {
                       }`
                     }
                   >
-                    {/* HINZUGEFÜGT: Icon wird hier angezeigt */}
                     <span className="mr-2">{item.icon}</span>
                     {item.text}
                   </NavLink>

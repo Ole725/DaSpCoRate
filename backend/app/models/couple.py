@@ -19,6 +19,8 @@ class Couple(Base):
     phone_number = Column(String(50), nullable=True)
     role = Column(String(50), default='couple')
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    consent_given_at = Column(DateTime(timezone=True), nullable=True)
+    consent_token = Column(String(255), nullable=True, unique=True, index=True)
 
     # Beziehung zu den Bewertungen, die dieses Paar erhalten hat
     ratings = relationship(

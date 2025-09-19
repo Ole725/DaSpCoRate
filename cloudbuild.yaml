@@ -29,9 +29,9 @@ steps:
     - '--platform=managed'
     - '--quiet'
     - '--set-cloudsql-instances=${_DB_CONNECTION_NAME}'
-    - '--remove-env-vars=DATABASE_URL,MAIL_PASSWORD' # Alte Vars entfernen
+    - '--remove-env-vars=DATABASE_URL,MAIL_PASSWORD'
     - '--set-secrets=DATABASE_URL=daspcorate-database-url:latest,MAIL_PASSWORD=brevo-smtp-key:latest'
-    - '--update-env-vars=SECRET_KEY=${_SECRET_KEY},ALGORITHM=HS256,ACCESS_TOKEN_EXPIRE_MINUTES=30,MAIL_USERNAME=${_BREVO_USERNAME},MAIL_SERVER=smtp-relay.brevo.com,MAIL_FROM=noreply@danscor.app'
+    - '--update-env-vars=SECRET_KEY=${_SECRET_KEY},ALGORITHM=HS256,ACCESS_TOKEN_EXPIRE_MINUTES=30,MAIL_USERNAME=${_BREVO_USERNAME},MAIL_SERVER=smtp-relay.brevo.com,MAIL_FROM=noreply@danscor.app,FRONTEND_URL=${_FRONTEND_URL}'
 
 # --- Schritt 5: Frontend auf Cloud Run deployen (mit neuem Image) ---
 - name: 'google/cloud-sdk'

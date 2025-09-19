@@ -213,14 +213,71 @@ function CoupleManagementPage() {
             {/* --- MODALS --- */}
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Neues Paar hinzufügen">
                 <form onSubmit={handleAddCoupleSubmit} className="space-y-4">
-                    {/* ... Formularfelder wie gehabt ... */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" name="mrs_first_name" placeholder="Vorname Dame" onChange={handleInputChange} value={newCoupleData.mrs_first_name} className={commonInputClasses} required />
+                        <input type="text" name="mr_first_name" placeholder="Vorname Herr" onChange={handleInputChange} value={newCoupleData.mr_first_name} className={commonInputClasses} required />
+                        <input type="email" name="email" placeholder="E-Mail" onChange={handleInputChange} value={newCoupleData.email} className={commonInputClasses} required />
+                        <input type="tel" name="phone_number" placeholder="Telefonnummer" onChange={handleInputChange} value={newCoupleData.phone_number} className={commonInputClasses} />
+                        
+                        <select name="start_group" value={newCoupleData.start_group} onChange={handleInputChange} className={commonInputClasses}>
+                            {START_GROUPS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                        </select>
+                        
+                        <select name="start_class" value={newCoupleData.start_class} onChange={handleInputChange} className={commonInputClasses}>
+                            {START_CLASSES.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                        </select>
+                        
+                        <select name="dance_style" value={newCoupleData.dance_style} onChange={handleInputChange} className={`${commonInputClasses} md:col-span-2`}>
+                            {DANCE_STYLES.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                        </select>
+
+                        <input type="password" name="password" placeholder="Initiales Passwort" onChange={handleInputChange} value={newCoupleData.password} className={`${commonInputClasses} md:col-span-2`} required />
+                    </div>
+                    
+                    <div className="flex justify-end pt-4">
+                        <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600 mr-2">
+                            Abbrechen
+                        </button>
+                        <button type="submit" disabled={isActionLoading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400 flex items-center">
+                            {isActionLoading ? <ClipLoader size={20} color="#fff" /> : 'Hinzufügen'}
+                        </button>
+                    </div>
                 </form>
             </Modal>
-            
+
             {editingCoupleData && (
                 <Modal isOpen={isEditModalOpen} onClose={closeEditModal} title="Paardaten bearbeiten">
                     <form onSubmit={handleUpdateCoupleSubmit} className="space-y-4">
-                        {/* ... Formularfelder wie gehabt ... */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="mrs_first_name" placeholder="Vorname Dame" onChange={handleEditInputChange} value={editingCoupleData.mrs_first_name} className={commonInputClasses} required />
+                            <input type="text" name="mr_first_name" placeholder="Vorname Herr" onChange={handleEditInputChange} value={editingCoupleData.mr_first_name} className={commonInputClasses} required />
+                            <input type="email" name="email" placeholder="E-Mail" onChange={handleEditInputChange} value={editingCoupleData.email} className={commonInputClasses} required />
+                            <input type="tel" name="phone_number" placeholder="Telefonnummer" onChange={handleEditInputChange} value={editingCoupleData.phone_number} className={commonInputClasses} />
+
+                            <select name="start_group" value={editingCoupleData.start_group} onChange={handleEditInputChange} className={commonInputClasses}>
+                                {START_GROUPS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                            </select>
+
+                            <select name="start_class" value={editingCoupleData.start_class} onChange={handleEditInputChange} className={commonInputClasses}>
+                                {START_CLASSES.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                            </select>
+
+                            <select name="dance_style" value={editingCoupleData.dance_style} onChange={handleEditInputChange} className={`${commonInputClasses} md:col-span-2`}>
+                                {DANCE_STYLES.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                            </select>
+
+                            {/* Optional: Passwortfeld zum Ändern hinzufügen */}
+                            <input type="password" name="password" placeholder="Neues Passwort (optional)" onChange={handleEditInputChange} className={`${commonInputClasses} md:col-span-2`} />
+                        </div>
+
+                        <div className="flex justify-end pt-4">
+                            <button type="button" onClick={closeEditModal} className="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600 mr-2">
+                                Abbrechen
+                            </button>
+                            <button type="submit" disabled={isActionLoading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400 flex items-center">
+                                {isActionLoading ? <ClipLoader size={20} color="#fff" /> : 'Speichern'}
+                            </button>
+                        </div>
                     </form>
                 </Modal>
             )}

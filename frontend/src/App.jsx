@@ -9,6 +9,7 @@ import AdminLayout from './components/AdminLayout';
 import DashboardLayout from './components/DashboardLayout';
 import CoupleLayout from './components/CoupleLayout';
 import PublicLayout from './components/PublicLayout';
+import ConsentPage from './pages/ConsentPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import DashboardOverviewPage from './pages/DashboardOverviewPage';
 import CouplesManagementPage from './pages/CouplesManagementPage';
@@ -23,6 +24,7 @@ import ContactPage from './pages/ContactPage';
 import LoginPage from './pages/LoginPage';
 import AdminTrainerManagementPage from './pages/AdminTrainerManagementPage';
 import CouplesRatingPage from './pages/CouplesRatingPage';
+import AdminConsentPage from './pages/AdminConsentPage';
 
 function App() {
   const { isAuthenticated, user, loading } = useAuth();
@@ -41,6 +43,7 @@ function App() {
         <Route path="/impressum" element={<ImpressumPage />} />
         <Route path="/datenschutz" element={<DatenschutzPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/consent" element={<ConsentPage />} />
       </Route>
 
       {/* --- GESCHÜTZTE BEREICHE --- */}
@@ -56,6 +59,7 @@ function App() {
           <Route path="trainers" element={<AdminTrainerManagementPage />} />
           <Route path="couples" element={<CouplesManagementPage />} />
           <Route path="wertungen/:coupleId" element={<CouplesRatingPage />} />
+          <Route path="consent" element={<AdminConsentPage />} />
          </Route>
       </Route>
 
