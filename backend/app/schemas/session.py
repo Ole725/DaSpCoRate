@@ -13,7 +13,7 @@ class SessionBase(BaseModel):
 # Schema für die Erstellung einer neuen Session
 class SessionCreate(SessionBase):
     # Trainer-ID wird vom authentifizierten Benutzer abgeleitet, nicht im Request Body mitgegeben
-    criteria: List[str]
+    pass
 
 # Schema für die Aktualisierung einer Session
 class SessionUpdate(SessionBase):

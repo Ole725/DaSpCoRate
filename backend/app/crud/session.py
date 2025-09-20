@@ -25,7 +25,6 @@ def create_session(self, db: Session, session: schemas_session.SessionCreate, tr
         session_date=session.session_date,
         title=session.title,
         trainer_id=trainer_id,  # Die Trainer-ID kommt vom authentifizierten Benutzer
-        criteria=session.criteria
     )
     db.add(db_session)
     db.commit()
