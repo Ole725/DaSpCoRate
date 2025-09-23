@@ -74,6 +74,16 @@ Dank Docker ist die Installation und das Starten der gesamten Anwendung sehr ein
     *   Das **Frontend** ist jetzt unter [http://localhost:5173](http://localhost:5173) erreichbar.
     *   Die **Backend-API-Dokumentation** (Swagger UI) findest du unter [http://localhost:8000/docs](http://localhost:8000/docs).
 
+
+## Danksagung & Genutzte Technologien
+
+DaSpCoRate wurde mit Hilfe fantastischer Open-Source-Technologien entwickelt. Wir danken den Entwicklern und Communitys der folgenden Projekte:
+
+*   **Frontend:** [React](https://reactjs.org/), [Vite](https://vitejs.dev/), [Tailwind CSS](https://tailwindcss.com/)
+*   **Backend:** [FastAPI](https://fastapi.tiangolo.com/), [Pydantic](https://pydantic-docs.helpmanual.io/), [SQLAlchemy](https://www.sqlalchemy.org/)
+*   **Containerisierung:** [Docker](https://www.docker.com/)
+*   **Deployment:** [Google Cloud Platform](https://cloud.google.com/)
+
 ## Lizenz
 
 Dieses Projekt steht unter der MIT-Lizenz.

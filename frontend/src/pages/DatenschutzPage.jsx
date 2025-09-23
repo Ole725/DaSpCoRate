@@ -76,28 +76,37 @@ function DatenschutzPage() {
           <div>
             <h2>4. Hosting und externe Dienstleister</h2>
             <p>
-              Um einen sicheren und zuverlässigen Betrieb unserer Anwendung zu gewährleisten, nutze ich die Dienste eines externen Hosting-Anbieters.
+              Um einen sicheren, zuverlässigen und effizienten Betrieb unserer Anwendung zu gewährleisten, setze ich auf die Dienste spezialisierter, externer Anbieter.
             </p>
-            <p>
-              <strong>Anbieter:</strong> Google Cloud Platform (GCP)
-              <br />
-              <strong>Betreiber:</strong> Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.
-              <br />
-              <strong>Serverstandort:</strong> Frankfurt am Main, Deutschland (Region europe-west3).
-            </p>
-            <p>
-              Im Rahmen des Hostings werden alle unter Punkt 2 genannten Daten sowie technische Server-Logfiles 
-              auf den Servern von Google verarbeitet und gespeichert. Dies ist notwendig, um die Anwendung bereitzustellen. 
-              Mein berechtigtes Interesse liegt hierbei in einer effizienten und sicheren Zurverfügungstellung meines 
-              Online-Angebots.
-            </p>
-            <p>
-              Ich habe mit Google einen **Auftragsverarbeitungsvertrag (AVV)** gemäß Art. 28 DSGVO abgeschlossen. 
-              Dieser Vertrag stellt sicher, dass Google die Daten der Nutzer dieser App nur im Rahmen meiner 
-              Weisungen und unter Einhaltung der DSGVO verarbeitet. Obwohl der primäre Serverstandort in Deutschland ist, 
-              kann es in Support- und Wartungsfällen zu Zugriffen aus Drittländern kommen. Diese Zugriffe sind durch 
-              EU-Standardvertragsklauseln abgesichert, um ein angemessenes Datenschutzniveau zu gewährleisten.
-            </p>
+
+            <div className="pl-4 border-l-2 border-gray-200 dark:border-gray-700 mt-4">
+                <h3 className="!mt-0">4.1 Hosting der Anwendung</h3>
+                <p>
+                    <strong>Anbieter:</strong> Google Cloud Platform (GCP)
+                    <br />
+                    <strong>Betreiber:</strong> Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.
+                    <br />
+                    <strong>Serverstandort:</strong> Frankfurt am Main, Deutschland (Region europe-west3).
+                </p>
+                <p>
+                    Im Rahmen des Hostings werden alle unter Punkt 2 genannten Daten sowie technische Server-Logfiles auf den Servern von Google verarbeitet und gespeichert. Rechtsgrundlage hierfür ist unser berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO) an einer professionellen und sicheren Zurverfügungstellung unseres Angebots. Wir haben mit Google einen <strong>Auftragsverarbeitungsvertrag (AVV)</strong> gemäß Art. 28 DSGVO abgeschlossen.
+                </p>
+            </div>
+
+            <div className="pl-4 border-l-2 border-gray-200 dark:border-gray-700 mt-6">
+                <h3 className="!mt-0">4.2 E-Mail-Versand</h3>
+                <p>
+                    Für den Versand von systemrelevanten E-Mails (sogenannte Transaktions-E-Mails), wie der Einholung Ihrer Einwilligung zur Datenverarbeitung oder Antworten auf Ihre Kontaktanfragen, nutze ich die Dienste des folgenden Anbieters:
+                </p>
+                <p>
+                    <strong>Anbieter:</strong> Brevo (ehemals Sendinblue)
+                    <br />
+                    <strong>Betreiber:</strong> Brevo GmbH, Köpenicker Straße 126, 10179 Berlin, Deutschland.
+                </p>
+                <p>
+                    Hierfür werden Ihre E-Mail-Adresse und Ihr Name sowie der Inhalt der jeweiligen Nachricht an Brevo übermittelt. Die Nutzung eines spezialisierten Dienstleisters ist notwendig, um eine zuverlässige Zustellung dieser wichtigen E-Mails sicherzustellen. Rechtsgrundlage ist die Erfüllung unserer vertraglichen Pflichten (Art. 6 Abs. 1 lit. b DSGVO) sowie unser berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO) an einer sicheren und effizienten Kommunikation. Wir haben mit Brevo ebenfalls einen <strong>Auftragsverarbeitungsvertrag (AVV)</strong> gemäß Art. 28 DSGVO abgeschlossen.
+                </p>
+            </div>
           </div>
 
           <div>
@@ -107,8 +116,7 @@ function DatenschutzPage() {
               App-Funktionen notwendigen Parteien einsehbar (z.B. zugehöriger Trainer, das Paar selbst, Administratoren).
             </p>
             <p>
-              Eine Weitergabe an externe Dritte erfolgt nicht, mit Ausnahme unseres Hosting-Anbieters Google Cloud Platform, 
-              wie in Punkt 4 beschrieben.
+              Eine Weitergabe an externe Dritte erfolgt nicht, mit Ausnahme der unter Punkt 4 genannten Dienstleister (Google Cloud Platform, Brevo).
             </p>
           </div>
 
