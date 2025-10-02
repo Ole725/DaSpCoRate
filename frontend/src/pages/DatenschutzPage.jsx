@@ -52,6 +52,8 @@ function DatenschutzPage() {
               <li>
                 <strong>Nutzungs- und Metadaten:</strong> IP-Adresse, Zugriffszeitpunkt, Browser-Informationen, die beim Zugriff auf unsere Anwendung technisch bedingt anfallen.
               </li>
+              <li><strong>Speicherung von Authentifizierungsinformationen:</strong>Um Ihre Login-Session aufrechtzuerhalten, speichert die App nach erfolgreicher Anmeldung ein fälschungssicheres JSON Web Token (JWT) im localStorage Ihres Browsers. Diese Speicherung ist für die Kernfunktionalität der geschützten Bereiche der Anwendung technisch zwingend erforderlich und erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO. Diese Daten werden nicht für Tracking-Zwecke verwendet und beim Ausloggen wieder entfernt.
+              </li>
             </ul>
           </div>
           
