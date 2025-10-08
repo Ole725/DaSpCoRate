@@ -27,6 +27,7 @@ class CoupleUpdate(BaseModel):
     start_class: Optional[str] = None
     dance_style: Optional[str] = None
     phone_number: Optional[str] = None
+    password: Optional[str] = None
 
 # Schema für das Lesen eines Paares aus der Datenbank
 class CoupleInDB(CoupleBase):

@@ -109,6 +109,9 @@ function CoupleManagementPage() {
         if (!editingCoupleData) return;
         setIsActionLoading(true);
         const { id, ...dataToUpdate } = editingCoupleData;
+        if (!dataToUpdate.password || dataToUpdate.password.trim() === '') {
+        delete dataToUpdate.password;
+        }
         try {
             await updateCouple(id, dataToUpdate);
             toast.success('Paardaten erfolgreich aktualisiert!');

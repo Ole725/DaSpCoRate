@@ -46,10 +46,22 @@ def create_couple(self, db: Session, couple: schemas_couple.CoupleCreate): # <--
 def update_couple(self, db: Session, couple_id: int, couple_in: schemas_couple.CoupleUpdate):
     db_couple = db.query(models_couple.Couple).filter(models_couple.Couple.id == couple_id).first()
     if db_couple:
-        # Pydantic-Modell in ein Dictionary umwandeln und None-Werte ausschließen
-        update_data = couple_in.dict(exclude_unset=True)
+        # Pydantic V2 verwendet .model_dump() anstelle von .dict()
+        update_data = couple_in.model_dump(exclude_unset=True)
+
+        # Prüfen, ob ein neues Passwort zum Aktualisieren gesendet wurde.
+        if "password" in update_data and update_data["password"]:
+            # Das Klartext-Passwort aus den Daten holen UND ENTFERNEN
+            plain_password = update_data.pop("password")
+            # Das Passwort hashen
+            hashed_password = security.get_password_hash(plain_password)
+            # Den Hash in das korrekte Feld des Datenbank-Objekts schreiben
+            db_couple.password_hash = hashed_password
+
+        # Die restlichen, "normalen" Felder aktualisieren
         for key, value in update_data.items():
-            setattr(db_couple, key, value) # Aktualisiert das SQLAlchemy-Objekt
+            setattr(db_couple, key, value)
+            
         db.add(db_couple)
         db.commit()
         db.refresh(db_couple)
