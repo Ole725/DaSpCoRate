@@ -1,5 +1,3 @@
-// /DaSpCoRate/frontend/src/pages/CoupleManagementPage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { getCouples, createCouple, updateCouple, deleteCouple } from '../api/client';
 import toast from 'react-hot-toast';
@@ -56,6 +54,10 @@ function CoupleManagementPage() {
     const [expandedRowId, setExpandedRowId] = useState(null);
     const [isActionLoading, setIsActionLoading] = useState(false);
 
+    // NEU: States für Passwort-Sichtbarkeit
+    const [showCreatePassword, setShowCreatePassword] = useState(false);
+    const [showEditPassword, setShowEditPassword] = useState(false);
+
     // --- DATENABRUF ---
     const fetchCouples = async () => {
         try {
@@ -96,6 +98,7 @@ function CoupleManagementPage() {
             setIsModalOpen(false);
             toast.success('Paar erfolgreich hinzugefügt!');
             setNewCoupleData(INITIAL_FORM_STATE);
+            setShowCreatePassword(false); // Reset Visibility
             await fetchCouples();
         } catch (err) {
             toast.error(err.message);
@@ -117,6 +120,7 @@ function CoupleManagementPage() {
             toast.success('Paardaten erfolgreich aktualisiert!');
             setIsEditModalOpen(false);
             setExpandedRowId(null);
+            setShowEditPassword(false); // Reset Visibility
             await fetchCouples();
         } catch (err) {
             toast.error(err.message);
@@ -142,7 +146,7 @@ function CoupleManagementPage() {
     };
 
     // Modal-Öffnen/Schließen-Funktionen
-    const openEditModal = (couple) => { setEditingCoupleData(couple); setIsEditModalOpen(true); };
+    const openEditModal = (couple) => { setEditingCoupleData(couple); setIsEditModalOpen(true); setShowEditPassword(false); };
     const closeEditModal = () => { setIsEditModalOpen(false); setEditingCoupleData(null); };
     const openDeleteModal = (couple) => { setCoupleToDelete(couple); setIsDeleteModalOpen(true); };
     const closeDeleteModal = () => { setIsDeleteModalOpen(false); setCoupleToDelete(null); };
@@ -155,7 +159,7 @@ function CoupleManagementPage() {
         return <p className="text-red-500 dark:text-red-400 text-center">Fehler beim Laden der Paare: {error}</p>;
     }
 
-    const commonInputClasses = "mb-4 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none focus:shadow-outline";
+    const commonInputClasses = "mb-4 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600";
 
     return (
         <>
@@ -213,7 +217,7 @@ function CoupleManagementPage() {
                 )}
             </div>
             
-            {/* --- MODALS --- */}
+            {/* --- CREATE MODAL --- */}
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Neues Paar hinzufügen">
                 <form onSubmit={handleAddCoupleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -234,7 +238,25 @@ function CoupleManagementPage() {
                             {DANCE_STYLES.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                         </select>
 
-                        <input type="password" name="password" placeholder="Initiales Passwort" onChange={handleInputChange} value={newCoupleData.password} className={`${commonInputClasses} md:col-span-2`} required />
+                        {/* PASSWORT FELD MIT AUGE */}
+                        <div className="relative md:col-span-2 mb-4">
+                             <input 
+                                type={showCreatePassword ? "text" : "password"} 
+                                name="password" 
+                                placeholder="Initiales Passwort" 
+                                onChange={handleInputChange} 
+                                value={newCoupleData.password} 
+                                className="shadow appearance-none border rounded w-full py-2 px-3 pr-10 text-gray-700 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline" 
+                                required 
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowCreatePassword(!showCreatePassword)}
+                                className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            >
+                                {showCreatePassword ? <FaEyeSlash /> : <FaEye />}
+                            </button>
+                        </div>
                     </div>
                     
                     <div className="flex justify-end pt-4">
@@ -248,6 +270,7 @@ function CoupleManagementPage() {
                 </form>
             </Modal>
 
+            {/* --- EDIT MODAL --- */}
             {editingCoupleData && (
                 <Modal isOpen={isEditModalOpen} onClose={closeEditModal} title="Paardaten bearbeiten">
                     <form onSubmit={handleUpdateCoupleSubmit} className="space-y-4">
@@ -269,8 +292,23 @@ function CoupleManagementPage() {
                                 {DANCE_STYLES.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                             </select>
 
-                            {/* Optional: Passwortfeld zum Ändern hinzufügen */}
-                            <input type="password" name="password" placeholder="Neues Passwort (optional)" onChange={handleEditInputChange} className={`${commonInputClasses} md:col-span-2`} />
+                            {/* PASSWORT FELD MIT AUGE (Optional) */}
+                            <div className="relative md:col-span-2 mb-4">
+                                <input 
+                                    type={showEditPassword ? "text" : "password"} 
+                                    name="password" 
+                                    placeholder="Neues Passwort (optional)" 
+                                    onChange={handleEditInputChange} 
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 pr-10 text-gray-700 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEditPassword(!showEditPassword)}
+                                    className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                >
+                                    {showEditPassword ? <FaEyeSlash /> : <FaEye />}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex justify-end pt-4">
@@ -287,7 +325,7 @@ function CoupleManagementPage() {
 
             <Modal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} title="Löschen bestätigen">
                 <div>
-                    <p>Möchtest du das Paar <span className="font-bold">{coupleToDelete?.mr_first_name} & {coupleToDelete?.mrs_first_name}</span> wirklich endgültig löschen?</p>
+                    <p>Möchtest du das Paar <span className="font-bold">{coupleToDelete?.mrs_first_name} & {coupleToDelete?.mr_first_name}</span> wirklich endgültig löschen?</p>
                     <div className="flex justify-end mt-6 space-x-4">
                         <button onClick={closeDeleteModal} className="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600">Abbrechen</button>
                         <button onClick={handleDeleteConfirm} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Löschen</button>

@@ -1,10 +1,12 @@
 // /DaSpCoRate/frontend/src/pages/ResetPasswordPage.jsx
 
+// /DaSpCoRate/frontend/src/pages/ResetPasswordPage.jsx
+
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-// WICHTIG: Auch hier den client.js importieren!
 import apiClient from '../api/client';
 import { toast } from 'react-hot-toast';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Icons importieren
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
@@ -14,6 +16,10 @@ const ResetPasswordPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // States für Sichtbarkeit
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +37,6 @@ const ResetPasswordPage = () => {
     setLoading(true);
 
     try {
-      // Nutzung von apiClient
       await apiClient.post('/auth/reset-password', {
         token: token,
         new_password: password
@@ -66,31 +71,49 @@ const ResetPasswordPage = () => {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="password" class="sr-only">Neues Passwort</label>
+            
+            {/* Feld: Neues Passwort */}
+            <div className="relative">
+              <label htmlFor="password" className="sr-only">Neues Passwort</label>
               <input
                 id="password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Neues Passwort"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 px-3 flex items-center z-20 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
             </div>
-            <div>
-              <label htmlFor="confirm-password" class="sr-only">Passwort bestätigen</label>
+
+            {/* Feld: Bestätigen */}
+            <div className="relative">
+              <label htmlFor="confirm-password" className="sr-only">Passwort bestätigen</label>
               <input
                 id="confirm-password"
                 name="confirm-password"
-                type="password"
+                type={showConfirm ? "text" : "password"}
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Passwort bestätigen"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(!showConfirm)}
+                className="absolute inset-y-0 right-0 px-3 flex items-center z-20 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                {showConfirm ? <FaEyeSlash /> : <FaEye />}
+              </button>
             </div>
           </div>
 
