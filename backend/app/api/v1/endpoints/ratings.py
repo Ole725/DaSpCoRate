@@ -62,7 +62,6 @@ def update_existing_rating(
     rating_id: int,
     rating_in: schemas_rating.RatingUpdate,
     db: Session = Depends(get_db),
-    # KORREKTUR: Verwende den neuen Funktionsnamen
     current_trainer: Trainer = Depends(get_current_trainer)
 ):
     db_rating = crud_rating.get(db, rating_id=rating_id)
