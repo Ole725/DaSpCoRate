@@ -58,3 +58,13 @@ def decode_access_token(token: str) -> Optional[dict]:
         return payload
     except JWTError:
         return None
+    
+# Token speziell für Passwort-Reset generieren (kurze Laufzeit)
+def create_password_reset_token(email: str) -> str:
+    """
+    Erstellt ein Token für den Passwort-Reset, das 15 Minuten gültig ist.
+    Unterscheidet sich vom Login-Token durch den 'sub' Claim (nur Email).
+    """
+    delta = timedelta(minutes=15)
+    data = {"sub": email, "type": "reset"}
+    return create_access_token(data=data, expires_delta=delta)

@@ -1,6 +1,6 @@
 # /DaSpCoRate/backend/app/schemas/token.py
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 class Token(BaseModel):
@@ -10,3 +10,10 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[str] = None 
     role: Optional[str] = None
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+class PasswordResetConfirm(BaseModel):
+    token: str
+    new_password: str

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { MdMan, MdWoman } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 function LoginPage() {
@@ -50,10 +51,24 @@ function LoginPage() {
                 <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" htmlFor="password">Passwort</label>
                 <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white bg-white dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
+              {/* Anmelden Button */}
               <div className="flex items-center justify-between">
-                <button type="submit" disabled={loading} className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:bg-blue-300 w-full transition-colors">
+                <button 
+                  type="submit" 
+                  disabled={loading} 
+                  className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:bg-blue-300 w-full transition-colors"
+                >
                   {loading ? 'Anmelden...' : 'Anmelden'}
                 </button>
+              </div>
+
+              {/* Link: Zentriert & Abstand nach oben */}
+              <div className="flex justify-center mt-4">
+                <div className="text-sm">
+                  <Link to="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 transition-colors">
+                    Passwort vergessen?
+                  </Link>
+                </div>
               </div>
               {error && <p className="mt-4 text-center text-red-500 dark:text-red-400 text-sm">{error}</p>}
             </form>
