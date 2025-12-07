@@ -8,6 +8,37 @@ import Modal from '../components/Modal';
 import { ClipLoader } from 'react-spinners';
 import { FaPlus, FaPlay, FaTrash, FaEdit, FaVideo } from 'react-icons/fa';
 
+const SessionFormFields = ({ data, onChange }) => (
+  <>
+      <div className="mb-4">
+          <label className="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" htmlFor="title">Titel des Trainings</label>
+          <input id="title" name="title" value={data.title} onChange={onChange} required className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
+      <div className="mb-4">
+          <label className="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" htmlFor="session_date">Datum</label>
+          <input id="session_date" name="session_date" type="date" value={data.session_date} onChange={onChange} required className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
+      <div className="mb-4">
+          <label className="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" htmlFor="video_url">Video Link (Optional)</label>
+          <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaVideo className="text-gray-400" />
+              </div>
+              <input 
+                  id="video_url" 
+                  name="video_url" 
+                  type="url" 
+                  placeholder="https://drive.google.com/..." 
+                  value={data.video_url} 
+                  onChange={onChange} 
+                  className="shadow appearance-none border rounded w-full py-2 pl-10 px-3 text-gray-700 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline" 
+              />
+          </div>
+          <p className="text-xs text-gray-500 mt-1">Hier kannst du einen Link zum aufgezeichneten Training einfügen.</p>
+      </div>
+  </>
+);
+
 function SessionsManagementPage() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -124,37 +155,6 @@ function SessionsManagementPage() {
   }
 
   // Gemeinsame Input-Felder für Modal (Wiederverwendbar)
-  const SessionFormFields = ({ data, onChange }) => (
-    <>
-        <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" htmlFor="title">Titel des Trainings</label>
-            <input id="title" name="title" value={data.title} onChange={onChange} required className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline" />
-        </div>
-        <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" htmlFor="session_date">Datum</label>
-            <input id="session_date" name="session_date" type="date" value={data.session_date} onChange={onChange} required className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline" />
-        </div>
-        <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2" htmlFor="video_url">Video Link (Optional)</label>
-            <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaVideo className="text-gray-400" />
-                </div>
-                <input 
-                    id="video_url" 
-                    name="video_url" 
-                    type="url" 
-                    placeholder="https://drive.google.com/..." 
-                    value={data.video_url} 
-                    onChange={onChange} 
-                    className="shadow appearance-none border rounded w-full py-2 pl-10 px-3 text-gray-700 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline" 
-                />
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Hier kannst du einen Link zum aufgezeichneten Training einfügen.</p>
-        </div>
-    </>
-  );
-
   const SessionTable = ({ sessionList, title }) => (
     <div className="mb-10">
       <h3 className="text-xl font-semibold mb-3 text-gray-700 dark:text-gray-300">{title}</h3>
