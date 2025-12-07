@@ -106,29 +106,70 @@ async def recover_password(email: str, background_tasks: BackgroundTasks, db: Se
     # Link zusammenbauen (Frontend-Route)
     reset_link = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
 
-    # E-Mail Inhalt (HTML)
+    # E-Mail Inhalt (HTML) - Design angepasst an Consent-Mail
     html_content = f"""
+    <!DOCTYPE html>
     <html>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6;">
-            <h3>Passwort zurücksetzen - DaSpCoRate</h3>
-            <p>Hallo,</p>
-            <p>du hast angefordert, dein Passwort zurückzusetzen.</p>
-            <p>Bitte klicke auf den folgenden Link, um ein neues Passwort zu vergeben:</p>
-            <p>
-                <a href="{reset_link}" style="padding: 10px 20px; background-color: #2563EB; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">
-                    Passwort ändern
-                </a>
-            </p>
-            <p><small>Dieser Link ist 15 Minuten gültig.</small></p>
-            <p>Falls du das nicht warst, ignoriere diese E-Mail einfach.</p>
-            <hr>
-            <p><small>DaSpCoRate Team</small></p>
-        </body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Passwort zurücksetzen DanSCoR</title>
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+        
+        <!-- Haupt-Container -->
+        <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            
+            <!-- Header -->
+            <div style="background-color: #2563eb; padding: 30px 20px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">DanSCoR</h1>
+                <p style="color: #e0e7ff; margin: 5px 0 0 0; font-size: 14px;">Passwort Wiederherstellung</p>
+            </div>
+
+            <!-- Inhalt -->
+            <div style="padding: 40px 30px;">
+                <h2 style="color: #1f2937; font-size: 20px; margin-top: 0;">Hallo,</h2>
+                
+                <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-bottom: 25px;">
+                    wir haben eine Anfrage erhalten, dein Passwort zurückzusetzen. Falls du das warst, kannst du dir über den Button unten ein neues Passwort erstellen.
+                </p>
+
+                <!-- Button -->
+                <div style="text-align: center; margin: 35px 0;">
+                    <a href="{reset_link}" style="background-color: #2563eb; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block;">
+                        Passwort ändern
+                    </a>
+                </div>
+
+                <div style="background-color: #fff7ed; border-left: 4px solid #f97316; padding: 10px 15px; margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 14px; color: #9a3412;">
+                        <strong>Hinweis:</strong> Dieser Link ist nur <strong>15 Minuten</strong> gültig.
+                    </p>
+                </div>
+
+                <p style="font-size: 14px; color: #6b7280;">
+                    Falls du kein neues Passwort angefordert hast, kannst du diese E-Mail einfach ignorieren. Dein Account ist sicher.
+                </p>
+
+                <!-- Fallback Link -->
+                <p style="font-size: 14px; color: #6b7280; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                    Button funktioniert nicht? Kopiere diesen Link in den Browser:<br>
+                    <a href="{reset_link}" style="color: #2563eb; word-break: break-all;">{reset_link}</a>
+                </p>
+            </div>
+
+            <!-- Footer -->
+            <div style="background-color: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #9ca3af;">
+                <p style="margin: 0;">Herzliche Grüße, Ole</p>
+                <p style="margin: 5px 0 0 0;">Diese E-Mail wurde automatisch von DanSCoR versendet.</p>
+            </div>
+        </div>
+    </body>
     </html>
     """
 
     message = MessageSchema(
-        subject="Passwort zurücksetzen - DaSpCoRate",
+        subject="🔐 Passwort zurücksetzen - DanSCoR",
         recipients=[email],
         body=html_content,
         subtype="html"

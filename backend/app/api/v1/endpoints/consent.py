@@ -39,22 +39,65 @@ async def send_consent_emails(
         couple.consent_token = token
         db.commit()
 
-        # E-Mail-Inhalt
+        # Generierter Link
+        consent_link = f"{settings.FRONTEND_URL}/consent?token={token}"
+        privacy_link = "https://danscor.app/datenschutz"
+
+        # Design-Upgrade: Responsive HTML E-Mail
+        # Wir nutzen Inline-CSS, da E-Mail-Programme (Outlook, Gmail) das am besten verstehen.
         email_body = f"""
+        <!DOCTYPE html>
         <html>
-        <body>
-            <p>Hallo {couple.mrs_first_name} & {couple.mr_first_name},</p>
-            <p>um die DanSCor-App nutzen zu können, benötigen ich Eure Zustimmung zur Verarbeitung Eurer Daten gemäß meiner <a href="https://danscor.app/datenschutz">Datenschutzerklärung</a>.</p>
-            <p>Bitte klicke auf den folgenden Link, um Eure Zustimmung zu geben:</p>
-            <p><a href="{settings.FRONTEND_URL}/consent?token={token}">Zustimmung jetzt geben</a></p>
-            <p>Der Link ist einmalig gültig.</p>
-            <p>Vielen Dank,<br>Ole</p>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Datenschutz Einwilligung DanSCoR</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+            
+            <!-- Haupt-Container -->
+            <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                
+                <!-- Header mit App Farbe -->
+                <div style="background-color: #2563eb; padding: 30px 20px; text-align: center;">
+                    <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">DanSCoR</h1>
+                    <p style="color: #e0e7ff; margin: 5px 0 0 0; font-size: 14px;">Dance Sport Rating App</p>
+                </div>
+
+                <!-- Inhalt -->
+                <div style="padding: 40px 30px;">
+                    <h2 style="color: #1f2937; font-size: 20px; margin-top: 0;">Liebe {couple.mrs_first_name}, lieber {couple.mr_first_name},</h2>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-bottom: 25px;">
+                        vielen Dank für eure Anmeldung. Damit ihr <strong>DanSCoR</strong> vollumfänglich nutzen könnt, benötige ich noch kurz eure formale Zustimmung zur Datenverarbeitung. 
+                        Dies dient meiner Absicherung und erfolgt gemäß meiner <a href="{privacy_link}" style="color: #2563eb; text-decoration: underline;">Datenschutzerklärung</a>.
+                    </p>
+
+                    <!-- Button -->
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="{consent_link}" style="background-color: #2563eb; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block;">
+                            Jetzt Zustimmung geben
+                        </a>
+                    </div>
+
+                    <p style="font-size: 14px; color: #6b7280; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                        Falls der Button nicht funktioniert, kopiert bitte diesen Link in euren Browser:<br>
+                        <a href="{consent_link}" style="color: #2563eb; word-break: break-all;">{consent_link}</a>
+                    </p>
+                </div>
+
+                <!-- Footer -->
+                <div style="background-color: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #9ca3af;">
+                    <p style="margin: 0;">Herzliche Grüße, Ole</p>
+                    <p style="margin: 5px 0 0 0;">Diese E-Mail wurde automatisch von DanSCoR versendet.</p>
+                </div>
+            </div>
         </body>
         </html>
         """
 
         message = MessageSchema(
-            subject="Ihre Einwilligung zur Datenverarbeitung für DanSCor",
+            subject="Noch ausstehend: Einwilligung zur Datenverarbeitung 🔒",
             recipients=[couple.email],
             body=email_body,
             subtype="html"
