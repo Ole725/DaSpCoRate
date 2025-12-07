@@ -48,6 +48,29 @@ def get_single_session(
         raise HTTPException(status_code=404, detail="Session not found.")
     return db_session
 
+@router.put("/{session_id}", response_model=schemas_session.SessionInDB)
+def update_existing_session(
+    session_id: int,
+    session_in: schemas_session.SessionUpdate,
+    db: Session = Depends(get_db),
+    current_trainer: Trainer = Depends(dependencies.get_current_trainer)
+):
+    """
+    Update a session. Only the creator (trainer) can update it.
+    """
+    # 1. Session suchen
+    db_session = crud_session.get(db, session_id=session_id)
+    if not db_session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # 2. Berechtigung prüfen (Ist es der eigene Trainer?)
+    if db_session.trainer_id != current_trainer.id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this session")
+
+    # 3. Update durchführen
+    session = crud_session.update(db, session_id=session_id, session_in=session_in)
+    return session
+
 @router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_a_session(
     session_id: int,

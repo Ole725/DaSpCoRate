@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { getMyRatings, getSessions } from '../api/client';
 import RatingViewTable from '../components/RatingViewTable';
 import { ClipLoader } from 'react-spinners';
-import { FaListUl, FaTable, FaChartLine } from 'react-icons/fa';
+import { FaListUl, FaTable, FaChartLine, FaVideo } from 'react-icons/fa'; // FaVideo importiert
 import PerformanceChart from '../components/PerformanceChart';
 import { useTheme } from '../context/ThemeContext';
 
@@ -54,7 +54,8 @@ function CoupleHistoryPage() {
         // Finde die Session-Infos
         const sessionInfo = sessions.find(s => s.id === sessionId);
         sessionGroups[sessionId] = {
-          sessionInfo: sessionInfo || { title: `Session ID: ${sessionId}`, session_date: '' },
+          // Fallback, falls SessionInfo fehlt (sollte nicht passieren)
+          sessionInfo: sessionInfo || { title: `Session ID: ${sessionId}`, session_date: '', video_url: '' },
           totalScore: 0,
           rounds: {}
         };
@@ -92,9 +93,7 @@ function CoupleHistoryPage() {
         };
 
         Object.values(sessionGroup.rounds).forEach(round => {
-          // Füge für jede Runde eine eigene Eigenschaft hinzu, z.B. round_1, round_2
           chartObject[`round_${round.roundNumber}`] = round.roundTotal;
-          // Finde die höchste Rundennummer über alle Sessions hinweg
           if (round.roundNumber > maxRound) {
             maxRound = round.roundNumber;
           }
@@ -103,7 +102,6 @@ function CoupleHistoryPage() {
         return chartObject;
       });
     
-    // Erstelle ein Array von Rundennummern, z.B. [1, 2, 3], wenn 3 die höchste Runde war
     const rounds = Array.from({ length: maxRound }, (_, i) => i + 1);
 
     return { chartData: data, availableRounds: rounds };
@@ -112,13 +110,7 @@ function CoupleHistoryPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <ClipLoader
-          color={"#3b82f6"} // Eine passende blaue Farbe
-          loading={loading}
-          size={50} // Größe des Spinners
-          aria-label="Loading Spinner"
-          data-testid="loader"
-        />
+        <ClipLoader color={"#3b82f6"} loading={loading} size={50} />
       </div>
     );
   }
@@ -146,24 +138,38 @@ function CoupleHistoryPage() {
         </div>
       )}
 
-      {/* NEU: Bedingtes Rendern basierend auf viewMode */}
-      {/* Ansicht 1: Standard (deine bisherige Ansicht) */}
+      {/* Ansicht 1: Standard */}
       {viewMode === 'default' && sessionsWithRatings.length > 0 && sessionsWithRatings.map(sessionGroup => (
         <div key={sessionGroup.sessionInfo.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-            <div className="bg-green-100 dark:bg-green-800 border-l-4 border-green-500 dark:border-green-400 text-green-800 dark:text-green-400 p-4 rounded-md mb-6 flex justify-between items-center">
+            <div className="bg-green-100 dark:bg-green-800 border-l-4 border-green-500 dark:border-green-400 text-green-800 dark:text-green-400 p-4 rounded-md mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              
+              {/* Linke Seite */}
               <div>
                 <h3 className="font-bold text-lg">{sessionGroup.sessionInfo.title}</h3>
                 <p className="text-sm">
                   Datum: {new Date(sessionGroup.sessionInfo.session_date).toLocaleDateString('de-DE')}
                 </p>
               </div>
+
+              {/* Mitte/Rechts: Video Button */}
+              {sessionGroup.sessionInfo.video_url && (
+                <a 
+                  href={sessionGroup.sessionInfo.video_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-gray-600 text-green-700 dark:text-green-300 font-semibold py-2 px-4 rounded shadow-sm flex items-center gap-2 transition-colors border border-green-200 dark:border-gray-600"
+                >
+                  <FaVideo /> Video ansehen
+                </a>
+              )}
+
+              {/* Ganz Rechts */}
               <div className="text-right">
                 <p className="text-2xl font-bold">{sessionGroup.totalScore}</p>
                 <p className="text-sm">Gesamtpunkte</p>
               </div>
             </div>
 
-            {/* Zeige die Detail-Tabellen für jede Runde in dieser Session */}
             <div className="space-y-6">
               {Object.values(sessionGroup.rounds)
                      .sort((a, b) => a.roundNumber - b.roundNumber)
@@ -176,6 +182,7 @@ function CoupleHistoryPage() {
             </div>
           </div>
       ))}
+
       {/* Ansicht 2: Kompakt-Tabelle */}
       {viewMode === 'compact' && sessionsWithRatings.length > 0 && (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg overflow-x-auto">
@@ -191,7 +198,13 @@ function CoupleHistoryPage() {
               {sessionsWithRatings.map(sessionGroup => (
                 <tr key={sessionGroup.sessionInfo.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="sticky left-0 bg-white dark:bg-gray-800 border p-2 font-semibold z-10">
-                    <div>{sessionGroup.sessionInfo.title}</div>
+                    <div className="flex items-center gap-2">
+                        {sessionGroup.sessionInfo.title}
+                        {/* Video Icon Kompakt */}
+                        {sessionGroup.sessionInfo.video_url && (
+                             <a href={sessionGroup.sessionInfo.video_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700"><FaVideo size={12} title="Video verfügbar"/></a>
+                        )}
+                    </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">{new Date(sessionGroup.sessionInfo.session_date).toLocaleDateString('de-DE')}</div>
                   </td>
                   {criteria.map(criterion => {
@@ -209,7 +222,7 @@ function CoupleHistoryPage() {
         </div>
       )}
       
-      {/* Ansicht 3: Platzhalter für den Graphen */}
+      {/* Ansicht 3: Graphen */}
       {viewMode === 'graph' && sessionsWithRatings.length > 0 && (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
           <h3 className="text-xl font-semibold mb-4">Leistungsverlauf</h3>

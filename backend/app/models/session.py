@@ -15,6 +15,7 @@ class Session(Base):
     title = Column(String(255), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     criteria = Column(JSON, nullable=True)
+    video_url = Column(String(500), nullable=True)
 
     # Beziehung zum Trainer, der diese Session erstellt hat
     # 'trainer' ist der Name für den Zugriff auf das verknüpfte Trainer-Objekt

@@ -138,6 +138,11 @@ export const createSession = async (sessionData) => {
   }
 };
 
+export const updateSession = async (sessionId, sessionData) => {
+    const response = await apiClient.put(`/sessions/${sessionId}`, sessionData);
+    return response.data;
+};
+
 export const getSessionDetails = async (sessionId) => {
   try {
     const response = await apiClient.get(`/sessions/${sessionId}`);

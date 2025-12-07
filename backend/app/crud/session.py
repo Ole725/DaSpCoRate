@@ -24,6 +24,7 @@ def create_session(self, db: Session, session: schemas_session.SessionCreate, tr
     db_session = models_session.Session(
         session_date=session.session_date,
         title=session.title,
+        video_url=session.video_url,
         trainer_id=trainer_id,  # Die Trainer-ID kommt vom authentifizierten Benutzer
     )
     db.add(db_session)

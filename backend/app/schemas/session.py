@@ -9,6 +9,7 @@ from typing import List, Optional
 class SessionBase(BaseModel):
     session_date: date # Datum der Session
     title: str         # Titel/Beschreibung der Session
+    video_url: Optional[str] = None  # URL zum Video der Session, optional
 
 # Schema für die Erstellung einer neuen Session
 class SessionCreate(SessionBase):
@@ -20,6 +21,7 @@ class SessionUpdate(SessionBase):
     session_date: Optional[date] = None
     title: Optional[str] = None
     criteria: Optional[List[str]] = None
+    video_url: Optional[str] = None
 
 # Schema für das Lesen einer Session aus der Datenbank
 class SessionInDB(SessionBase):
